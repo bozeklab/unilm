@@ -166,7 +166,7 @@ def beit_base_patch16_448_8k_vocab(pretrained=False, **kwargs):
 @register_model
 def beit_base_patch16_512_8k_vocab(pretrained=False, **kwargs):
     model = VisionTransformerForMaskedImageModeling(
-        img_size=448, patch_size=16, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4, qkv_bias=True,
+        img_size=512, patch_size=16, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4, qkv_bias=True,
         norm_layer=partial(nn.LayerNorm, eps=1e-6), vocab_size=8192, **kwargs)
     model.default_cfg = _cfg()
     if pretrained:
