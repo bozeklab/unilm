@@ -87,7 +87,10 @@ class DataAugmentationForBEiT(object):
 def build_beit_pretraining_dataset(args):
     transform = DataAugmentationForBEiT(args)
     print("Data Aug = %s" % str(transform))
-    return ImageFolder(args.data_path, transform=transform)
+    if args.data_set == 'CIFAR':
+        return datasets.CIFAR100(args.data_path, train=True, transform=transform)
+    else:
+        return ImageFolder(args.data_path, transform=transform)
 
 
 def build_dataset(is_train, args):
