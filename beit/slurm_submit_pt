@@ -1,0 +1,20 @@
+#!/bin/bash -l
+
+
+#SBATCH --partition=zmmk-exclusive
+#SBATCH --nodes=1
+#SBATCH --mem=100G
+#SBATCH --gres=gpu:2
+#SBATCH --time=24-00:00:00
+
+#SBATCH --job-name=beit
+#SBATCH --output=beit_pt.txt
+
+### begin of executable commands
+conda activate beit3
+TOKENIZER_PATH=model_dir/dall_e_tokenizer_weight/
+DATA_PATH=/scratch/pwojcik/cifar/
+OUTPUT_DIR=model_dir_pt/
+export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
+
+python -u run_beit_pretraining.py  --data_path ${DATA_PATH}  --data_set CIFAR  --output_dir ${OUTPUT_DIR} --num_mask_patches 75   --model beit_large_patch16_224_8k_vocab --resume model_dir_pt/beit_large_patch16_224_pt22k.pth  --discrete_vae_weight_path ${TOKENIZER_PATH}  --batch_size 8 --lr 1.5e-3 --warmup_steps 10000 --epochs 400   --clip_grad 3.0 --drop_path 0.1 --layer_scale_init_value 0.1 --input_size 224 --second_input_size 112
