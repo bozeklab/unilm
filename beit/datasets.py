@@ -88,7 +88,7 @@ def build_beit_pretraining_dataset(args):
     transform = DataAugmentationForBEiT(args)
     print("Data Aug = %s" % str(transform))
     if args.data_set == 'CIFAR':
-        return datasets.CIFAR100(args.data_path, train=True, transform=transform)
+        return datasets.CIFAR100(root=args.data_path, train=True, transform=transform)
     else:
         return ImageFolder(args.data_path, transform=transform)
 
@@ -108,7 +108,7 @@ def build_dataset(is_train, args):
     print("---------------------------")
 
     if args.data_set == 'CIFAR':
-        dataset = datasets.CIFAR100(args.data_path, train=is_train, transform=transform, download=True)
+        dataset = datasets.CIFAR100(root=args.data_path, train=True, transform=transform, download=False)
         nb_classes = 100
     elif args.data_set == 'IMNET':
         root = os.path.join(args.data_path, 'train' if is_train else 'val')
