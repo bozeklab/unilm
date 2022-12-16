@@ -266,6 +266,9 @@ def init_distributed_mode(args):
         # ["RANK", "WORLD_SIZE", "MASTER_ADDR", "MASTER_PORT", "LOCAL_RANK"]
     elif 'RANK' in os.environ and 'WORLD_SIZE' in os.environ:
         print('2!')
+        print(int(os.environ["RANK"]))
+        print(int(os.environ['WORLD_SIZE']))
+        print(int(os.environ['LOCAL_RANK']))
         args.rank = int(os.environ["RANK"])
         args.world_size = int(os.environ['WORLD_SIZE'])
         args.gpu = int(os.environ['LOCAL_RANK'])
