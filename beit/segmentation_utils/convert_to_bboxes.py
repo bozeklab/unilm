@@ -44,6 +44,8 @@ def expand_bounding_box(bbox, margin, img_shape):
 
 
 def create_bboxes_for_image(masks, img_shape=(448, 448)):
+    print('!!!')
+    print(masks.shape)
     boxes = masks_to_boxes(masks)
     boxes_u = nms(boxes, torch.ones(boxes.shape[0], dtype=torch.float), 0.50)
     boxes_id = boxes[boxes_u]
