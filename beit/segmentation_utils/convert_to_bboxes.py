@@ -71,7 +71,7 @@ if __name__ == '__main__':
             for id, img in tqdm(enumerate(filenames)):
                 bboxes = create_bboxes_for_image(torch.tensor(masks[id]))
                 with open(os.path.join(OUTPUT_DIRECTORY, f"{img.strip('.png')}.pkl"), 'wb') as outf:
-                    pickle.dump(bboxes.numpy(), outf)
+                    pickle.dump(np.asarray(bboxes), outf)
 
 
 
