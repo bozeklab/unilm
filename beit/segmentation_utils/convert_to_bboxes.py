@@ -2,8 +2,6 @@ import os
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
-from torchvision.io import read_image
-from torchvision.utils import draw_bounding_boxes
 from os import listdir
 from os.path import isfile, join
 from torchvision.ops import nms, masks_to_boxes, box_convert
