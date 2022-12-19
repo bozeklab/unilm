@@ -67,10 +67,11 @@ if __name__ == '__main__':
             filenames = np.load(os.path.join(ASSETS_DIRECTORY, f), allow_pickle=True)
             print(f"Processing {f}...")
             masks = np.load(os.path.join(ASSETS_DIRECTORY, f"seg_{num}.pkl"), allow_pickle=True)
+            print(f"Loaded masks.")
             for id, img in tqdm(enumerate(filenames)):
-                bboxes = create_bboxes_for_image(masks[id])
-                with open(os.path.join(OUTPUT_DIRECTORY, f"{img.strip('.png')}.pkl"), 'rb') as f:
-                    pickle.dump(bboxes.numpy(), )
+                bboxes = create_bboxes_for_image(torch.tensor(masks[id]))
+                with open(os.path.join(OUTPUT_DIRECTORY, f"{img.strip('.png')}.pkl"), 'rb') as outf:
+                    pickle.dump(bboxes.numpy(), outf)
 
 
 
