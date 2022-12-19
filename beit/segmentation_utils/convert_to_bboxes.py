@@ -70,9 +70,10 @@ if __name__ == '__main__':
             print(f"Loaded masks.")
             for id, img in tqdm(enumerate(filenames)):
                 mask = torch.tensor(masks[id])
+                _mask = []
                 for i in range(400):
-                    if torch.all(mask[i] == False):
-                        print('!!!')
-                bboxes = create_bboxes_for_image(mask)
+                    if not torch.all(mask[i] == False):
+                        _mask.append(mask[i].unsqueeze(0))
+                bboxes = create_bboxes_for_image(torch.cat(_mask, dim=0))
                 with open(os.path.join(OUTPUT_DIRECTORY, f"{img.strip('.png')}.pkl"), 'wb') as outf:
                     pickle.dump(np.asarray(bboxes, dtype=object), outf)
