@@ -43,13 +43,13 @@ def expand_bounding_box(bbox, margin, img_shape):
     return box_convert(torch.tensor([xmin, ymin, xmax, ymax]), 'xyxy', 'xyxy').unsqueeze(0)
 
 
-def create_bboxes_for_image(masks):
+def create_bboxes_for_image(masks, img_shape=(448, 448)):
     boxes = masks_to_boxes(masks)
     boxes_u = nms(boxes, torch.ones(boxes.shape[0], dtype=torch.float), 0.50)
     boxes_id = boxes[boxes_u]
     boxes_expanded = []
     for i in range(boxes_id.shape[0]):
-        expanded = expand_bounding_box(boxes_id[i].numpy(), margin=10, img_shape=(img.shape[1], img.shape[2]))
+        expanded = expand_bounding_box(boxes_id[i].numpy(), margin=10, img_shape=img_shape)
         if expanded is not None:
             boxes_expanded.append(expanded)
     return boxes_expanded
