@@ -4,9 +4,9 @@ import torch
 import matplotlib.pyplot as plt
 from os import listdir
 from os.path import isfile, join
-from torchvision.ops import nms, masks_to_boxes, box_convert
 
 import torchvision.transforms.functional as F
+from torchvision.ops import masks_to_boxes, nms
 
 ASSETS_DIRECTORY = "/Users/piotrwojcik/he_segmentation/"
 OUTPUT_DIRECTORY = "/scratch/pwojcik/images_ihc/positive/"
