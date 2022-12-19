@@ -6,9 +6,9 @@ from os import listdir
 from os.path import isfile, join
 
 import torchvision.transforms.functional as F
-from torchvision.ops import masks_to_boxes, nms
+from torchvision.ops import masks_to_boxes, nms, box_convert
 
-ASSETS_DIRECTORY = "/Users/piotrwojcik/he_segmentation/"
+ASSETS_DIRECTORY = "/projects/ag-bozek/hnaji/code/outp/"
 OUTPUT_DIRECTORY = "/scratch/pwojcik/images_ihc/positive/"
 
 plt.rcParams["savefig.bbox"] = "tight"
