@@ -51,8 +51,8 @@ def create_bboxes_for_image(masks, img_shape=(448, 448)):
     for i in range(boxes_id.shape[0]):
         expanded = expand_bounding_box(boxes_id[i].numpy(), margin=10, img_shape=img_shape)
         if expanded is not None:
-            boxes_expanded.append(expanded)
-    return boxes_expanded
+            boxes_expanded.append(expanded.unsqueeze(0))
+    return troch.cat(boxes_expanded, dim=0)
 
 
 if __name__ == '__main__':
@@ -76,4 +76,4 @@ if __name__ == '__main__':
                         _mask.append(mask[i].unsqueeze(0))
                 bboxes = create_bboxes_for_image(torch.cat(_mask, dim=0))
                 with open(os.path.join(OUTPUT_DIRECTORY, f"{img.strip('.png')}.pkl"), 'wb') as outf:
-                    pickle.dump(np.asarray(bboxes, dtype=object), outf)
+                    pickle.dump(bboxes, outf)
