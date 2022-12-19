@@ -52,7 +52,7 @@ def create_bboxes_for_image(masks, img_shape=(448, 448)):
         expanded = expand_bounding_box(boxes_id[i].numpy(), margin=10, img_shape=img_shape)
         if expanded is not None:
             boxes_expanded.append(expanded.unsqueeze(0))
-    return troch.cat(boxes_expanded, dim=0)
+    return torch.cat(boxes_expanded, dim=0)
 
 
 if __name__ == '__main__':
