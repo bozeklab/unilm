@@ -28,9 +28,6 @@ def show(imgs):
 
 
 def expand_bounding_box(bbox, margin, img_shape):
-    if (0 in bbox) or (img_shape[0] in bbox) or (img_shape[1] in bbox):
-        return None
-
     x_fill = 2 * margin
     x_fill -= min(margin, bbox[0])
     xmin = max(bbox[0] - margin, 0)
@@ -40,6 +37,10 @@ def expand_bounding_box(bbox, margin, img_shape):
     y_fill -= min(margin, bbox[2])
     ymin = max(bbox[1] - margin, 0)
     ymax = min(bbox[3] + y_fill, img_shape[1] - 1)
+
+    if (0 in bbox) or (xmax >= img_shape[0]) or (ymax >= img_shape[1]):
+        return None
+
     return box_convert(torch.tensor([xmin, ymin, xmax, ymax]), 'xyxy', 'xyxy').unsqueeze(0)
 
 
