@@ -68,7 +68,8 @@ if __name__ == '__main__':
             print(f"Processing {f}...")
             masks = np.load(os.path.join(ASSETS_DIRECTORY, f"seg_{num}.pkl"), allow_pickle=True)
             print(f"Loaded masks.")
-            for id, img in tqdm(enumerate(filenames)):
+            for id in tqdm(range(len(filenames))):
+                img = filenames[id]
                 mask = torch.tensor(masks[id])
                 _mask = []
                 for i in range(400):
