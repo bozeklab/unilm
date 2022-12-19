@@ -3,10 +3,12 @@ import numpy as np
 import torch
 import matplotlib.pyplot as plt
 from os import listdir
+import pickle
 from os.path import isfile, join
 
 import torchvision.transforms.functional as F
 from torchvision.ops import masks_to_boxes, nms, box_convert
+from tqdm import tqdm
 
 ASSETS_DIRECTORY = "/projects/ag-bozek/hnaji/code/outp/"
 OUTPUT_DIRECTORY = "/scratch/pwojcik/images_ihc/positive/"
@@ -56,4 +58,20 @@ def create_bboxes_for_image(masks):
 if __name__ == '__main__':
     files = [f for f in listdir(ASSETS_DIRECTORY) if isfile(join(ASSETS_DIRECTORY, f))]
     for f in files:
-        print(f)
+        cat = f.split('_')[-2]
+        num = f.split('_')[-1].strip('.pkl')
+
+        if int(num) < 1000:
+            continue
+        if cat == 'filename':
+            filenames = np.load(os.path.join(ASSETS_DIRECTORY, f), allow_pickle=True)
+            print(f"Processing {f}...")
+            masks = np.load(os.path.join(ASSETS_DIRECTORY, f"seg_{num}.pkl"), allow_pickle=True)
+            for id, img in tqdm(enumerate(filenames)):
+                bboxes = create_bboxes_for_image(masks[id])
+                with open(os.path.join(OUTPUT_DIRECTORY, f"{img.strip('.png')}.pkl"), 'rb') as f:
+                    pickle.dump(bboxes.numpy(), )
+
+
+
+
