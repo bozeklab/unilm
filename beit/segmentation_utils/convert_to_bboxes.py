@@ -71,10 +71,10 @@ if __name__ == '__main__':
             for id, img in tqdm(enumerate(filenames)):
                 mask = torch.tensor(masks[id])
                 if torch.all(mask == False):
-                    continue
+                    print('!!!')
                 bboxes = create_bboxes_for_image(mask)
                 with open(os.path.join(OUTPUT_DIRECTORY, f"{img.strip('.png')}.pkl"), 'wb') as outf:
-                    pickle.dump(np.asarray(bboxes), outf)
+                    pickle.dump(np.asarray(bboxes, dtype=object), outf)
 
 
 
