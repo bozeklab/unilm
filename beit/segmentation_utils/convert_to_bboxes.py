@@ -44,8 +44,6 @@ def expand_bounding_box(bbox, margin, img_shape):
 
 
 def create_bboxes_for_image(masks, img_shape=(448, 448)):
-    print('!!!')
-    print(masks.shape)
     boxes = masks_to_boxes(masks)
     boxes_u = nms(boxes, torch.ones(boxes.shape[0], dtype=torch.float), 0.50)
     boxes_id = boxes[boxes_u]
@@ -71,6 +69,8 @@ if __name__ == '__main__':
             masks = np.load(os.path.join(ASSETS_DIRECTORY, f"seg_{num}.pkl"), allow_pickle=True)
             print(f"Loaded masks.")
             for id, img in tqdm(enumerate(filenames)):
+                if torch.all(masks[id] == 0):
+                    continue
                 bboxes = create_bboxes_for_image(torch.tensor(masks[id]))
                 with open(os.path.join(OUTPUT_DIRECTORY, f"{img.strip('.png')}.pkl"), 'wb') as outf:
                     pickle.dump(np.asarray(bboxes), outf)
