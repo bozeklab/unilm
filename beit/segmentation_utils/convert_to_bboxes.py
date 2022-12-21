@@ -55,7 +55,7 @@ def create_bboxes_for_image(masks, margin=10, img_shape=(448, 448)):
             if expanded is not None:
                 boxes_expanded.append(expanded)
         else:
-            boxes_expanded.append(boxes_id[i])
+            boxes_expanded.append(boxes_id[i].unsqueeze(0))
     return torch.cat(boxes_expanded, dim=0)
 
 
