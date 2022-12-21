@@ -44,15 +44,18 @@ def expand_bounding_box(bbox, margin, img_shape):
     return box_convert(torch.tensor([xmin, ymin, xmax, ymax]), 'xyxy', 'xyxy').unsqueeze(0)
 
 
-def create_bboxes_for_image(masks, img_shape=(448, 448)):
+def create_bboxes_for_image(masks, margin=10, img_shape=(448, 448)):
     boxes = masks_to_boxes(masks)
     boxes_u = nms(boxes, torch.ones(boxes.shape[0], dtype=torch.float), 0.50)
     boxes_id = boxes[boxes_u]
     boxes_expanded = []
     for i in range(boxes_id.shape[0]):
-        expanded = expand_bounding_box(boxes_id[i].numpy(), margin=10, img_shape=img_shape)
-        if expanded is not None:
-            boxes_expanded.append(expanded)
+        if margin > 0:
+            expanded = expand_bounding_box(boxes_id[i].numpy(), margin=margin, img_shape=img_shape)
+            if expanded is not None:
+                boxes_expanded.append(expanded)
+        else:
+            boxes_expanded.append(boxes_id[i])
     return torch.cat(boxes_expanded, dim=0)
 
 
@@ -76,6 +79,9 @@ if __name__ == '__main__':
                 for i in range(400):
                     if not torch.all(mask[i] == False):
                         _mask.append(mask[i].unsqueeze(0))
-                bboxes = create_bboxes_for_image(torch.cat(_mask, dim=0))
+                bboxes = create_bboxes_for_image(torch.cat(_mask, dim=0), margin=10)
+                boxes_orig = create_bboxes_for_image(torch.cat(_mask, dim=0), margin=0)
                 with open(os.path.join(OUTPUT_DIRECTORY, f"{img.strip('.png')}.pkl"), 'wb') as outf:
                     pickle.dump(bboxes, outf)
+                with open(os.path.join(OUTPUT_DIRECTORY, f"{img.strip('.png')}_orig.pkl"), 'wb') as outf:
+                    pickle.dump(boxes_orig, outf)
