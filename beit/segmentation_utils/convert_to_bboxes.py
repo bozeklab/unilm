@@ -74,11 +74,15 @@ if __name__ == '__main__':
             print(f"Loaded masks.")
             for id in tqdm(range(len(filenames))):
                 img = filenames[id]
+                if 'wsi_002-tile-r99bis-c89' not in img:
+                    continue
                 mask = torch.tensor(masks[id])
                 _mask = []
                 for i in range(400):
                     if not torch.all(mask[i] == False):
                         _mask.append(mask[i].unsqueeze(0))
+                with open(os.path.join(OUTPUT_DIRECTORY, f"{img.strip('.png')}_mask.pkl"), 'wb') as outf:
+                    pickle.dump(torch.cat(_mask, dim=0), outf)
                 bboxes = create_bboxes_for_image(torch.cat(_mask, dim=0), margin=10)
                 boxes_orig = create_bboxes_for_image(torch.cat(_mask, dim=0), margin=0)
                 with open(os.path.join(OUTPUT_DIRECTORY, f"{img.strip('.png')}.pkl"), 'wb') as outf:
