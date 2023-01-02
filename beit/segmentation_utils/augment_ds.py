@@ -43,7 +43,7 @@ if __name__ == '__main__':
             image = torch.cat([image1, image2], dim=2)
             #image_boxes = T.ToPILImage()(image)
             #canvas = ImageDraw.Draw(image_boxes)
-            for _ in range(10):
+            for cc in range(10):
                 a = random.randint(10, 512)
                 b = random.randint(10, 512)
                 crop = image[:, a:(a + 512), b:(b + 512)]
@@ -51,7 +51,7 @@ if __name__ == '__main__':
                 #canvas.rectangle(shape, outline="blue")
                 assert(crop.shape == (3, 512, 512))
                 crop = T.ToPILImage()(crop)
-                crop.save(os.path.join(IMG_DIR, f"wsi_001-tile-r{lu[0]}-c{lu[0]}_aug.png"))
+                crop.save(os.path.join(IMG_DIR, f"wsi_001-tile-r{lu[0]}-c{lu[0]}_{cc}aug.png"))
                 #crop.show()
             #image_boxes.show()
 
