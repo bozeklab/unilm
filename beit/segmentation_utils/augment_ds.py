@@ -51,7 +51,7 @@ if __name__ == '__main__':
                 #canvas.rectangle(shape, outline="blue")
                 assert(crop.shape == (3, 512, 512))
                 crop = T.ToPILImage()(crop)
-                crop.save(os.path.join(IMG_DIR, f"wsi_001-tile-r{lu[0]}-c{lu[0]}_{cc}aug.png"))
+                crop.save(os.path.join(IMG_DIR, f"wsi_001-tile-r{lu[0]}-c{lu[1]}_{cc}aug.png"))
                 #crop.show()
             #image_boxes.show()
 
