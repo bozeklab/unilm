@@ -1,11 +1,7 @@
 import random
 
-import cv2
-import numpy as np
 import os
-import matplotlib.pyplot as plt
 import torchvision.transforms as T
-from PIL import ImageDraw
 from torchvision.io import read_image
 import torch
 import glob
