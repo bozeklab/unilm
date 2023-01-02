@@ -36,6 +36,7 @@ if __name__ == '__main__':
                     break
             if not all:
                 continue
+            print(ic, jr)
             images = [read_image(os.path.join(IMG_DIR, f)) for f in files]
             image1 = torch.cat([images[0], images[1]], dim=1)
             image2 = torch.cat([images[2], images[3]], dim=1)
