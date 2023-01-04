@@ -15,6 +15,7 @@ OUTPUT_DIRECTORY = "/scratch/pwojcik/images_he/positive/"
 
 plt.rcParams["savefig.bbox"] = "tight"
 
+from skimage.measure import label, regionprops
 
 def show(imgs):
     if not isinstance(imgs, list):
@@ -59,6 +60,19 @@ def create_bboxes_for_image(masks, margin=10, img_shape=(448, 448)):
     return torch.cat(boxes_expanded, dim=0)
 
 
+def create_bboxes_for_mask(masks):
+    mask_sum = masks.int().sum(dim=0)
+    mask_sum = (mask_sum > 0).unsqueeze(0)
+    mask_sum = torch.permute(mask_sum, [1, 2, 0])
+    lbl_0 = label(mask_sum)
+    props = regionprops(lbl_0)
+    bboxes = []
+    for prop in props:
+        bbox = prop.bbox
+        bboxes.append(torch.tensor([bbox[1], bbox[0], bbox[4], bbox[3]]).unsqueeze(0))
+    return torch.cat(bboxes, dim=0)
+
+
 if __name__ == '__main__':
     files = [f for f in listdir(ASSETS_DIRECTORY) if isfile(join(ASSETS_DIRECTORY, f))]
     for f in files:
@@ -83,9 +97,9 @@ if __name__ == '__main__':
                         _mask.append(mask[i].unsqueeze(0))
                 with open(os.path.join(OUTPUT_DIRECTORY, f"{img.strip('.png')}_mask.pkl"), 'wb') as outf:
                     pickle.dump(torch.cat(_mask, dim=0), outf)
-                bboxes = create_bboxes_for_image(torch.cat(_mask, dim=0), margin=10)
-                boxes_orig = create_bboxes_for_image(torch.cat(_mask, dim=0), margin=0)
+                bboxes = create_bboxes_for_mask(torch.cat(_mask, dim=0))
+                #boxes_orig = create_bboxes_for_image(torch.cat(_mask, dim=0), margin=0)
                 with open(os.path.join(OUTPUT_DIRECTORY, f"{img.strip('.png')}.pkl"), 'wb') as outf:
                     pickle.dump(bboxes, outf)
-                with open(os.path.join(OUTPUT_DIRECTORY, f"{img.strip('.png')}_orig.pkl"), 'wb') as outf:
-                    pickle.dump(boxes_orig, outf)
+                #with open(os.path.join(OUTPUT_DIRECTORY, f"{img.strip('.png')}_orig.pkl"), 'wb') as outf:
+                #    pickle.dump(boxes_orig, outf)
