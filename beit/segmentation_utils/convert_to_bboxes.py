@@ -74,7 +74,7 @@ if __name__ == '__main__':
             print(f"Loaded masks.")
             for id in tqdm(range(len(filenames))):
                 img = filenames[id]
-                if 'wsi_001-tile-r133bis-c45.png' not in img:
+                if 'wsi_001-tile-r101bis-c69.png' not in img:
                     continue
                 mask = torch.tensor(masks[id])
                 _mask = []
