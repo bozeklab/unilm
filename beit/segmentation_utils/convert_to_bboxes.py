@@ -64,7 +64,7 @@ def show(imgs):
 def create_bboxes_for_mask(masks):
     mask_sum = masks.int().sum(dim=0)
     mask_sum = (mask_sum > 0).unsqueeze(0)
-    mask_sum = torch.permute(mask_sum, [1, 2, 0])
+    mask_sum = mask_sum.permute((1, 2, 0))
     lbl_0 = label(mask_sum)
     props = regionprops(lbl_0)
     bboxes = []
@@ -81,6 +81,8 @@ if __name__ == '__main__':
         num = f.split('_')[-1].strip('.pkl')
 
         if int(num) < 1000:
+            continue
+        if int(num) != 31000:
             continue
         if cat == 'filename':
             filenames = np.load(os.path.join(ASSETS_DIRECTORY, f), allow_pickle=True)
