@@ -85,8 +85,6 @@ if __name__ == '__main__':
 
         if int(num) < 1000:
             continue
-        if int(num) != 31000:
-            continue
         if cat == 'filename':
             filenames = np.load(os.path.join(ASSETS_DIRECTORY, f), allow_pickle=True)
             print(f"Processing {f}...")
@@ -94,8 +92,6 @@ if __name__ == '__main__':
             print(f"Loaded masks.")
             for id in tqdm(range(len(filenames))):
                 img = filenames[id]
-                if 'wsi_001-tile-r101bis-c69.png' not in img:
-                    continue
                 mask = torch.tensor(masks[id])
                 _mask = []
                 for i in range(400):
