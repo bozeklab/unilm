@@ -71,6 +71,7 @@ def create_bboxes_for_mask(masks):
     for prop in props:
         bbox = prop.bbox
         bboxes.append(torch.tensor([bbox[1], bbox[0], bbox[4], bbox[3]]).unsqueeze(0))
+        print((bbox[3] - bbox[0]) * (bbox[4] - bbox[1]))
     return torch.cat(bboxes, dim=0)
 
 
