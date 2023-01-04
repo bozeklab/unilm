@@ -70,7 +70,7 @@ def create_bboxes_for_mask(masks):
     bboxes = []
     for prop in props:
         bbox = prop.bbox
-        bboxes.append(torch.tensor([bbox[0], bbox[1], bbox[3], bbox[4]]).unsqueeze(0))
+        bboxes.append(torch.tensor([bbox[1], bbox[0], bbox[4], bbox[3]]).unsqueeze(0))
     return torch.cat(bboxes, dim=0)
 
 
