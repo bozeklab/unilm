@@ -10,8 +10,8 @@ import torchvision.transforms.functional as F
 from torchvision.ops import masks_to_boxes, nms, box_convert
 from tqdm import tqdm
 
-ASSETS_DIRECTORY = "/projects/ag-bozek/hnaji/code/outp/"
-OUTPUT_DIRECTORY = "/scratch/pwojcik/images_ihc/positive/"
+ASSETS_DIRECTORY = "/projects/ag-bozek/hnaji/code/outp/he"
+OUTPUT_DIRECTORY = "/scratch/pwojcik/images_he/positive/"
 
 plt.rcParams["savefig.bbox"] = "tight"
 
@@ -74,7 +74,7 @@ if __name__ == '__main__':
             print(f"Loaded masks.")
             for id in tqdm(range(len(filenames))):
                 img = filenames[id]
-                if 'wsi_002-tile-r99bis-c89' not in img:
+                if 'wsi_001-tile-r133bis-c45.png' not in img:
                     continue
                 mask = torch.tensor(masks[id])
                 _mask = []
