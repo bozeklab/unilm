@@ -10,12 +10,13 @@ import torchvision.transforms.functional as F
 from torchvision.ops import masks_to_boxes, nms, box_convert
 from tqdm import tqdm
 
+from skimage.measure import label, regionprops
+
 ASSETS_DIRECTORY = "/projects/ag-bozek/hnaji/code/outp/he"
 OUTPUT_DIRECTORY = "/scratch/pwojcik/images_he/positive/"
 
 plt.rcParams["savefig.bbox"] = "tight"
 
-from skimage.measure import label, regionprops
 
 def show(imgs):
     if not isinstance(imgs, list):
