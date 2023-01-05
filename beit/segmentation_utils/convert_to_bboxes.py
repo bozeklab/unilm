@@ -94,6 +94,9 @@ if __name__ == '__main__':
                 img = filenames[id]
                 mask = torch.tensor(masks[id])
                 _mask = []
+                if os.path.exists(os.path.join(OUTPUT_DIRECTORY, f"{img.strip('.png')}.pkl")):
+                    continue
+
                 for i in range(400):
                     if not torch.all(mask[i] == False):
                         _mask.append(mask[i].unsqueeze(0))
