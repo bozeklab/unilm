@@ -54,7 +54,7 @@ def flatten_list(nested_list):
 
 
 @torch.no_grad()
-def infere(model, dataset, device):
+def infere(model, dataset, patch_size, device):
     model.eval()
 
     for i in range(len(dataset)):
@@ -69,6 +69,7 @@ def infere(model, dataset, device):
         with torch.cuda.amp.autocast():
             output = model.forward_features(x=img, bool_masked_pos=bool_masked_pos)
             output = output[:, 1:]
+            output = output.view(output.shape[0], patch_size, patch_size)
         print(output.shape)
 
 
@@ -110,7 +111,7 @@ def main(args):
     dataset_train = build_beit_inference_dataset(args)
     print(f"Length of dataset == {len(dataset_train)}")
 
-    infere(model, dataset_train, device)
+    infere(model, dataset_train, patch_size, device)
 
 
 if __name__ == '__main__':
