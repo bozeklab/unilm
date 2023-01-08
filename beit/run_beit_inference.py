@@ -61,7 +61,7 @@ def infere(model, dataset, device):
         img, mask_bool, boxes = sample
 
         img = img.to(device)
-        mask_bool = torch.tensor(mask_bool.to(device))
+        mask_bool = torch.tensor(mask_bool).to(device)
 
         print(mask_bool.shape)
 
