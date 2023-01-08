@@ -19,6 +19,8 @@ def get_args():
     parser.add_argument('--checkpoint', default='', help='use this checkpoint')
     parser.add_argument('--model_key', default='model|module', type=str)
     parser.add_argument('--model_prefix', default='', type=str)
+    parser.add_argument('--drop_path', type=float, default=0.1, metavar='PCT',
+                        help='Drop path rate (default: 0.1)')
 
     parser.add_argument('--data_path', default='/Users/piotrwojcik/data/he/', type=str,
                         help='dataset path')
