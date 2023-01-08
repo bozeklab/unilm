@@ -64,6 +64,7 @@ def infere(model, dataset, device):
 
         img = img.to(device)
         bool_masked_pos = torch.tensor(bool_masked_pos).to(device)
+        print(img.shape)
 
         output = model(img.unsqueeze(0), bool_masked_pos.unsqueeze(0), return_all_tokens=True)
         print(output.shape)
