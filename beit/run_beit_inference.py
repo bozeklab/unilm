@@ -58,7 +58,7 @@ def main(args):
     args.patch_size = patch_size
 
     if args.checkpoint:
-        checkpoint = torch.load(args.finetune, map_location='cpu')
+        checkpoint = torch.load(args.checkpoint, map_location='cpu')
         print("Load ckpt from %s" % args.finetune)
         checkpoint_model = None
         for model_key in args.model_key.split('|'):
