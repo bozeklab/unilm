@@ -107,6 +107,9 @@ class VisionTransformerForMaskedImageModeling(nn.Module):
         x = self.patch_embed(x, bool_masked_pos=bool_masked_pos)
         batch_size, seq_len, _ = x.size()
 
+        print('!!!')
+        print(x.shape)
+
         cls_tokens = self.cls_token.expand(batch_size, -1, -1)  # stole cls_tokens impl from Phil Wang, thanks
         mask_token = self.mask_token.expand(batch_size, seq_len, -1)
 
