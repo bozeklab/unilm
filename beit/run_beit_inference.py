@@ -4,6 +4,7 @@ import torch
 
 from pathlib import Path
 import utils
+from beit.datasets import build_beit_inference_dataset
 from beit.run_beit_pretraining import get_model
 
 
@@ -42,8 +43,18 @@ def get_args():
     return parser.parse_args()
 
 
+def flatten_list(nested_list):
+    flattened_list = []
+    for element in nested_list:
+        if isinstance(element, list):
+            flattened_list.extend(flatten_list(element))
+        else:
+            flattened_list.append(element)
+    return flattened_list
+
+
 @torch.no_grad()
-def infere(model, device):
+def infere(model, dataset, device):
     pass
 
 
@@ -77,7 +88,15 @@ def main(args):
     print("Model = %s" % str(model_without_ddp))
     print('number of params:', n_parameters)
 
-    infere(model, device)
+    patch_size = [16, 16]
+
+    args.window_size = (args.input_size // patch_size[0], args.input_size // patch_size[1])
+    args.patch_size = patch_size
+
+    dataset_train = build_beit_inference_dataset(args)
+    print(f"Length of dataset == {len(dataset_train)}")
+
+    infere(model, dataset_train, device)
 
 
 if __name__ == '__main__':
