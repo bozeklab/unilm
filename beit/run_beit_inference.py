@@ -71,7 +71,7 @@ def infere(model, dataset, patch_size, device):
             output = output[:, 1:]
             print(output.shape)
             batch_size, seq_len, _ = output.shape
-            output = output.view(batch_size, img.shape[2] // patch_size[0], img.shape[2] // patch_size[1])
+            output = output.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1])
         print(output.shape)
 
 
