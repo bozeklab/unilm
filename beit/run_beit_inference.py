@@ -30,6 +30,9 @@ def get_args():
 
     parser.add_argument('--output_dir', default='', help='path where to save, empty for no saving')
 
+    return parser.parse_args()
+
+
 @torch.no_grad()
 def infere(model, device):
     pass
@@ -37,9 +40,6 @@ def infere(model, device):
 
 def main(args):
     utils.init_distributed_mode(args)
-
-    if ds_init is not None:
-        utils.create_ds_config(args)
 
     print(args)
 
