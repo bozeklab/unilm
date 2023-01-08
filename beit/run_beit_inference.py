@@ -39,8 +39,6 @@ def infere(model, device):
 
 
 def main(args):
-    utils.init_distributed_mode(args)
-
     print(args)
 
     device = torch.device(args.device)
