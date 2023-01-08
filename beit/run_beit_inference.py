@@ -64,11 +64,10 @@ def infere(model, dataset, device):
 
         img = img.to(device).unsqueeze(0)
         bool_masked_pos = torch.tensor(bool_masked_pos).to(device).unsqueeze(0)
+        bool_masked_pos = bool_masked_pos.flatten(1)
 
-        print(img.shape)
-        print(bool_masked_pos.shape)
-
-        output = model(x=img, bool_masked_pos=bool_masked_pos, return_all_tokens=True)
+        with torch.cuda.amp.autocast():
+            output = model(x=img, bool_masked_pos=bool_masked_pos, return_all_tokens=True)
         print(output.shape)
 
 
