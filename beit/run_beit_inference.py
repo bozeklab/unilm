@@ -58,12 +58,12 @@ def infere(model, dataset, device):
     for i in range(len(dataset)):
         sample, target = dataset[i]
         sample = flatten_list(sample)
-        img, mask, boxes = sample
+        img, mask_bool, boxes = sample
 
-        img.to(device)
-        mask.to(device)
+        img = img.to(device)
+        mask_bool = torch.tensor(mask_bool.to(device))
 
-        print(mask.shape)
+        print(mask_bool.shape)
 
 
 def main(args):
