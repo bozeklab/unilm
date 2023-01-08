@@ -69,7 +69,8 @@ def infere(model, dataset, patch_size, device):
         with torch.cuda.amp.autocast():
             output = model.forward_features(x=img, bool_masked_pos=bool_masked_pos)
             output = output[:, 1:]
-            output = output.view(output.shape[0], patch_size[0], patch_size[1])
+            batch_size, seq_len = output.shape
+            output = output.view(batch_size, img.shape[2] // patch_size[0], img.shape[2] // patch_size[1])
         print(output.shape)
 
 
