@@ -6,6 +6,7 @@ from pathlib import Path
 import utils
 from beit.datasets import build_beit_inference_dataset
 from beit.run_beit_pretraining import get_model
+from torchvision.ops import roi_align
 
 
 def get_args():
@@ -43,11 +44,11 @@ def get_args():
     return parser.parse_args()
 
 
-def flatten_list(nested_list):
+def _flatten_list(nested_list):
     flattened_list = []
     for element in nested_list:
         if isinstance(element, list):
-            flattened_list.extend(flatten_list(element))
+            flattened_list.extend(_flatten_list(element))
         else:
             flattened_list.append(element)
     return flattened_list
@@ -59,7 +60,7 @@ def infere(model, dataset, patch_size, device):
 
     for i in range(len(dataset)):
         sample, target = dataset[i]
-        sample = flatten_list(sample)
+        sample = _flatten_list(sample)
         img, bool_masked_pos, boxes = sample
 
         img = img.to(device).unsqueeze(0)
@@ -67,12 +68,12 @@ def infere(model, dataset, patch_size, device):
         bool_masked_pos = bool_masked_pos.flatten(1)
 
         with torch.cuda.amp.autocast():
-            output = model.forward_features(x=img, bool_masked_pos=bool_masked_pos)
-            output = output[:, 1:]
-            print(output.shape)
-            batch_size, seq_len, C = output.shape
-            output = output.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
-        print(output.shape)
+            x = model.forward_features(x=img, bool_masked_pos=bool_masked_pos)
+            x = x[:, 1:]
+            batch_size, seq_len, C = x.shape
+            x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
+        aligned_boxes = roi_align(input=x, boxes=boxes, output_size=(3, 3))
+        print(aligned_boxes.shape)
 
 
 def main(args):
