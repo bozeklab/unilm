@@ -143,7 +143,7 @@ def main():
         if args.format_only:
             dataset.format_results(outputs, **kwargs)
         if args.eval:
-            dataset.evaluate(outputs, args.eval, **kwargs)
+            dataset.infere(outputs, args.eval, **kwargs)
 
 
 if __name__ == '__main__':

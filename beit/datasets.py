@@ -16,6 +16,8 @@ from torchvision import datasets, transforms
 
 from timm.data.constants import \
     IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD, IMAGENET_INCEPTION_MEAN, IMAGENET_INCEPTION_STD
+
+from beit.dataset_folder_with_segmentation import SegmentedImageFolder
 from transforms import RandomResizedCropAndInterpolationWithTwoPic
 from timm.data import create_transform
 
@@ -84,6 +86,29 @@ class DataAugmentationForBEiT(object):
         return repr
 
 
+class DataAugmentationForBEITInference(object):
+    def __init__(self, args):
+        imagenet_default_mean_and_std = args.imagenet_default_mean_and_std
+        mean = IMAGENET_INCEPTION_MEAN if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_MEAN
+        std = IMAGENET_INCEPTION_STD if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_STD
+
+        self.patch_transform = transforms.Compose([
+            transforms.ToTensor(),
+            #transforms.Normalize(
+            #    mean=torch.tensor(mean),
+            #    std=torch.tensor(std))
+            ])
+
+        self.masked_position_generator = MaskingGenerator(
+            args.window_size, num_masking_patches=args.num_mask_patches,
+            max_num_patches=args.max_mask_patches_per_block,
+            min_num_patches=args.min_mask_patches_per_block,
+        )
+
+    def __call__(self, image):
+        return [self.patch_transform(image), self.masked_position_generator()]
+
+
 def build_beit_pretraining_dataset(args):
     transform = DataAugmentationForBEiT(args)
     print("Data Aug = %s" % str(transform))
@@ -91,6 +116,11 @@ def build_beit_pretraining_dataset(args):
         return datasets.CIFAR100(root=args.data_path, train=True, transform=transform, download=True)
     else:
         return ImageFolder(args.data_path, transform=transform)
+
+
+def build_beit_inference_dataset(args):
+    transform = DataAugmentationForBEITInference(args)
+    return SegmentedImageFolder(root=args.data_path, transform=transform)
 
 
 def build_dataset(is_train, args):
