@@ -15,14 +15,18 @@ def get_args():
                         help='Name of model to train')
 
     parser.add_argument('--input_size', default=448, type=int, help='images input size')
-
     parser.add_argument('--device', default='cuda', help='device to use for training / testing')
-
-    parser.add_argument('--checkpoint', default='', help='use checkpoint')
-
+    parser.add_argument('--checkpoint', default='', help='use this checkpoint')
     parser.add_argument('--model_key', default='model|module', type=str)
-
     parser.add_argument('--model_prefix', default='', type=str)
+
+    parser.add_argument('--data_path', default='/Users/piotrwojcik/data/he/', type=str,
+                        help='dataset path')
+    parser.add_argument('--imagenet_default_mean_and_std', default=False, action='store_true')
+    parser.add_argument('--num_mask_patches', default=75, type=int,
+                        help='number of the visual tokens/patches need be masked')
+    parser.add_argument('--max_mask_patches_per_block', type=int, default=None)
+    parser.add_argument('--min_mask_patches_per_block', type=int, default=16)
 
 
 @torch.no_grad()
