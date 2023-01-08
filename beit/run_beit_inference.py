@@ -21,6 +21,13 @@ def get_args():
     parser.add_argument('--model_prefix', default='', type=str)
     parser.add_argument('--drop_path', type=float, default=0.1, metavar='PCT',
                         help='Drop path rate (default: 0.1)')
+    parser.add_argument('--rel_pos_bias', action='store_true')
+    parser.add_argument('--disable_rel_pos_bias', action='store_false', dest='rel_pos_bias')
+    parser.set_defaults(rel_pos_bias=True)
+    parser.add_argument('--abs_pos_emb', action='store_true')
+    parser.set_defaults(abs_pos_emb=False)
+    parser.add_argument('--layer_scale_init_value', default=0.1, type=float,
+                        help="0.1 for base, 1e-5 for large. set 0 to disable layer scale")
 
     parser.add_argument('--data_path', default='/Users/piotrwojcik/data/he/', type=str,
                         help='dataset path')
