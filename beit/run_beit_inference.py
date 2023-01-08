@@ -55,7 +55,15 @@ def flatten_list(nested_list):
 
 @torch.no_grad()
 def infere(model, dataset, device):
-    pass
+    for i in range(len(dataset[i])):
+        sample, target = dataset_train[27]
+        sample = flatten_list(sample)
+        img, mask, boxes = sample
+
+        img.to(device)
+        mask.to(device)
+
+        print(mask.shape)
 
 
 def main(args):
