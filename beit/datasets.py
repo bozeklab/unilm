@@ -94,10 +94,9 @@ class DataAugmentationForBEITInference(object):
 
         self.patch_transform = transforms.Compose([
             transforms.ToTensor(),
-            #transforms.Normalize(
-            #    mean=torch.tensor(mean),
-            #    std=torch.tensor(std))
-            ])
+            transforms.Normalize(
+                mean=torch.tensor(mean),
+                std=torch.tensor(std))])
 
         self.masked_position_generator = MaskingGenerator(
             args.window_size, num_masking_patches=args.num_mask_patches,
