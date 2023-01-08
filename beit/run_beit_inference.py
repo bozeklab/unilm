@@ -28,6 +28,7 @@ def get_args():
     parser.add_argument('--max_mask_patches_per_block', type=int, default=None)
     parser.add_argument('--min_mask_patches_per_block', type=int, default=16)
 
+    parser.add_argument('--output_dir', default='', help='path where to save, empty for no saving')
 
 @torch.no_grad()
 def infere(model, device):
