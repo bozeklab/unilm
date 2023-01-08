@@ -67,7 +67,8 @@ def infere(model, dataset, device):
         bool_masked_pos = bool_masked_pos.flatten(1)
 
         with torch.cuda.amp.autocast():
-            output = model(x=img, bool_masked_pos=bool_masked_pos, return_all_tokens=True)
+            output = model.forward_features(x=img, bool_masked_pos=bool_masked_pos)
+            output = output[:, 1:]
         print(output.shape)
 
 
