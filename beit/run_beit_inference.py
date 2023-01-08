@@ -62,13 +62,13 @@ def infere(model, dataset, device):
         sample = flatten_list(sample)
         img, bool_masked_pos, boxes = sample
 
-        img = img.to(device)
-        bool_masked_pos = torch.tensor(bool_masked_pos).to(device)
-        print(img.shape)
+        img = img.to(device).unsqueeze(0)
+        bool_masked_pos = torch.tensor(bool_masked_pos).to(device).unsqueeze(0)
 
-        output = model(x=img.unsqueeze(0),
-                       bool_masked_pos=bool_masked_pos.unsqueeze(0),
-                       return_all_tokens=True)
+        print(img.shape)
+        print(bool_masked_pos.shape)
+
+        output = model(x=img, bool_masked_pos=bool_masked_pos, return_all_tokens=True)
         print(output.shape)
 
 
