@@ -59,7 +59,7 @@ def main(args):
 
     if args.checkpoint:
         checkpoint = torch.load(args.checkpoint, map_location='cpu')
-        print("Load ckpt from %s" % args.finetune)
+        print("Load ckpt from %s" % args.checkpoint)
         checkpoint_model = None
         for model_key in args.model_key.split('|'):
             if model_key in checkpoint:
