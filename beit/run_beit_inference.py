@@ -55,15 +55,18 @@ def flatten_list(nested_list):
 
 @torch.no_grad()
 def infere(model, dataset, device):
+    model.eval()
+
     for i in range(len(dataset)):
         sample, target = dataset[i]
         sample = flatten_list(sample)
-        img, mask_bool, boxes = sample
+        img, bool_masked_pos, boxes = sample
 
         img = img.to(device)
-        mask_bool = torch.tensor(mask_bool).to(device)
+        bool_masked_pos = torch.tensor(bool_masked_pos).to(device)
 
-        print(mask_bool.shape)
+        output = model(img.usqueeue(0), bool_masked_pos.usqueeue(0), return_all_tokens=True)
+        print(output.shape)
 
 
 def main(args):
