@@ -73,6 +73,7 @@ def infere(model, dataset, patch_size, device):
             x = x[:, 1:]
             batch_size, seq_len, C = x.shape
             x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
+            print(boxes)
         aligned_boxes = roi_align(input=x, boxes=[boxes], output_size=(3, 3))
         print(aligned_boxes.shape)
 
