@@ -12,13 +12,14 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 from beit.dataset_folder import pil_loader, make_dataset, IMG_EXTENSIONS
 
 
-def pil_pkl_loader(path: str) -> Tuple[Image.Image, np.ndarray]:
+def pil_pkl_loader(path: str) -> List[Image.Image, np.ndarray, np.ndarray]:
     extension = Path(path).suffix
     file_name = path.strip(extension)
 
     img = pil_loader(path)
-    pkl = np.load(f"{file_name}.pkl", allow_pickle=True)
-    return img, pkl
+    segmentation_pkl = np.load(f"{file_name}.pkl", allow_pickle=True)
+    labels_pkl = np.load(f"{file_name}_class.pkl", allow_pickle=True)
+    return [img, segmentation_pkl, labels_pkl]
 
 
 def default_loader(path: str) -> Any:
