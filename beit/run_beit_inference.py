@@ -57,12 +57,15 @@ def _flatten_list(nested_list):
 
 @torch.no_grad()
 def infere(model, dataset, patch_size, device):
-    model.eval()
+    embeddings = []
+    labels = []
+    images = []
 
+    model.eval()
     for i in range(len(dataset)):
         sample, target = dataset[i]
         sample = _flatten_list(sample)
-        img, bool_masked_pos, boxes_and_labels = sample
+        img, bool_masked_pos, nonnormalized_img, boxes_and_labels = sample
         boxes, labels = boxes_and_labels
 
         img = img.to(device, non_blocking=True).unsqueeze(0)
@@ -77,7 +80,7 @@ def infere(model, dataset, patch_size, device):
             x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
         aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), boxes=[boxes], output_size=(3, 3))
         m = nn.AvgPool2d(3, stride=1)
-        aligned_boxes = m(aligned_boxes)
+        aligned_boxes = m(aligned_boxes).squeeze()
         print(aligned_boxes.shape)
 
 
