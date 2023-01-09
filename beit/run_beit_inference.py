@@ -4,6 +4,7 @@ import torch
 
 from pathlib import Path
 import utils
+import pickle
 from beit.datasets import build_beit_inference_dataset
 from beit.run_beit_pretraining import get_model
 from torchvision.ops import roi_align
@@ -143,6 +144,9 @@ def main(args):
     print(f"Length of dataset == {len(dataset_train)}")
 
     embeddings, labels, images = infere(model, dataset_train, patch_size, device)
+    output_dict = {'embeddings': embeddings, 'labels': labels, 'images': images}
+    with open('outputs/tumor.pickle', 'wb') as f:
+       pickle.dump(output_dict, f)
 
 
 if __name__ == '__main__':
