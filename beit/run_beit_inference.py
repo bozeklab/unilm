@@ -61,7 +61,6 @@ def infere(model, dataset, patch_size, device):
     for i in range(len(dataset)):
         sample, target = dataset[i]
         sample = _flatten_list(sample)
-        print(len(sample))
         img, bool_masked_pos, labels_and_boxes = sample
         labels, boxes = labels_and_boxes
 
@@ -74,7 +73,7 @@ def infere(model, dataset, patch_size, device):
             x = x[:, 1:]
             batch_size, seq_len, C = x.shape
             x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
-        aligned_boxes = roi_align(input=x, boxes=boxes, output_size=(3, 3))
+        aligned_boxes = roi_align(input=x, boxes=[boxes], output_size=(3, 3))
         print(aligned_boxes.shape)
 
 
