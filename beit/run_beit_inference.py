@@ -101,7 +101,6 @@ def infere(model, dataset, patch_size, device):
             crop_to_pil = transforms.ToPILImage()(crop)
             crop_to_pil = transforms.Resize((32, 32), interpolation=Image.BICUBIC)(crop_to_pil)
             crop_to_pil = transforms.ToTensor()(crop_to_pil).permute(1, 2, 0)
-            print(crop_to_pil.shape)
             images.append(crop_to_pil.numpy())
 
     return embeddings, labels, images
