@@ -89,6 +89,7 @@ def infere(model, dataset, patch_size, device):
         aligned_boxes = m(aligned_boxes).squeeze()
 
         aligned_boxes = aligned_boxes.cpu()
+        boxes = boxes.cpu()
 
         for i in range(aligned_boxes.shape[0]):
             embeddings.append(aligned_boxes[i].numpy())
