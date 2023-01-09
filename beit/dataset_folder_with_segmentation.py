@@ -13,7 +13,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 from beit.dataset_folder import pil_loader, make_dataset, IMG_EXTENSIONS
 
 
-def pil_pkl_loader(path: str) -> Tuple[Image.Image, np.ndarray, np.ndarray]:
+def pil_pkl_loader(path: str) -> Tuple[Image.Image, Tuple[np.ndarray, np.ndarray]]:
     extension = Path(path).suffix
     file_name = path.strip(extension)
 
@@ -21,8 +21,7 @@ def pil_pkl_loader(path: str) -> Tuple[Image.Image, np.ndarray, np.ndarray]:
     segmentation_pkl = np.load(f"{file_name}.pkl", allow_pickle=True)
     with open(f"{file_name}_cls.pkl", 'rb') as f:
         labels_pkl = pickle.load(f)
-    print(labels_pkl)
-    return img, segmentation_pkl, labels_pkl
+    return img, (segmentation_pkl, labels_pkl)
 
 
 def default_loader(path: str) -> Any:
@@ -93,7 +92,7 @@ class SegmentedDatasetFolder(VisionDataset):
                 index = random.randint(0, len(self.samples) - 1)
 
         if self.transform is not None:
-            sample = [self.transform(sample[0]), sample[1], sample[2]]
+            sample = [self.transform(sample[0]), sample[1]]
         if self.target_transform is not None:
             target = self.target_transform(target)
 

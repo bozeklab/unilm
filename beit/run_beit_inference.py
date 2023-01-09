@@ -62,7 +62,8 @@ def infere(model, dataset, patch_size, device):
         sample, target = dataset[i]
         sample = _flatten_list(sample)
         print(len(sample))
-        img, bool_masked_pos, labels, boxes = sample
+        img, bool_masked_pos, labels_and_boxes = sample
+        labels, boxes = labels_and_boxes
 
         img = img.to(device).unsqueeze(0)
         bool_masked_pos = torch.tensor(bool_masked_pos).to(device).unsqueeze(0)
