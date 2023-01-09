@@ -65,7 +65,7 @@ def infere(model, dataset, patch_size, device):
     for i in range(len(dataset)):
         sample, target = dataset[i]
         sample = _flatten_list(sample)
-        img, bool_masked_pos, nonnormalized_img, boxes_and_labels = sample
+        img, nonnormalized_img, bool_masked_pos, boxes_and_labels = sample
         boxes, labels = boxes_and_labels
 
         img = img.to(device, non_blocking=True).unsqueeze(0)
