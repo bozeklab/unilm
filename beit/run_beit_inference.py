@@ -87,7 +87,7 @@ def infere(model, dataset, patch_size, device):
         aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), boxes=[boxes], output_size=(3, 3))
         m = nn.AvgPool2d(3, stride=1)
         aligned_boxes = m(aligned_boxes).squeeze()
-        for i in aligned_boxes.shape[0]:
+        for i in range(aligned_boxes.shape[0]):
             embeddings.append(aligned_boxes[i].numpy())
             label = classes[0][i]
             labels.append(tumor_categories[label.numpy()])
