@@ -21,6 +21,7 @@ def pil_pkl_loader(path: str) -> Tuple[Image.Image, np.ndarray, np.ndarray]:
     segmentation_pkl = np.load(f"{file_name}.pkl", allow_pickle=True)
     with open(f"{file_name}_cls.pkl", 'rb') as f:
         labels_pkl = pickle.load(f)
+    print(labels_pkl)
     return img, segmentation_pkl, labels_pkl
 
 
