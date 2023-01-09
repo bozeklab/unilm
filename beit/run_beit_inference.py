@@ -87,6 +87,9 @@ def infere(model, dataset, patch_size, device):
         aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), boxes=[boxes], output_size=(3, 3))
         m = nn.AvgPool2d(3, stride=1)
         aligned_boxes = m(aligned_boxes).squeeze()
+
+        aligned_boxes = aligned_boxes.cpu()
+
         for i in range(aligned_boxes.shape[0]):
             embeddings.append(aligned_boxes[i].numpy())
             label = classes[0][i]
