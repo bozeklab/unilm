@@ -65,7 +65,7 @@ def infere(model, dataset, patch_size, device):
         boxes, labels = boxes_and_labels
 
         img = img.to(device, non_blocking=True).unsqueeze(0)
-        boxes = boxes.to(device, non_blocking=True)
+        boxes = boxes.to(device, non_blocking=True).float()
         bool_masked_pos = torch.tensor(bool_masked_pos).to(device, non_blocking=True).unsqueeze(0)
         bool_masked_pos = bool_masked_pos.flatten(1)
 
@@ -74,7 +74,6 @@ def infere(model, dataset, patch_size, device):
             x = x[:, 1:]
             batch_size, seq_len, C = x.shape
             x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
-            print(boxes)
         aligned_boxes = roi_align(input=x, boxes=[boxes], output_size=(3, 3))
         print(aligned_boxes.shape)
 
