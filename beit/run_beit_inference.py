@@ -7,6 +7,8 @@ import utils
 from beit.datasets import build_beit_inference_dataset
 from beit.run_beit_pretraining import get_model
 from torchvision.ops import roi_align
+import torchvision.transforms as transforms
+from PIL import Image
 
 from torch import nn
 
@@ -55,6 +57,10 @@ def _flatten_list(nested_list):
     return flattened_list
 
 
+tumor_categories = ['plasma cell', 'eosinophil', 'macrophage', 'vessel', 'apoptotic bodies', 'epithelial cell',
+                    'normal small lymphocyte', 'large leucocyte', 'stroma', 'immune cells', 'unknown', 'erythrocyte', 'mitose', 'positive', 'tumor']
+
+
 @torch.no_grad()
 def infere(model, dataset, patch_size, device):
     embeddings = []
@@ -66,7 +72,7 @@ def infere(model, dataset, patch_size, device):
         sample, target = dataset[i]
         sample = _flatten_list(sample)
         img, nonnormalized_img, bool_masked_pos, boxes_and_labels = sample
-        boxes, labels = boxes_and_labels
+        boxes, classes = boxes_and_labels
 
         img = img.to(device, non_blocking=True).unsqueeze(0)
         boxes = boxes.to(device, non_blocking=True).float()
@@ -81,8 +87,17 @@ def infere(model, dataset, patch_size, device):
         aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), boxes=[boxes], output_size=(3, 3))
         m = nn.AvgPool2d(3, stride=1)
         aligned_boxes = m(aligned_boxes).squeeze()
-        print(aligned_boxes.shape)
+        for i in aligned_boxes.shape[0]:
+            embeddings.append(aligned_boxes[i].numpy())
+            label = classes[0][i]
+            labels.append(tumor_categories[label.numpy()])
+            box = boxes[i].numpy().tolist()
+            crop = nonnormalized_img[:, int(box[1]):int(box[3]), int(box[0]):int(box[2])]
+            crop_to_pil = transforms.ToPILImage()(crop)
+            crop_to_pil = transforms.Resize((32, 32), interpolation=Image.BICUBIC)(crop_to_pil)
+            images.append(transforms.ToTensor()(crop_to_pil).numpy())
 
+    return embeddings, labels, images
 
 
 def main(args):
@@ -123,7 +138,7 @@ def main(args):
     dataset_train = build_beit_inference_dataset(args)
     print(f"Length of dataset == {len(dataset_train)}")
 
-    infere(model, dataset_train, patch_size, device)
+    embeddings, labels, images = infere(model, dataset_train, patch_size, device)
 
 
 if __name__ == '__main__':
