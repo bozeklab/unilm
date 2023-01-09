@@ -8,6 +8,7 @@ from beit.datasets import build_beit_inference_dataset
 from beit.run_beit_pretraining import get_model
 from torchvision.ops import roi_align
 
+from torch import nn
 
 def get_args():
     parser = argparse.ArgumentParser('BEiT inference script', add_help=False)
@@ -75,7 +76,10 @@ def infere(model, dataset, patch_size, device):
             batch_size, seq_len, C = x.shape
             x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
         aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), boxes=[boxes], output_size=(3, 3))
+        m = nn.AvgPool2d(3, stride=1)
+        aligned_boxes = m(aligned_boxes)
         print(aligned_boxes.shape)
+
 
 
 def main(args):
