@@ -93,7 +93,7 @@ def infere(model, dataset, patch_size, device):
         for i in range(aligned_boxes.shape[0]):
             embeddings.append(aligned_boxes[i].numpy())
             label = classes[0][i]
-            labels.append(tumor_categories[label])
+            labels.append(label)
             box = boxes[i].numpy().tolist()
             crop = nonnormalized_img[:, int(box[1]):int(box[3]), int(box[0]):int(box[2])]
             crop_to_pil = transforms.ToPILImage()(crop)
