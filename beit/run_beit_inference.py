@@ -98,9 +98,9 @@ def infere(model, dataset, patch_size, device):
             labels.append(label)
             box = boxes[i].numpy().tolist()
             crop = nonnormalized_img[:, int(box[1]):int(box[3]), int(box[0]):int(box[2])]
-            crop_to_pil = transforms.ToPILImage()(crop)
-            crop_to_pil = transforms.Resize((32, 32), interpolation=Image.BICUBIC)(crop_to_pil)
-            crop_to_pil = transforms.ToTensor()(crop_to_pil).permute(1, 2, 0)
+            print(crop.shape)
+            print(crop)
+            crop_to_pil = transforms.ToTensor()(crop).permute(1, 2, 0)
             images.append(crop_to_pil.numpy())
 
     return embeddings, labels, images
