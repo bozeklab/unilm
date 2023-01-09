@@ -18,7 +18,7 @@ def pil_pkl_loader(path: str) -> Tuple[Image.Image, np.ndarray, np.ndarray]:
 
     img = pil_loader(path)
     segmentation_pkl = np.load(f"{file_name}.pkl", allow_pickle=True)
-    labels_pkl = np.load(f"{file_name}_class.pkl", allow_pickle=True)
+    labels_pkl = np.load(f"{file_name}_cls.pkl", allow_pickle=True)
     return img, segmentation_pkl, labels_pkl
 
 
