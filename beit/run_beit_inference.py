@@ -64,8 +64,9 @@ def infere(model, dataset, patch_size, device):
         img, bool_masked_pos, boxes_and_labels = sample
         boxes, labels = boxes_and_labels
 
-        img = img.to(device).unsqueeze(0)
-        bool_masked_pos = torch.tensor(bool_masked_pos).to(device).unsqueeze(0)
+        img = img.to(device, non_blocking=True).unsqueeze(0)
+        boxes = boxes.to(device, non_blocking=True)
+        bool_masked_pos = torch.tensor(bool_masked_pos).to(device, non_blocking=True).unsqueeze(0)
         bool_masked_pos = bool_masked_pos.flatten(1)
 
         with torch.cuda.amp.autocast():
