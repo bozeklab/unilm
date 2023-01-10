@@ -3,9 +3,11 @@ import torch
 import torch.nn as nn
 from functools import partial
 
+from beit.positional_encoding import PositionalEncoding
 from modeling_finetune import Block, _cfg, PatchEmbed, RelativePositionBias
 from timm.models.registry import register_model
 from timm.models.layers import trunc_normal_ as __call_trunc_normal_
+import torch.nn.functional as F
 
 
 def trunc_normal_(tensor, mean=0., std=1.):
@@ -27,7 +29,23 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
         self.mask_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
         if use_abs_pos_emb:
-            self.pos_embed = nn.Parameter(torch.zeros(1, num_patches + 1, embed_dim))
+            self.pos_embed_x = PositionalEncoding(embed_dim=embed_dim // 4, drop_rate=0., max_len=img_size)
+            self.pos_embed_y = PositionalEncoding(embed_dim=embed_dim // 4, drop_rate=0., max_len=img_size)
+            self.pos_embed_h = PositionalEncoding(embed_dim=embed_dim // 4, drop_rate=0., max_len=img_size)
+            self.pos_embed_w = PositionalEncoding(embed_dim=embed_dim // 4, drop_rate=0., max_len=img_size)
+
+            pos_embed = torch.cat((
+                self.pos_embed_x()[..., None, :].repeat(1, 1, img_size, 1),  #
+                self.pos_embed_y()[:, None].repeat(1, img_size, 1, 1),  #
+                self.pos_embed_w()[:, (patch_size - 1)][:, None, None].repeat(1, img_size, img_size, 1),
+                self.pos_embed_h()[:, (patch_size - 1)][:, None, None].repeat(1, img_size, img_size, 1),
+            ), dim=3)
+            self.pos_embed = F.interpolate(pos_embed.permute(0, 3, 1, 2),
+                                           size=(img_size // patch_size, img_size // patch_size),
+                                           mode='bilinear').flatten(2).transpose(-1, -2)
+            print('!!!!')
+            print(self.pos_embed.shape)
+
         else:
             self.pos_embed = None
         self.pos_drop = nn.Dropout(p=drop_rate)
