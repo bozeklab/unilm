@@ -71,9 +71,9 @@ if __name__ == '__main__':
             for cc in range(10):
                 a = random.randint(10, IMG_SIZE)
                 b = random.randint(10, IMG_SIZE)
-                idx = get_bounding_boxes(torch.cat(pickles), a, b)
+                idx = get_bounding_boxes(torch.cat(pickles, dim=0), a, b)
                 pickles_n = [np.load(os.path.join(IMG_DIR, f), allow_pickle=True) for f in pickle_files]
-                pickles_n = torch.cat(pickles_n)
+                pickles_n = torch.cat(pickles_n, dim=0)
                 pckls = [pickles_n[i] for i in idx]
 
                 crop = image[:, a:(a + IMG_SIZE), b:(b + IMG_SIZE)]
@@ -83,7 +83,7 @@ if __name__ == '__main__':
                 crop = T.ToPILImage()(crop)
                 #crop.save(os.path.join(IMG_DIR, f"wsi_001-tile-r{a}-c{b}aug.png"))
                 with open(os.path.join(IMG_DIR, f"wsi_001-tile-r{a}-c{b}aug.pkl"), 'wb') as outf:
-                    print(torch.cat(pckls).shape)
+                    print(torch.cat(pckls, dim=0).shape)
                     #pickle.dump(torch.cat(pckls), outf)
                 #crop.show()
             #image_boxes.show()
