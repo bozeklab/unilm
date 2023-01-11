@@ -73,16 +73,17 @@ if __name__ == '__main__':
                 b = random.randint(10, IMG_SIZE)
                 idx = get_bounding_boxes(torch.cat(pickles), a, b)
                 pickles_n = [np.load(os.path.join(IMG_DIR, f), allow_pickle=True) for f in pickle_files]
-                pckls = [pickles_n[i] for i in pickles_n]
+                pckls = [pickles_n[i] for i in idx]
 
                 crop = image[:, a:(a + IMG_SIZE), b:(b + IMG_SIZE)]
                 shape = [a, b, a + IMG_SIZE, b + IMG_SIZE]
                 #canvas.rectangle(shape, outline="blue")
                 assert(crop.shape == (3, IMG_SIZE, IMG_SIZE))
                 crop = T.ToPILImage()(crop)
-                crop.save(os.path.join(IMG_DIR, f"wsi_001-tile-r{a}-c{b}aug.png"))
+                #crop.save(os.path.join(IMG_DIR, f"wsi_001-tile-r{a}-c{b}aug.png"))
                 with open(os.path.join(IMG_DIR, f"wsi_001-tile-r{a}-c{b}aug.pkl"), 'wb') as outf:
-                    pickle.dump(torch.cat(pckls), outf)
+                    print(torch.cat(pckls).shape)
+                    #pickle.dump(torch.cat(pckls), outf)
                 #crop.show()
             #image_boxes.show()
 
