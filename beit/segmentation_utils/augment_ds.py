@@ -84,8 +84,8 @@ if __name__ == '__main__':
                 #canvas.rectangle(shape, outline="blue")
                 assert(crop.shape == (3, IMG_SIZE, IMG_SIZE))
                 crop = T.ToPILImage()(crop)
-                crop.save(os.path.join(IMG_DIR, f"wsi_001-tile-r{a}-c{b}aug.png"))
-                with open(os.path.join(IMG_DIR, f"wsi_001-tile-r{a}-c{b}aug.pkl"), 'wb') as outf:
+                crop.save(os.path.join(IMG_DIR, f"wsi_001-tile-r{lu[0]}-c{lu[1]}_{a}_{b}_aug.png"))
+                with open(os.path.join(IMG_DIR, f"wsi_001-tile-r{lu[0]}-c{lu[1]}_{a}_{b}_aug.pkl"), 'wb') as outf:
                     pickle.dump(pickles_n, outf)
                 #crop.show()
             #image_boxes.show()
