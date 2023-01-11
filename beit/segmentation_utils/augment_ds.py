@@ -71,12 +71,13 @@ if __name__ == '__main__':
             for cc in range(10):
                 a = random.randint(10, IMG_SIZE)
                 b = random.randint(10, IMG_SIZE)
-                print(torch.cat(pickles, dim=0).shape)
 
                 idx = get_bounding_boxes(torch.cat(pickles, dim=0), a, b)
+                if len(idx) == 0:
+                    continue
                 pickles_n = [np.load(os.path.join(IMG_DIR, f), allow_pickle=True) for f in pickle_files]
                 pickles_n = torch.cat(pickles_n, dim=0)
-                pckls = [pickles_n[i] for i in idx]
+                pickles_n = pickles_n[idx, ...]
 
                 crop = image[:, a:(a + IMG_SIZE), b:(b + IMG_SIZE)]
                 shape = [a, b, a + IMG_SIZE, b + IMG_SIZE]
