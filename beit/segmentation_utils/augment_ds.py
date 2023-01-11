@@ -8,7 +8,7 @@ import glob
 import numpy as np
 import pickle
 
-IMG_DIR = '/data/pwojcik/images_he/'
+IMG_DIR = '/data/pwojcik/images_he_seg/positive/'
 IMG_SIZE = 512
 
 
