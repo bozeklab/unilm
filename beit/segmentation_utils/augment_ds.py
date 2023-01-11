@@ -55,11 +55,11 @@ if __name__ == '__main__':
             if not all:
                 continue
             pickles = [np.load(os.path.join(IMG_DIR, f), allow_pickle=True) for f in pickle_files]
-            pickles[1][0::2] += IMG_SIZE
-            pickles[2][1::2] += IMG_SIZE
+            pickles[1][:, 0::2] += IMG_SIZE
+            pickles[2][:, 1::2] += IMG_SIZE
 
-            pickles[3][0::2] += IMG_SIZE
-            pickles[3][1::2] += IMG_SIZE
+            pickles[3][:, 0::2] += IMG_SIZE
+            pickles[3][:, 1::2] += IMG_SIZE
 
             images = [read_image(os.path.join(IMG_DIR, f)) for f in files]
             image1 = torch.cat([images[0], images[1]], dim=1)
