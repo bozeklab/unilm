@@ -23,7 +23,7 @@ def get_bounding_boxes(boxes, x_offset, y_offset):
 
 if __name__ == '__main__':
     files = glob.glob(os.path.join(IMG_DIR, '*'))
-    files = [f for f in files if not 'bis' in f and not 'aug' in f]
+    files = [f for f in files if not 'bis' in f and not 'aug' in f and not 'pkl' in f]
     c, r = [], []
     for f in files:
         n = f.split('-')
