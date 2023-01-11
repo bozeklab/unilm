@@ -86,7 +86,7 @@ if __name__ == '__main__':
                 crop = T.ToPILImage()(crop)
                 crop.save(os.path.join(IMG_DIR, f"wsi_001-tile-r{a}-c{b}aug.png"))
                 with open(os.path.join(IMG_DIR, f"wsi_001-tile-r{a}-c{b}aug.pkl"), 'wb') as outf:
-                    pickle.dump(torch.cat(pckls), outf)
+                    pickle.dump(torch.cat(pickles_n), outf)
                 #crop.show()
             #image_boxes.show()
 
