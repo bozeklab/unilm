@@ -71,6 +71,8 @@ if __name__ == '__main__':
             for cc in range(10):
                 a = random.randint(10, IMG_SIZE)
                 b = random.randint(10, IMG_SIZE)
+                print(torch.cat(pickles, dim=0).shape)
+
                 idx = get_bounding_boxes(torch.cat(pickles, dim=0), a, b)
                 pickles_n = [np.load(os.path.join(IMG_DIR, f), allow_pickle=True) for f in pickle_files]
                 pickles_n = torch.cat(pickles_n, dim=0)
