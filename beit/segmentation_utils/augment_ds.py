@@ -73,6 +73,7 @@ if __name__ == '__main__':
                 b = random.randint(10, IMG_SIZE)
                 idx = get_bounding_boxes(torch.cat(pickles), a, b)
                 pickles_n = [np.load(os.path.join(IMG_DIR, f), allow_pickle=True) for f in pickle_files]
+                pickles_n = torch.cat(pickles_n)
                 pckls = [pickles_n[i] for i in idx]
 
                 crop = image[:, a:(a + IMG_SIZE), b:(b + IMG_SIZE)]
