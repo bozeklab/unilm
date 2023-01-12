@@ -6,10 +6,8 @@ import os
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
-from torchvision.utils import draw_bounding_boxes
 
 import torchvision.transforms.functional as F
-from torchvision import transforms as T
 
 
 def get_args():
