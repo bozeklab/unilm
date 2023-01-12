@@ -62,10 +62,13 @@ def main(args):
 
     dataset_train = build_instaformer_pretraining_dataset(args)
     print(len(dataset_train))
-    print(len(dataset_train[0]))
     samples, _ = dataset_train[0]
-    print('!!!')
     print(len(samples))
+    img, boxes, patch_img, mask = samples
+    print(img.shape)
+    print(boxes.shape)
+    print(patch_img.shape)
+    print(mask.shape)
     #img_boxes = samples
 
 
