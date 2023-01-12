@@ -23,6 +23,12 @@ def get_args():
     parser.add_argument('--max_mask_patches_per_block', type=int, default=None)
     parser.add_argument('--min_mask_patches_per_block', type=int, default=16)
 
+    # Augmentation parameters
+    parser.add_argument('--train_interpolation', type=str, default='bicubic',
+                        help='Training interpolation (random, bilinear, bicubic default: "bicubic")')
+    parser.add_argument('--second_interpolation', type=str, default='lanczos',
+                        help='Interpolation for discrete vae (random, bilinear, bicubic default: "lanczos")')
+
     return parser.parse_args()
 
 
