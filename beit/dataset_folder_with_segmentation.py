@@ -28,6 +28,9 @@ def pil_pkl_loader(path: str) -> Tuple[Image.Image, np.ndarray]:
     extension = Path(path).suffix
     file_name = path.strip(extension)
 
+    print('!!!')
+    print(file_name)
+
     img = pil_loader(path)
     segmentation_pkl = np.load(f"{file_name}.pkl", allow_pickle=True)
     return img, segmentation_pkl
