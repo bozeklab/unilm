@@ -46,14 +46,11 @@ class SegmentedDatasetFolder(VisionDataset):
             loader: Callable[[str], Any],
             extensions: Optional[Tuple[str, ...]] = None,
             transform: Optional[Callable] = None,
-            boxes_transform: Optional[Callable] = None,
             target_transform: Optional[Callable] = None,
             is_valid_file: Optional[Callable[[str], bool]] = None,
     ) -> None:
         super(SegmentedDatasetFolder, self).__init__(root, transform=transform,
                                                      target_transform=target_transform)
-
-        self.boxes_transform = boxes_transform
 
         classes, class_to_idx = self._find_classes(self.root)
         samples = make_dataset(self.root, class_to_idx, extensions, is_valid_file)
@@ -108,8 +105,6 @@ class SegmentedDatasetFolder(VisionDataset):
 
         if self.transform is not None:
             sample = [self.transform(sample[0]), sample[1]]
-        if self.boxes_transform is not None:
-            sample = [sample[0], self.boxes_transform(sample[0], sample[1])]
         if self.target_transform is not None:
             target = self.target_transform(target)
 
@@ -125,13 +120,11 @@ class SegmentedImageFolder(SegmentedDatasetFolder):
             root: str,
             transform: Optional[Callable] = None,
             target_transform: Optional[Callable] = None,
-            boxes_transform: Optional[Callable] = None,
             loader: Callable[[str], Any] = default_loader,
             is_valid_file: Optional[Callable[[str], bool]] = None,
     ):
         super(SegmentedImageFolder, self).__init__(root, loader, IMG_EXTENSIONS if is_valid_file is None else None,
                                                    transform=transform,
-                                                   boxes_transform=boxes_transform,
                                                    target_transform=target_transform,
                                                    is_valid_file=is_valid_file)
         self.imgs = self.samples
