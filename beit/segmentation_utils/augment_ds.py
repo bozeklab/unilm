@@ -6,6 +6,7 @@ from torchvision.io import read_image
 import torch
 import glob
 import numpy as np
+import statistics
 import pickle
 
 IMG_DIR = '/data/pwojcik/images_he_seg/positive/'
@@ -18,8 +19,12 @@ def get_bounding_boxes(boxes, x_offset, y_offset):
         if (boxes[i, 0] >= y_offset) and (boxes[i, 1] >= x_offset) \
                 and (boxes[i, 2] < y_offset + IMG_SIZE) and (boxes[i, 3] < x_offset + IMG_SIZE):
             idx.append(i)
-    return idx
+    n_boxes = boxes[idx, ...]
+    n_boxes[:, 0::2] -= y_offset
+    n_boxes[:, 1::2] -= x_offset
+    return n_boxes
 
+num_boxes = []
 
 if __name__ == '__main__':
     files = glob.glob(os.path.join(IMG_DIR, '*'))
@@ -72,12 +77,13 @@ if __name__ == '__main__':
                 a = random.randint(10, IMG_SIZE)
                 b = random.randint(10, IMG_SIZE)
 
-                idx = get_bounding_boxes(torch.cat(pickles, dim=0), a, b)
-                if len(idx) == 0:
-                    continue
-                pickles_n = [np.load(os.path.join(IMG_DIR, f), allow_pickle=True) for f in pickle_files]
-                pickles_n = torch.cat(pickles_n, dim=0)
-                pickles_n = pickles_n[idx, ...]
+                n_boxes = get_bounding_boxes(torch.cat(pickles, dim=0), a, b)
+                num_boxes.append(n_boxes.shape[0])
+
+                if len(num_boxes) % 20 == 0:
+                    print(f"Max number of boxes == {max(num_boxes)}")
+                    print(f"Min number of boxes == {min(num_boxes)}")
+                    print(f"Median number of boxes == {statistics.median(num_boxes)}")
 
                 crop = image[:, a:(a + IMG_SIZE), b:(b + IMG_SIZE)]
                 shape = [a, b, a + IMG_SIZE, b + IMG_SIZE]
@@ -86,7 +92,7 @@ if __name__ == '__main__':
                 crop = T.ToPILImage()(crop)
                 crop.save(os.path.join(IMG_DIR, f"wsi_001-tile-r{lu[0]}-c{lu[1]}_{a}_{b}_aug.png"))
                 with open(os.path.join(IMG_DIR, f"wsi_001-tile-r{lu[0]}-c{lu[1]}_{a}_{b}_aug.pkl"), 'wb') as outf:
-                    pickle.dump(pickles_n, outf)
+                    pickle.dump(n_boxes, outf)
                 #crop.show()
             #image_boxes.show()
 
