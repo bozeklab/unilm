@@ -43,9 +43,9 @@ class DataAugmentationForBEiT(object):
 
         self.patch_transform = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize(
-                mean=torch.tensor(mean),
-                std=torch.tensor(std))
+            #transforms.Normalize(
+            #    mean=torch.tensor(mean),
+            #    std=torch.tensor(std))
         ])
 
         if args.discrete_vae_type == "dall-e":
