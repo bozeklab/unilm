@@ -17,6 +17,7 @@ def get_args():
                         help='dataset path')
     parser.add_argument('--imagenet_default_mean_and_std', default=False, action='store_true')
     parser.add_argument('--input_size', default=448, type=int, help='images input size for backbone')
+    parser.add_argument('--second_input_size', default=224, type=int, help='images input size for backbone')
     parser.add_argument('--num_mask_patches', default=75, type=int,
                         help='number of the visual tokens/patches need be masked')
     parser.add_argument('--max_mask_patches_per_block', type=int, default=None)
