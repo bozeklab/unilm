@@ -121,8 +121,8 @@ class RandomResizedCropAndInterpolationWithTwoPic:
         else:
             ratio_w = self.size / w
             ratio_h = self.size / h
-        boxes[idx, 0::2] *= ratio_w
-        boxes[idx, 1::2] *= ratio_h
+        boxes[:, 0::2] *= ratio_w
+        boxes[:, 1::2] *= ratio_h
 
         return boxes.int()
 
