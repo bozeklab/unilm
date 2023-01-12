@@ -100,7 +100,7 @@ class SegmentedDatasetFolder(VisionDataset):
                 index = random.randint(0, len(self.samples) - 1)
 
         if self.transform is not None:
-            sample = [self.transform(sample[0]), sample[1]]
+            sample = self.transform(sample[0], sample[1])
         if self.target_transform is not None:
             target = self.target_transform(target)
 
