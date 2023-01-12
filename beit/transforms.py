@@ -103,6 +103,29 @@ class RandomResizedCropAndInterpolationWithTwoPic:
         self.scale = scale
         self.ratio = ratio
 
+    def rescale_boxes(self, boxes, i, j, h, w):
+        """Rescale bounding boxes according to the crop parameters"""
+        boxes[:, 0::2] -= j
+        boxes[:, 1::2] -= i
+        idx = []
+        for i in range(boxes.shape[0]):
+            if boxes[i, 0, :] < 0 or boxes[i, 1, :] < 0:
+                continue
+            if boxes[i, 0, :] >= w or boxes[i, 1, :] >= h:
+                continue
+            idx.append(i)
+        boxes = boxes[idx, ...]
+        if isinstance(self.size, tuple):
+            ratio_w = self.size[1] / w
+            ratio_h = self.size[0] / h
+        else:
+            ratio_w = self.size / w
+            ratio_h = self.size / h
+        boxes[idx, 0::2] *= ratio_w
+        boxes[idx, 1::2] *= ratio_h
+
+        return boxes.int()
+
     @staticmethod
     def get_params(img, scale, ratio):
         """Get parameters for ``crop`` for a random sized crop.
@@ -146,7 +169,7 @@ class RandomResizedCropAndInterpolationWithTwoPic:
         j = (img.size[0] - w) // 2
         return i, j, h, w
 
-    def __call__(self, img):
+    def __call__(self, img, boxes=None):
         """
         Args:
             img (PIL Image): Image to be cropped and resized.
@@ -155,15 +178,25 @@ class RandomResizedCropAndInterpolationWithTwoPic:
             PIL Image: Randomly cropped and resized image.
         """
         i, j, h, w = self.get_params(img, self.scale, self.ratio)
+        if boxes is not None:
+            boxes = self.rescale_boxes(boxes, i, j, h, w)
+
         if isinstance(self.interpolation, (tuple, list)):
             interpolation = random.choice(self.interpolation)
         else:
             interpolation = self.interpolation
         if self.second_size is None:
-            return F.resized_crop(img, i, j, h, w, self.size, interpolation)
+            if boxes is not None:
+                return F.resized_crop(img, i, j, h, w, self.size, interpolation), boxes
+            else:
+                return F.resized_crop(img, i, j, h, w, self.size, interpolation)
         else:
-            return F.resized_crop(img, i, j, h, w, self.size, interpolation), \
-                   F.resized_crop(img, i, j, h, w, self.second_size, self.second_interpolation)
+            if boxes is not None:
+                return F.resized_crop(img, i, j, h, w, self.size, interpolation), boxes, \
+                    F.resized_crop(img, i, j, h, w, self.second_size, self.second_interpolation)
+            else:
+                return F.resized_crop(img, i, j, h, w, self.size, interpolation), \
+                    F.resized_crop(img, i, j, h, w, self.second_size, self.second_interpolation)
 
     def __repr__(self):
         if isinstance(self.interpolation, (tuple, list)):

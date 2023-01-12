@@ -70,11 +70,17 @@ class DataAugmentationForBEiT(object):
             min_num_patches=args.min_mask_patches_per_block,
         )
 
-    def __call__(self, image):
+    def __call__(self, image, boxes=None):
         for_patches, for_visual_tokens = self.common_transform(image)
-        return \
-            self.patch_transform(for_patches), self.visual_token_transform(for_visual_tokens), \
-            self.masked_position_generator()
+        if isinstance(for_patches, tuple):
+            for_patches, boxes = for_patches
+            return \
+                self.patch_transform(for_patches), boxes, self.visual_token_transform(for_visual_tokens), \
+                self.masked_position_generator()
+        else:
+            return \
+                self.patch_transform(for_patches), self.visual_token_transform(for_visual_tokens), \
+                self.masked_position_generator()
 
     def __repr__(self):
         repr = "(DataAugmentationForBEiT,\n"
