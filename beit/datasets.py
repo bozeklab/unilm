@@ -72,8 +72,8 @@ class DataAugmentationForBEiT(object):
         )
 
     def __call__(self, image, boxes=None):
-        for_patches, for_visual_tokens = self.common_transform(image)
-        for_patches = self.crop_and_resize(boxes=boxes)
+        for_patches = self.common_transform(image)
+        for_patches, for_visual_tokens = self.crop_and_resize(img=for_patches, boxes=boxes)
         if isinstance(for_patches, tuple):
             for_patches, boxes = for_patches
             return \
