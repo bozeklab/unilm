@@ -72,10 +72,12 @@ class DataAugmentationForBEiT(object):
 
     def __call__(self, image, boxes=None):
         for_patches, for_visual_tokens = self.common_transform(image)
-        if boxes is not None:
-            patches_transformed, boxes_transformed = self.patch_transform(for_patches)
+        if isinstance(for_patches, tuple):
+            for_patches, boxes = for_patches
+            print('!!!!')
+            print(boxes.shape)
             return \
-                patches_transformed, boxes_transformed, self.visual_token_transform(for_visual_tokens), \
+                self.patch_transform(for_patches), boxes, self.visual_token_transform(for_visual_tokens), \
                 self.masked_position_generator()
         else:
             return \
