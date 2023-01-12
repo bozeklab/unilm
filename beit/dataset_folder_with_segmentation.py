@@ -51,8 +51,10 @@ class SegmentedDatasetFolder(VisionDataset):
             is_valid_file: Optional[Callable[[str], bool]] = None,
     ) -> None:
         super(SegmentedDatasetFolder, self).__init__(root, transform=transform,
-                                                     boxes_transform=boxes_transform,
                                                      target_transform=target_transform)
+
+        self.boxes_transform = boxes_transform
+
         classes, class_to_idx = self._find_classes(self.root)
         samples = make_dataset(self.root, class_to_idx, extensions, is_valid_file)
         if len(samples) == 0:
