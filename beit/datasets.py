@@ -74,12 +74,11 @@ class DataAugmentationForBEiT(object):
         for_patches, for_visual_tokens = self.common_transform(image)
         if isinstance(for_patches, tuple):
             for_patches, boxes = for_patches
-            print('!!!!')
-            print(boxes.shape)
             return \
                 self.patch_transform(for_patches), boxes, self.visual_token_transform(for_visual_tokens), \
                 self.masked_position_generator()
         else:
+            print('dupa')
             return \
                 self.patch_transform(for_patches), self.visual_token_transform(for_visual_tokens), \
                 self.masked_position_generator()
