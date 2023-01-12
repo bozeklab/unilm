@@ -121,6 +121,7 @@ class RandomResizedCropAndInterpolationWithTwoPic:
         else:
             ratio_w = self.size / w
             ratio_h = self.size / h
+        boxes = boxes.float()
         boxes[:, 0::2] *= ratio_w
         boxes[:, 1::2] *= ratio_h
 
