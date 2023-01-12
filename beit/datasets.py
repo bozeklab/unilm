@@ -17,7 +17,7 @@ from torchvision import datasets, transforms
 from timm.data.constants import \
     IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD, IMAGENET_INCEPTION_MEAN, IMAGENET_INCEPTION_STD
 
-from beit.dataset_folder_with_segmentation import SegmentedImageFolder
+from beit.dataset_folder_with_segmentation import SegmentedImageFolder, pil_pkl_loader_classes
 from transforms import RandomResizedCropAndInterpolationWithTwoPic
 from timm.data import create_transform
 
@@ -104,7 +104,7 @@ class DataAugmentationForBEITInference(object):
             min_num_patches=args.min_mask_patches_per_block,
         )
 
-    def __call__(self, image):
+    def __call__(self, image, boxes=None):
         return [self.patch_transform(image), transforms.ToTensor()(image), self.masked_position_generator()]
 
 
@@ -119,7 +119,8 @@ def build_beit_pretraining_dataset(args):
 
 def build_beit_inference_dataset(args):
     transform = DataAugmentationForBEITInference(args)
-    return SegmentedImageFolder(root=args.data_path, transform=transform)
+    return SegmentedImageFolder(root=args.data_path, loader=pil_pkl_loader_classes,
+                                transform=transform)
 
 
 def build_dataset(is_train, args):
