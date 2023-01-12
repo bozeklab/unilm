@@ -17,7 +17,7 @@ from torchvision import datasets, transforms
 from timm.data.constants import \
     IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD, IMAGENET_INCEPTION_MEAN, IMAGENET_INCEPTION_STD
 
-from beit.dataset_folder_with_segmentation import SegmentedImageFolder, pil_pkl_loader_classes
+from beit.dataset_folder_with_segmentation import SegmentedImageFolder, pil_pkl_loader_classes, pil_pkl_loader
 from transforms import RandomResizedCropAndInterpolationWithTwoPic
 from timm.data import create_transform
 
@@ -121,6 +121,13 @@ def build_beit_pretraining_dataset(args):
         return datasets.CIFAR100(root=args.data_path, train=True, transform=transform, download=True)
     else:
         return ImageFolder(args.data_path, transform=transform)
+
+
+def build_instaformer_pretraining_dataset(args):
+    transform = DataAugmentationForBEiT(args)
+    print("Data Aug = %s" % str(transform))
+    return ImageFolder(root=args.data_path, loader=pil_pkl_loader,
+                       transform=transform)
 
 
 def build_beit_inference_dataset(args):
