@@ -28,6 +28,7 @@ def get_args():
                         help='Training interpolation (random, bilinear, bicubic default: "bicubic")')
     parser.add_argument('--second_interpolation', type=str, default='lanczos',
                         help='Interpolation for discrete vae (random, bilinear, bicubic default: "lanczos")')
+    parser.add_argument("--discrete_vae_type", type=str, default="dall-e")
 
     return parser.parse_args()
 
