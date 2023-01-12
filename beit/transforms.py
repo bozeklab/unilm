@@ -193,7 +193,7 @@ class RandomResizedCropAndInterpolationWithTwoPic:
                 return F.resized_crop(img, i, j, h, w, self.size, interpolation)
         else:
             if boxes is not None:
-                return F.resized_crop(img, i, j, h, w, self.size, interpolation), boxes, \
+                return (F.resized_crop(img, i, j, h, w, self.size, interpolation), boxes), \
                     F.resized_crop(img, i, j, h, w, self.second_size, self.second_interpolation)
             else:
                 return F.resized_crop(img, i, j, h, w, self.size, interpolation), \
