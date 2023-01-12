@@ -126,8 +126,8 @@ def build_beit_pretraining_dataset(args):
 def build_instaformer_pretraining_dataset(args):
     transform = DataAugmentationForBEiT(args)
     print("Data Aug = %s" % str(transform))
-    return ImageFolder(root=args.data_path, loader=pil_pkl_loader,
-                       transform=transform)
+    return SegmentedImageFolder(root=args.data_path, loader=pil_pkl_loader,
+                                transform=transform)
 
 
 def build_beit_inference_dataset(args):
