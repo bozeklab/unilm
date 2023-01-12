@@ -29,6 +29,7 @@ def pil_pkl_loader(path: str) -> Tuple[Image.Image, np.ndarray]:
     file_name = path.strip(extension)
 
     print('!!!')
+    print()
     print(file_name)
 
     img = pil_loader(path)

@@ -63,6 +63,12 @@ def main(args):
     dataset_train = build_instaformer_pretraining_dataset(args)
     print(len(dataset_train))
     print(dataset_train[0])
+    samples, images, bool_masked_pos, _ = dataset_train[0]
+    img, boxes = samples
+    print(img.shape)
+    print(boxes.shape)
+    print(images.shape)
+    print(bool_masked_pos.shape)
 
 
 if __name__ == '__main__':
