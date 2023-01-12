@@ -5,9 +5,11 @@ from beit.datasets import build_beit_inference_dataset, build_instaformer_pretra
 import os
 import numpy as np
 import torch
+import pickle
 import matplotlib.pyplot as plt
 
 import torchvision.transforms.functional as F
+import torchvision.transforms as T
 
 
 def get_args():
@@ -69,6 +71,10 @@ def main(args):
     print(boxes.shape)
     print(patch_img.shape)
     print(mask.shape)
+    with open(os.path.join(args.data_path, f"dupa.pkl"), 'wb') as outf:
+        pickle.dump(boxes, outf)
+    crop = T.ToPILImage()(img)
+    crop.save(os.path.join(args.data_path, f"dupa.png"))
     #img_boxes = samples
 
 
