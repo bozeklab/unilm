@@ -70,7 +70,7 @@ def infere(model, dataset, patch_size, device):
 
     model.eval()
     for i in range(len(dataset)):
-        sample, target = dataset[i]
+        sample, _ = dataset[i]
         sample = _flatten_list(sample)
         img, nonnormalized_img, bool_masked_pos, boxes_and_labels = sample
         boxes, classes = boxes_and_labels
