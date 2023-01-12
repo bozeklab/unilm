@@ -71,6 +71,8 @@ class DataAugmentationForBEiT(object):
         )
 
     def __call__(self, image, boxes=None):
+        print('!!!!!!!')
+        print(boxes)
         for_patches, for_visual_tokens = self.common_transform(image)
         if isinstance(for_patches, tuple):
             for_patches, boxes = for_patches

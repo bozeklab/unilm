@@ -66,7 +66,7 @@ def main(args):
     samples, _ = dataset_train[0]
     print('!!!')
     print(len(samples))
-    img, boxes = samples
+    #img_boxes = samples
 
 
 if __name__ == '__main__':
