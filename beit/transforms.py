@@ -109,9 +109,9 @@ class RandomResizedCropAndInterpolationWithTwoPic:
         boxes[:, 1::2] -= i
         idx = []
         for i in range(boxes.shape[0]):
-            if boxes[i, 0, :] < 0 or boxes[i, 1, :] < 0:
+            if boxes[i, 0] < 0 or boxes[i, 1] < 0:
                 continue
-            if boxes[i, 0, :] >= w or boxes[i, 1, :] >= h:
+            if boxes[i, 0] >= w or boxes[i, 1] >= h:
                 continue
             idx.append(i)
         boxes = boxes[idx, ...]
