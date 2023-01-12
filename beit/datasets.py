@@ -113,7 +113,6 @@ class DataAugmentationForBEITInference(object):
         )
 
     def __call__(self, image, boxes=None):
-        print(len(boxes))
         return [self.patch_transform(image),
                 transforms.ToTensor()(image),
                 self.masked_position_generator(),
