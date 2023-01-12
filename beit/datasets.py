@@ -113,7 +113,11 @@ class DataAugmentationForBEITInference(object):
         )
 
     def __call__(self, image, boxes=None):
-        return [self.patch_transform(image), transforms.ToTensor()(image), self.masked_position_generator()]
+        print(len(boxes))
+        return [self.patch_transform(image),
+                transforms.ToTensor()(image),
+                self.masked_position_generator(),
+                boxes]
 
 
 def build_beit_pretraining_dataset(args):
