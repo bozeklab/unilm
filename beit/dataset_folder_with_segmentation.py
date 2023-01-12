@@ -14,26 +14,20 @@ from beit.dataset_folder import pil_loader, make_dataset, IMG_EXTENSIONS
 
 
 def pil_pkl_loader_classes(path: str) -> Tuple[Image.Image, Tuple[np.ndarray, np.ndarray]]:
-    extension = Path(path).suffix
-    file_name = path.strip(extension)
+    filename = Path(path).with_suffix('')
 
     img = pil_loader(path)
-    segmentation_pkl = np.load(f"{file_name}.pkl", allow_pickle=True)
-    with open(f"{file_name}_cls.pkl", 'rb') as f:
+    segmentation_pkl = np.load(f"{filename}.pkl", allow_pickle=True)
+    with open(f"{filename}_cls.pkl", 'rb') as f:
         labels_pkl = pickle.load(f)
     return img, (segmentation_pkl, labels_pkl)
 
 
 def pil_pkl_loader(path: str) -> Tuple[Image.Image, np.ndarray]:
-    extension = Path(path).suffix
-    file_name = path.strip(extension)
-
-    print('!!!')
-    print()
-    print(file_name)
+    filename = Path(path).with_suffix('')
 
     img = pil_loader(path)
-    segmentation_pkl = np.load(f"{file_name}.pkl", allow_pickle=True)
+    segmentation_pkl = np.load(f"{filename}.pkl", allow_pickle=True)
     return img, segmentation_pkl
 
 
