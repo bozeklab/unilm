@@ -35,11 +35,12 @@ class DataAugmentationForBEiT(object):
         self.common_transform = transforms.Compose([
             transforms.ColorJitter(0.4, 0.4, 0.4),
             transforms.RandomHorizontalFlip(p=0.5),
-            RandomResizedCropAndInterpolationWithTwoPic(
-                size=args.input_size, second_size=args.second_input_size,
-                interpolation=args.train_interpolation, second_interpolation=args.second_interpolation,
-            ),
         ])
+
+        self.crop_and_resize = RandomResizedCropAndInterpolationWithTwoPic(
+            size=args.input_size, second_size=args.second_input_size,
+            interpolation=args.train_interpolation, second_interpolation=args.second_interpolation,
+        )
 
         self.patch_transform = transforms.Compose([
             transforms.ToTensor(),
@@ -72,13 +73,13 @@ class DataAugmentationForBEiT(object):
 
     def __call__(self, image, boxes=None):
         for_patches, for_visual_tokens = self.common_transform(image)
+        for_patches = self.crop_and_resize(boxes=boxes)
         if isinstance(for_patches, tuple):
             for_patches, boxes = for_patches
             return \
                 self.patch_transform(for_patches), boxes, self.visual_token_transform(for_visual_tokens), \
                 self.masked_position_generator()
         else:
-            print('dupa')
             return \
                 self.patch_transform(for_patches), self.visual_token_transform(for_visual_tokens), \
                 self.masked_position_generator()
