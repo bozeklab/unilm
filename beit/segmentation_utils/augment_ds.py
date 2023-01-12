@@ -36,12 +36,12 @@ if __name__ == '__main__':
         r.append(int(n[-2][1:]))
     mc = max(c)
     mr = max(r)
-    for ic in range(mc + 1):
-        for jr in range(mr + 1):
-            lu = ic, jr
-            ru = ic + 1, jr
-            ld = ic, jr + 1
-            rd = ic + 1, jr + 1
+    for ir in range(mr + 1):
+        for jc in range(mc + 1):
+            lu = ir, jc
+            ru = ir, jc + 1
+            ld = ir + 1, jc
+            rd = ir + 1, jc + 1
             flu = f"wsi_001-tile-r{lu[0]}-c{lu[1]}.png"
             flu_p = f"wsi_001-tile-r{lu[0]}-c{lu[1]}.pkl"
             fru = f"wsi_001-tile-r{ru[0]}-c{ru[1]}.png"
@@ -67,9 +67,9 @@ if __name__ == '__main__':
             pickles[3][:, 1::2] += IMG_SIZE
 
             images = [read_image(os.path.join(IMG_DIR, f)) for f in files]
-            image1 = torch.cat([images[0], images[1]], dim=1)
-            image2 = torch.cat([images[2], images[3]], dim=1)
-            image = torch.cat([image1, image2], dim=2)
+            image1 = torch.cat([images[0], images[1]], dim=2)
+            image2 = torch.cat([images[2], images[3]], dim=2)
+            image = torch.cat([image1, image2], dim=1)
             #image_boxes = T.ToPILImage()(image)
             #canvas = ImageDraw.Draw(image_boxes)
             offsets = [(random.randint(10, IMG_SIZE), random.randint(10, IMG_SIZE)) for _ in range(10)]
