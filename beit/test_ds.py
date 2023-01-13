@@ -15,7 +15,7 @@ import torchvision.transforms as T
 def get_args():
     parser = argparse.ArgumentParser('BEiT inference ds test', add_help=False)
 
-    parser.add_argument('--data_path', default='/data/pwojcik/images_he_seg/positive/', type=str,
+    parser.add_argument('--data_path', default='/data/pwojcik/images_he_seg/', type=str,
                         help='dataset path')
     parser.add_argument('--imagenet_default_mean_and_std', default=False, action='store_true')
     parser.add_argument('--input_size', default=448, type=int, help='images input size for backbone')
