@@ -78,7 +78,7 @@ class DataAugmentationForBEiT(object):
     def get_masks_for_boxes(self, boxes, mask, patch_size):
         bmask = []
         for i in range(boxes.shape[0]):
-            scaled_box = boxes[i] // patch_size
+            scaled_box = boxes[i] // patch_size[0]
             crop = mask[scaled_box[i, 1]:scaled_box[i, 3] + 1,
                         scaled_box[i, 0]:scaled_box[i, 2] + 1]
             bmask.append(np.any(crop))
