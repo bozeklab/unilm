@@ -33,6 +33,8 @@ class DataAugmentationForBEiT(object):
         mean = IMAGENET_INCEPTION_MEAN if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_MEAN
         std = IMAGENET_INCEPTION_STD if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_STD
 
+        self.patch_size = args.patch_size
+
         self.common_transform = transforms.Compose([
             transforms.ColorJitter(0.4, 0.4, 0.4),
         ])
@@ -73,10 +75,11 @@ class DataAugmentationForBEiT(object):
             min_num_patches=args.min_mask_patches_per_block,
         )
 
-    def get_masks_for_boxes(self, boxes, mask):
+    def get_masks_for_boxes(self, boxes, mask, patch_size):
         bmask = []
         for i in range(boxes.shape[0]):
-            crop = mask[boxes[i, 1]:boxes[i, 3]+1, boxes[i, 0]:boxes[i, 2]+1]
+            crop = mask[boxes[i, 1] * patch_size:(boxes[i, 3] * patch_size + 1),
+                        boxes[i, 0] * patch_size:(boxes[i, 2] * patch_size + 1)]
             bmask.append(np.any(crop))
         return torch.tensor(bmask)
 
@@ -89,7 +92,7 @@ class DataAugmentationForBEiT(object):
             for_patches, boxes = for_patches
             return \
                 self.patch_transform(for_patches), boxes, self.visual_token_transform(for_visual_tokens), \
-                mask, self.get_masks_for_boxes(boxes, mask)
+                mask, self.get_masks_for_boxes(boxes, mask, self.patch_size)
         else:
             return \
                 self.patch_transform(for_patches), self.visual_token_transform(for_visual_tokens), \
