@@ -64,6 +64,26 @@ def _pil_interp(method):
 _RANDOM_INTERPOLATION = (Image.BILINEAR, Image.BICUBIC)
 
 
+class RandomHorizontalFlip:
+    def __init__(self, p=0.5):
+        super(RandomHorizontalFlip, self).__init__(p=p)
+
+    def flip_boxes(self, boxes, width):
+        boxes[:, 0::2] *= -1
+        boxes[:, 0::2] += width - 1
+        return boxes
+
+    def __call__(self, img, boxes=None):
+        if random.random() >= 0.5:
+            if boxes is not None:
+                return F.hflip(img), self.flip_boxes(boxes)
+            return F.hflip(img)
+        else:
+            if boxes is not None:
+                return img, boxes
+            return img
+
+
 class RandomResizedCropAndInterpolationWithTwoPic:
     """Crop the given PIL Image to random size and aspect ratio with random interpolation.
 
@@ -111,7 +131,7 @@ class RandomResizedCropAndInterpolationWithTwoPic:
         for i in range(boxes.shape[0]):
             if boxes[i, 0] < 0 or boxes[i, 1] < 0:
                 continue
-            if boxes[i, 0] >= w or boxes[i, 1] >= h:
+            if boxes[i, 0] >= j + w or boxes[i, 1] >= i + h:
                 continue
             idx.append(i)
         boxes = boxes[idx, ...]
