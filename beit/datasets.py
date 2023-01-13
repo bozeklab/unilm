@@ -76,8 +76,8 @@ class DataAugmentationForBEiT(object):
         bmask = []
         for i in range(boxes.shape[0]):
             crop = mask[boxes[i, 1]:boxes[i, 3]+1, boxes[i, 0]:boxes[i, 2]+1]
-            mask.append(torch.any(crop))
-        return bmask
+            bmask.append(torch.any(crop))
+        return torch.tensor(bmask)
 
     def __call__(self, image, boxes=None, num_boxes=None):
         for_patches = self.common_transform(image)
