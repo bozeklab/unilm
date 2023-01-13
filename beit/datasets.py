@@ -34,7 +34,7 @@ class DataAugmentationForBEiT(object):
 
         self.common_transform = transforms.Compose([
             transforms.ColorJitter(0.4, 0.4, 0.4),
-            transforms.RandomHorizontalFlip(p=0.5),
+            #transforms.RandomHorizontalFlip(p=0.5),
         ])
 
         self.crop_and_resize = RandomResizedCropAndInterpolationWithTwoPic(
