@@ -18,7 +18,7 @@ from timm.data.constants import \
     IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD, IMAGENET_INCEPTION_MEAN, IMAGENET_INCEPTION_STD
 
 from beit.dataset_folder_with_segmentation import SegmentedImageFolder, pil_pkl_loader_classes, pil_pkl_loader
-from transforms import RandomResizedCropAndInterpolationWithTwoPic
+from transforms import RandomResizedCropAndInterpolationWithTwoPic, RandomHorizontalFlip
 from timm.data import create_transform
 
 from dall_e.utils import map_pixels
@@ -34,13 +34,14 @@ class DataAugmentationForBEiT(object):
 
         self.common_transform = transforms.Compose([
             transforms.ColorJitter(0.4, 0.4, 0.4),
-            #transforms.RandomHorizontalFlip(p=0.5),
         ])
 
         self.crop_and_resize = RandomResizedCropAndInterpolationWithTwoPic(
             size=args.input_size, second_size=args.second_input_size,
             interpolation=args.train_interpolation, second_interpolation=args.second_interpolation,
         )
+
+        self.random_hflip = RandomHorizontalFlip(p=0.5)
 
         self.patch_transform = transforms.Compose([
             transforms.ToTensor(),
@@ -73,6 +74,7 @@ class DataAugmentationForBEiT(object):
 
     def __call__(self, image, boxes=None):
         for_patches = self.common_transform(image)
+        for_patches = self.random_hflip(for_patches)
         for_patches, for_visual_tokens = self.crop_and_resize(img=for_patches, boxes=boxes)
         if isinstance(for_patches, tuple):
             for_patches, boxes = for_patches
