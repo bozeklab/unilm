@@ -72,19 +72,27 @@ class DataAugmentationForBEiT(object):
             min_num_patches=args.min_mask_patches_per_block,
         )
 
-    def __call__(self, image, boxes=None):
+    def get_masks_for_boxes(self, boxes, mask):
+        bmask = []
+        for i in range(boxes.shape[0]):
+            crop = mask[boxes[i, 1]:boxes[i, 3]+1, boxes[i, 0]:boxes[i, 2]+1]
+            mask.append(torch.any(crop))
+        return bmask
+
+    def __call__(self, image, boxes=None, num_boxes=None):
         for_patches = self.common_transform(image)
         for_patches = self.random_hflip(for_patches)
         for_patches, for_visual_tokens = self.crop_and_resize(img=for_patches, boxes=boxes)
+        mask = self.masked_position_generator()
         if isinstance(for_patches, tuple):
             for_patches, boxes = for_patches
             return \
                 self.patch_transform(for_patches), boxes, self.visual_token_transform(for_visual_tokens), \
-                self.masked_position_generator()
+                mask, self.get_masks_for_boxes(boxes, mask)
         else:
             return \
                 self.patch_transform(for_patches), self.visual_token_transform(for_visual_tokens), \
-                self.masked_position_generator()
+                mask
 
     def __repr__(self):
         repr = "(DataAugmentationForBEiT,\n"
