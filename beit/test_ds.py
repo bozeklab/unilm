@@ -66,7 +66,7 @@ def main(args):
     #print(len(dataset_train))
     samples, _ = dataset_train[1058]
     print(len(samples))
-    img, boxes, patch_img, mask = samples
+    img, boxes, patch_img, mask, bmask = samples
     print(img.shape)
     print(boxes.shape)
     print(patch_img.shape)
