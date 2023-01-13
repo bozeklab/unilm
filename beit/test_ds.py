@@ -15,7 +15,7 @@ import torchvision.transforms as T
 def get_args():
     parser = argparse.ArgumentParser('BEiT inference ds test', add_help=False)
 
-    parser.add_argument('--data_path', default='/Users/piotrwojcik/data/he/', type=str,
+    parser.add_argument('--data_path', default='/data/pwojcik/images_he_seg/positive/', type=str,
                         help='dataset path')
     parser.add_argument('--imagenet_default_mean_and_std', default=False, action='store_true')
     parser.add_argument('--input_size', default=448, type=int, help='images input size for backbone')
@@ -64,17 +64,22 @@ def main(args):
 
     dataset_train = build_instaformer_pretraining_dataset(args)
     print(len(dataset_train))
-    samples, _ = dataset_train[0]
+    samples, _ = dataset_train[1057]
     print(len(samples))
     img, boxes, patch_img, mask = samples
     print(img.shape)
     print(boxes.shape)
     print(patch_img.shape)
     print(mask.shape)
-    with open(os.path.join(args.data_path, f"dupa.pkl"), 'wb') as outf:
+
+    output_dir = '/data/pwojcik/images_he_seg/positive/'
+
+    with open(os.path.join(output_dir, f"dupa.pkl"), 'wb') as outf:
         pickle.dump(boxes, outf)
+    with open(os.path.join(output_dir, f"mask.pkl"), 'wb') as outf:
+        pickle.dump(mask, outf)
     crop = T.ToPILImage()(img)
-    crop.save(os.path.join(args.data_path, f"dupa.png"))
+    crop.save(os.path.join(output_dir, f"dupa.png"))
     #img_boxes = samples
 
 
