@@ -79,7 +79,7 @@ def main(args):
     with open(os.path.join(output_dir, f"mask.pkl"), 'wb') as outf:
         pickle.dump(mask, outf)
     with open(os.path.join(output_dir, f"bmask.pkl"), 'wb') as outf:
-        pickle.dump(mask, outf)
+        pickle.dump(bmask, outf)
     crop = T.ToPILImage()(img)
     crop.save(os.path.join(output_dir, f"dupa.png"))
     #img_boxes = samples
