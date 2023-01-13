@@ -78,8 +78,9 @@ class DataAugmentationForBEiT(object):
     def get_masks_for_boxes(self, boxes, mask, patch_size):
         bmask = []
         for i in range(boxes.shape[0]):
-            crop = mask[boxes[i, 1] * patch_size:(boxes[i, 3] * patch_size + 1),
-                        boxes[i, 0] * patch_size:(boxes[i, 2] * patch_size + 1)]
+            scaled_box = boxes[i] // patch_size
+            crop = mask[scaled_box[i, 1]:scaled_box[i, 3] + 1,
+                        scaled_box[i, 0]:scaled_box[i, 2] + 1]
             bmask.append(np.any(crop))
         return torch.tensor(bmask)
 
