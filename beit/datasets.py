@@ -12,6 +12,7 @@
 import os
 import torch
 import numpy as np
+import random
 
 from torchvision import datasets, transforms
 
@@ -82,7 +83,35 @@ class DataAugmentationForBEiT(object):
             crop = mask[scaled_box[1]:scaled_box[3] + 1,
                         scaled_box[0]:scaled_box[2] + 1]
             bmask.append(np.any(crop))
-        return torch.tensor(bmask)
+        return bmask
+
+    def choose_boxes(self, boxes, boxes_mask, num_boxes):
+        def _get_indices(boolean_list, value):
+            return list(filter(lambda x: x[1] == value, enumerate(boolean_list)))
+
+        masked_boxes = _get_indices(boxes_mask, True)
+        unmasked_boxes = _get_indices(boxes_mask, False)
+
+        boxes_available = boxes_mask.shape[0]
+        if boxes_available == num_boxes:
+            return boxes, torch.tensor(boxes_mask), torch.tensor([True] * num_boxes)
+        if boxes_available < num_boxes:
+            diff = num_boxes - boxes_available
+            fake_box = torch.tensor([-1, -1, -1, -1])
+            fake_box = fake_box.expand(diff, -1)
+            choosen_boxes = [True] * boxes_available + [False] * diff
+            boxes_mask = boxes + [False] * diff
+            return torch.cat(boxes, fake_box), torch.tensor(boxes_mask), torch.tensor(choosen_boxes)
+        if num_boxes < boxes_available and boxes_available >= len(masked_boxes):
+            diff = boxes_available - len(masked_boxes)
+            idx = random.sample(unmasked_boxes, diff)
+            return torch.cat([boxes[masked_boxes], boxes[idx]]), \
+            torch.tensor([True] * len(masked_boxes) + [False] * diff), torch.tensor([True] * num_boxes)
+        if len(masked_boxes) == num_boxes:
+            return boxes[masked_boxes], torch.tensor([True] * num_boxes), torch.tensor([True] * num_boxes)
+        if num_boxes < len(masked_boxes):
+            idx = random.sample(masked_boxes, num_boxes)
+            return boxes[idx], torch.tensor([True] * num_boxes), torch.tensor([True] * num_boxes)
 
     def __call__(self, image, boxes=None, num_boxes=None):
         for_patches = self.common_transform(image)
