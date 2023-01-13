@@ -64,7 +64,7 @@ def main(args):
 
     dataset_train = build_instaformer_pretraining_dataset(args)
     print(len(dataset_train))
-    samples, _ = dataset_train[1057]
+    samples, _ = dataset_train[1058]
     print(len(samples))
     img, boxes, patch_img, mask = samples
     print(img.shape)
@@ -72,7 +72,7 @@ def main(args):
     print(patch_img.shape)
     print(mask.shape)
 
-    output_dir = '/data/pwojcik/images_he_seg/positive/'
+    output_dir = '/data/pwojcik/unilm/beit/test_ds_o/'
 
     with open(os.path.join(output_dir, f"dupa.pkl"), 'wb') as outf:
         pickle.dump(boxes, outf)
