@@ -11,6 +11,7 @@
 # --------------------------------------------------------'
 import os
 import torch
+import numpy as np
 
 from torchvision import datasets, transforms
 
@@ -76,7 +77,7 @@ class DataAugmentationForBEiT(object):
         bmask = []
         for i in range(boxes.shape[0]):
             crop = mask[boxes[i, 1]:boxes[i, 3]+1, boxes[i, 0]:boxes[i, 2]+1]
-            bmask.append(torch.any(crop))
+            bmask.append(np.any(crop))
         return torch.tensor(bmask)
 
     def __call__(self, image, boxes=None, num_boxes=None):
