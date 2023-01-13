@@ -66,7 +66,7 @@ _RANDOM_INTERPOLATION = (Image.BILINEAR, Image.BICUBIC)
 
 class RandomHorizontalFlip:
     def __init__(self, p=0.5):
-        super(RandomHorizontalFlip, self).__init__(p=p)
+        self.p = p
 
     def flip_boxes(self, boxes, width):
         boxes[:, 0::2] *= -1
@@ -74,9 +74,9 @@ class RandomHorizontalFlip:
         return boxes
 
     def __call__(self, img, boxes=None):
-        if random.random() >= 0.5:
+        if random.random() >= self.p:
             if boxes is not None:
-                return F.hflip(img), self.flip_boxes(boxes)
+                return F.hflip(img), self.flip_boxes(boxes, img.shape[1])
             return F.hflip(img)
         else:
             if boxes is not None:
