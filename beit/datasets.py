@@ -35,6 +35,7 @@ class DataAugmentationForBEiT(object):
         std = IMAGENET_INCEPTION_STD if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_STD
 
         self.patch_size = args.patch_size
+        self.num_boxes = args.num_mask_patches
 
         self.common_transform = transforms.Compose([
             transforms.ColorJitter(0.4, 0.4, 0.4),
@@ -113,7 +114,7 @@ class DataAugmentationForBEiT(object):
             idx = random.sample(masked_boxes, num_boxes)
             return boxes[idx], torch.tensor([True] * num_boxes), torch.tensor([True] * num_boxes)
 
-    def __call__(self, image, boxes=None, num_boxes=None):
+    def __call__(self, image, boxes=None):
         for_patches = self.common_transform(image)
         for_patches = self.random_hflip(for_patches)
         for_patches, for_visual_tokens = self.crop_and_resize(img=for_patches, boxes=boxes)
@@ -121,7 +122,7 @@ class DataAugmentationForBEiT(object):
         if isinstance(for_patches, tuple):
             for_patches, boxes = for_patches
             boxes_mask = self.get_masks_for_boxes(boxes, mask, self.patch_size)
-            boxes, boxes_mask, choosen_boxes = self.choose_boxes(self, boxes, boxes_mask, num_boxes)
+            boxes, boxes_mask, choosen_boxes = self.choose_boxes(self, boxes, boxes_mask, self.num_boxes)
 
             return \
                 self.patch_transform(for_patches), boxes, self.visual_token_transform(for_visual_tokens), \

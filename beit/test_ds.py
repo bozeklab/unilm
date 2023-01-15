@@ -20,6 +20,7 @@ def get_args():
     parser.add_argument('--imagenet_default_mean_and_std', default=False, action='store_true')
     parser.add_argument('--input_size', default=448, type=int, help='images input size for backbone')
     parser.add_argument('--second_input_size', default=224, type=int, help='images input size for backbone')
+    parser.add_argument('--num_boxes', default=None, type=int, help='number of bounding boxes taken into consideration')
     parser.add_argument('--num_mask_patches', default=75, type=int,
                         help='number of the visual tokens/patches need be masked')
     parser.add_argument('--max_mask_patches_per_block', type=int, default=None)
@@ -66,7 +67,7 @@ def main(args):
     #print(len(dataset_train))
     samples, _ = dataset_train[1358]
     print(len(samples))
-    img, boxes, patch_img, mask, bmask = samples
+    img, boxes, patch_img, mask, bmask, cmask = samples
     print(img.shape)
     print(boxes.shape)
     print(patch_img.shape)
@@ -80,6 +81,8 @@ def main(args):
         pickle.dump(mask, outf)
     with open(os.path.join(output_dir, f"bmask.pkl"), 'wb') as outf:
         pickle.dump(bmask, outf)
+    with open(os.path.join(output_dir, f"cmask.pkl"), 'wb') as outf:
+        pickle.dump(cmask, outf)
     crop = T.ToPILImage()(img)
     crop.save(os.path.join(output_dir, f"dupa.png"))
     #img_boxes = samples
