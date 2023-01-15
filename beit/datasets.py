@@ -35,7 +35,7 @@ class DataAugmentationForBEiT(object):
         std = IMAGENET_INCEPTION_STD if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_STD
 
         self.patch_size = args.patch_size
-        self.num_boxes = args.num_mask_patches
+        self.num_boxes = args.num_boxes
 
         self.common_transform = transforms.Compose([
             transforms.ColorJitter(0.4, 0.4, 0.4),
