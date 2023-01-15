@@ -100,19 +100,18 @@ class DataAugmentationForBEiT(object):
             diff = num_boxes - boxes_available
             fake_box = torch.tensor([-1, -1, -1, -1])
             fake_box = fake_box.expand(diff, -1)
-            choosen_boxes = [True] * boxes_available + [False] * diff
-            boxes_mask = [True] * boxes_available + [False] * diff
-            return torch.cat([boxes, fake_box]), torch.tensor(boxes_mask), torch.tensor(choosen_boxes)
+            attention_mask = [True] * boxes_available + [False] * diff
+            return torch.cat([boxes, fake_box]), torch.tensor(attention_mask)
         if num_boxes < boxes_available and boxes_available >= len(masked_boxes):
             diff = boxes_available - len(masked_boxes)
             idx = random.sample(unmasked_boxes, diff)
             return torch.cat([boxes[masked_boxes], boxes[idx]]), \
             torch.tensor([True] * len(masked_boxes) + [False] * diff), torch.tensor([True] * num_boxes)
         if len(masked_boxes) == num_boxes:
-            return boxes[masked_boxes], torch.tensor([True] * num_boxes), torch.tensor([True] * num_boxes)
+            return boxes[masked_boxes], torch.tensor([True] * num_boxes)
         if num_boxes < len(masked_boxes):
             idx = random.sample(masked_boxes, num_boxes)
-            return boxes[idx], torch.tensor([True] * num_boxes), torch.tensor([True] * num_boxes)
+            return boxes[idx], torch.tensor([True] * num_boxes)
 
     def __call__(self, image, boxes=None):
         for_patches = self.common_transform(image)
@@ -122,11 +121,11 @@ class DataAugmentationForBEiT(object):
         if isinstance(for_patches, tuple):
             for_patches, boxes = for_patches
             boxes_mask = self.get_masks_for_boxes(boxes, mask, self.patch_size)
-            boxes, boxes_mask, choosen_boxes = self.choose_boxes(boxes, boxes_mask, self.num_boxes)
+            boxes, attention_mask = self.choose_boxes(boxes, boxes_mask, self.num_boxes)
 
             return \
                 self.patch_transform(for_patches), boxes, self.visual_token_transform(for_visual_tokens), \
-                mask, boxes_mask, choosen_boxes
+                mask, attention_mask
         else:
             return \
                 self.patch_transform(for_patches), self.visual_token_transform(for_visual_tokens), \

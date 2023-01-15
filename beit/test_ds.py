@@ -67,7 +67,7 @@ def main(args):
     #print(len(dataset_train))
     samples, _ = dataset_train[1358]
     print(len(samples))
-    img, boxes, patch_img, mask, bmask, cmask = samples
+    img, boxes, patch_img, mask, attention_mask = samples
     print(img.shape)
     print(boxes.shape)
     print(patch_img.shape)
@@ -79,10 +79,8 @@ def main(args):
         pickle.dump(boxes, outf)
     with open(os.path.join(output_dir, f"mask.pkl"), 'wb') as outf:
         pickle.dump(mask, outf)
-    with open(os.path.join(output_dir, f"bmask.pkl"), 'wb') as outf:
-        pickle.dump(bmask, outf)
-    with open(os.path.join(output_dir, f"cmask.pkl"), 'wb') as outf:
-        pickle.dump(cmask, outf)
+    with open(os.path.join(output_dir, f"attn_mask.pkl"), 'wb') as outf:
+        pickle.dump(attention_mask, outf)
     crop = T.ToPILImage()(img)
     crop.save(os.path.join(output_dir, f"dupa.png"))
     #img_boxes = samples
