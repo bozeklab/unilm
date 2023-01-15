@@ -87,8 +87,12 @@ class DataAugmentationForBEiT(object):
         return bmask
 
     def choose_boxes(self, boxes, boxes_mask, num_boxes):
-        def _get_indices(boolean_list, value):
-            return list(filter(lambda x: x[1] == value, enumerate(boolean_list)))
+        def _unzip(zip_list):
+            return [l[0] for l in zip_list]
+
+        def _get_indices(self, boolean_list, value):
+            idx = list(filter(lambda x: x[1] == value, enumerate(boolean_list)))
+            return _unzip(idx)
 
         masked_boxes = _get_indices(boxes_mask, True)
         unmasked_boxes = _get_indices(boxes_mask, False)
@@ -105,13 +109,14 @@ class DataAugmentationForBEiT(object):
         if num_boxes < boxes_available and boxes_available >= len(masked_boxes):
             diff = boxes_available - len(masked_boxes)
             idx = random.sample(unmasked_boxes, diff)
-            idx = [i[0] for i in idx]
+            idx = _unzip(idx)
+
             return torch.cat([boxes[masked_boxes], boxes[idx]]), torch.tensor([True] * num_boxes)
         if len(masked_boxes) == num_boxes:
             return boxes[masked_boxes], torch.tensor([True] * num_boxes)
         if num_boxes < len(masked_boxes):
             idx = random.sample(masked_boxes, num_boxes)
-            idx = [i[0] for i in idx]
+            idx = _unzip(idx)
             return boxes[idx], torch.tensor([True] * num_boxes)
 
     def __call__(self, image, boxes=None):
