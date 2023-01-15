@@ -95,7 +95,7 @@ class DataAugmentationForBEiT(object):
 
         boxes_available = boxes.shape[0]
         if boxes_available == num_boxes:
-            return boxes, torch.tensor(boxes_mask), torch.tensor([True] * num_boxes)
+            return boxes, torch.tensor([True] * num_boxes)
         if boxes_available < num_boxes:
             diff = num_boxes - boxes_available
             fake_box = torch.tensor([-1, -1, -1, -1])
@@ -106,8 +106,7 @@ class DataAugmentationForBEiT(object):
             diff = boxes_available - len(masked_boxes)
             idx = random.sample(unmasked_boxes, diff)
             idx = [i[0] for i in idx]
-            return torch.cat([boxes[masked_boxes], boxes[idx]]), \
-            torch.tensor([True] * len(masked_boxes) + [False] * diff), torch.tensor([True] * num_boxes)
+            return torch.cat([boxes[masked_boxes], boxes[idx]]), torch.tensor([True] * num_boxes)
         if len(masked_boxes) == num_boxes:
             return boxes[masked_boxes], torch.tensor([True] * num_boxes)
         if num_boxes < len(masked_boxes):
