@@ -122,7 +122,7 @@ class DataAugmentationForBEiT(object):
         if isinstance(for_patches, tuple):
             for_patches, boxes = for_patches
             boxes_mask = self.get_masks_for_boxes(boxes, mask, self.patch_size)
-            boxes, boxes_mask, choosen_boxes = self.choose_boxes(self, boxes, boxes_mask, self.num_boxes)
+            boxes, boxes_mask, choosen_boxes = self.choose_boxes(boxes, boxes_mask, self.num_boxes)
 
             return \
                 self.patch_transform(for_patches), boxes, self.visual_token_transform(for_visual_tokens), \
