@@ -21,7 +21,7 @@ def get_args():
     parser.add_argument('--input_size', default=448, type=int, help='images input size for backbone')
     parser.add_argument('--second_input_size', default=224, type=int, help='images input size for backbone')
     parser.add_argument('--num_boxes', default=None, type=int, help='number of bounding boxes taken into consideration')
-    parser.add_argument('--num_mask_patches', default=75, type=int,
+    parser.add_argument('--num_mask_patches', default=314, type=int,
                         help='number of the visual tokens/patches need be masked')
     parser.add_argument('--max_mask_patches_per_block', type=int, default=None)
     parser.add_argument('--min_mask_patches_per_block', type=int, default=16)
