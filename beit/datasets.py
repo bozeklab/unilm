@@ -93,7 +93,7 @@ class DataAugmentationForBEiT(object):
         masked_boxes = _get_indices(boxes_mask, True)
         unmasked_boxes = _get_indices(boxes_mask, False)
 
-        boxes_available = boxes_mask.shape[0]
+        boxes_available = boxes.shape[0]
         if boxes_available == num_boxes:
             return boxes, torch.tensor(boxes_mask), torch.tensor([True] * num_boxes)
         if boxes_available < num_boxes:
