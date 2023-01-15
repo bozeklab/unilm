@@ -105,12 +105,14 @@ class DataAugmentationForBEiT(object):
         if num_boxes < boxes_available and boxes_available >= len(masked_boxes):
             diff = boxes_available - len(masked_boxes)
             idx = random.sample(unmasked_boxes, diff)
+            idx = [i[0] for i in idx]
             return torch.cat([boxes[masked_boxes], boxes[idx]]), \
             torch.tensor([True] * len(masked_boxes) + [False] * diff), torch.tensor([True] * num_boxes)
         if len(masked_boxes) == num_boxes:
             return boxes[masked_boxes], torch.tensor([True] * num_boxes)
         if num_boxes < len(masked_boxes):
             idx = random.sample(masked_boxes, num_boxes)
+            idx = [i[0] for i in idx]
             return boxes[idx], torch.tensor([True] * num_boxes)
 
     def __call__(self, image, boxes=None):
