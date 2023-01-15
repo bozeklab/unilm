@@ -90,7 +90,7 @@ class DataAugmentationForBEiT(object):
         def _unzip(zip_list):
             return [l[0] for l in zip_list]
 
-        def _get_indices(self, boolean_list, value):
+        def _get_indices(boolean_list, value):
             idx = list(filter(lambda x: x[1] == value, enumerate(boolean_list)))
             return _unzip(idx)
 
