@@ -37,6 +37,7 @@ class DataAugmentationForBEiT(object):
 
         self.patch_size = args.patch_size
         self.num_boxes = args.num_boxes
+        self.instance_size = args.instance_size
 
         self.common_transform = transforms.Compose([
             transforms.ColorJitter(0.4, 0.4, 0.4),
@@ -138,7 +139,7 @@ class DataAugmentationForBEiT(object):
             for_patches, boxes = for_patches
             boxes_mask = self.get_masks_for_boxes(boxes, mask, self.patch_size)
             boxes, attention_mask = self.get_attention_mask(boxes, boxes_mask, self.num_boxes)
-            crops = self.take_crops(boxes, for_patches, (32, 32))
+            crops = self.take_crops(boxes, for_patches, self.instance_size)
             return \
                 self.patch_transform(for_patches), boxes, self.visual_token_transform(for_visual_tokens), crops, \
                 mask, attention_mask

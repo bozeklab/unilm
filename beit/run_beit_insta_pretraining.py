@@ -57,6 +57,8 @@ def get_args():
                         help='images input size for backbone')
     parser.add_argument('--second_input_size', default=112, type=int,
                         help='images input size for discrete vae')
+    parser.add_argument('--instance_size', default=32, type=int,
+                        help='instance image size')
 
     parser.add_argument('--drop_path', type=float, default=0.1, metavar='PCT',
                         help='Drop path rate (default: 0.1)')
