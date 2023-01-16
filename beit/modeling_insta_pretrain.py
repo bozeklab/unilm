@@ -45,7 +45,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
             pos_embed = F.interpolate(pos_embed.permute(0, 3, 1, 2),
                                            size=(img_size // patch_size, img_size // patch_size),
                                            mode='bilinear').flatten(2).transpose(-1, -2)
-            self.register_buffer('pos_embed ', pos_embed)
+            self.register_buffer('pos_embed', pos_embed)
 
         else:
             self.pos_embed = None
