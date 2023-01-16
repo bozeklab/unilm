@@ -87,7 +87,7 @@ class DataAugmentationForBEiT(object):
             bmask.append(np.any(crop))
         return bmask
 
-    def choose_boxes(self, boxes, boxes_mask, num_boxes):
+    def get_attention_mask(self, boxes, boxes_mask, num_boxes):
         def _unzip(zip_list):
             return [l[0] for l in zip_list]
 
@@ -119,11 +119,12 @@ class DataAugmentationForBEiT(object):
 
     def take_crops(self, boxes, img, size):
         crops = []
+        image = transforms.ToTensor()(img)
         for i in range(boxes.shape[0]):
             if boxes[i, 1] == -1:
                 crop = torch.rand(3, size)
             else:
-                crop = img[:, int(boxes[i, 1]): int(boxes[i, 3]), int(boxes[i, 0]): int(boxes[i, 2])]
+                crop = image[:, int(boxes[i, 1]): int(boxes[i, 3]), int(boxes[i, 0]): int(boxes[i, 2])]
                 crop = F.resize(crop, size=size)
             crops.append(crop.unsqueeze(dim=0))
         return torch.cat(crops, dim=0)
@@ -136,7 +137,7 @@ class DataAugmentationForBEiT(object):
         if isinstance(for_patches, tuple):
             for_patches, boxes = for_patches
             boxes_mask = self.get_masks_for_boxes(boxes, mask, self.patch_size)
-            boxes, attention_mask = self.choose_boxes(boxes, boxes_mask, self.num_boxes)
+            boxes, attention_mask = self.get_attention_mask(boxes, boxes_mask, self.num_boxes)
             crops = self.take_crops(boxes, for_patches, 32)
             return \
                 self.patch_transform(for_patches), boxes, self.visual_token_transform(for_visual_tokens), crops, \
