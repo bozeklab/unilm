@@ -119,9 +119,9 @@ class DataAugmentationForBEiT(object):
 
     def take_crops(self, boxes, img, size):
         crops = []
-        for i in boxes.shape[0]:
+        for i in range(boxes.shape[0]):
             if boxes[i, 1] == -1:
-                crop = torch.rand(size)
+                crop = torch.rand(3, size)
             else:
                 crop = img[:, int(boxes[i, 1]): int(boxes[i, 3]), int(boxes[i, 0]): int(boxes[i, 2])]
                 crop = F.resize(crop, size=size)
