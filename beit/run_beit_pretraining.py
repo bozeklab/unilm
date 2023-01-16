@@ -23,7 +23,7 @@ from pathlib import Path
 from timm.models import create_model
 from optim_factory import create_optimizer
 
-from datasets import build_beit_pretraining_dataset
+from datasets import build_instaformer_pretraining_dataset
 from engine_for_pretraining import train_one_epoch
 from utils import NativeScalerWithGradNormCount as NativeScaler
 import utils
@@ -57,7 +57,7 @@ def get_args():
                         help='images input size for backbone')
     parser.add_argument('--second_input_size', default=112, type=int,
                         help='images input size for discrete vae')
-
+    parser.add_argument('--num_boxes', default=None, type=int, help='number of bounding boxes taken into consideration')
     parser.add_argument('--drop_path', type=float, default=0.1, metavar='PCT',
                         help='Drop path rate (default: 0.1)')
 
@@ -172,7 +172,7 @@ def main(args):
     args.patch_size = patch_size
 
     # get dataset
-    dataset_train = build_beit_pretraining_dataset(args)
+    dataset_train = build_instaformer_pretraining_dataset(args)
 
     # prepare discrete vae
     d_vae = utils.create_d_vae(
