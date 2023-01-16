@@ -16,6 +16,7 @@ import cv2
 
 plt.rcParams["savefig.bbox"] = "tight"
 
+
 def expand_bounding_box(bbox, margin, img_shape):
     x_fill = 2 * margin
     x_fill -= min(margin, bbox[0])
