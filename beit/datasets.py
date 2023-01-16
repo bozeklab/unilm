@@ -126,6 +126,7 @@ class DataAugmentationForBEiT(object):
             else:
                 crop = image[:, int(boxes[i, 1]): int(boxes[i, 3]), int(boxes[i, 0]): int(boxes[i, 2])]
                 crop = F.resize(crop, size=size)
+                print(crop.shape)
             crops.append(crop.unsqueeze(dim=0))
         return torch.cat(crops, dim=0)
 
@@ -138,7 +139,7 @@ class DataAugmentationForBEiT(object):
             for_patches, boxes = for_patches
             boxes_mask = self.get_masks_for_boxes(boxes, mask, self.patch_size)
             boxes, attention_mask = self.get_attention_mask(boxes, boxes_mask, self.num_boxes)
-            crops = self.take_crops(boxes, for_patches, 32)
+            crops = self.take_crops(boxes, for_patches, (32, 32))
             return \
                 self.patch_transform(for_patches), boxes, self.visual_token_transform(for_visual_tokens), crops, \
                 mask, attention_mask
