@@ -24,10 +24,11 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 
         self.patch_embed = PatchEmbed(
             img_size=img_size, patch_size=patch_size, in_chans=in_chans, embed_dim=embed_dim)
-        num_patches = self.patch_embed.num_patches
+        #num_patches = self.patch_embed.num_patches
 
         self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
         self.mask_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
+        self.cls_pos_embed = nn.Parameter(torch.zeros(1, 1, embed_dim))
         if use_abs_pos_emb:
             self.pos_embed_x = PositionalEncoding(embed_dim=embed_dim // 4, drop_rate=0., max_len=img_size)
             self.pos_embed_y = PositionalEncoding(embed_dim=embed_dim // 4, drop_rate=0., max_len=img_size)
@@ -43,8 +44,6 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
             self.pos_embed = F.interpolate(pos_embed.permute(0, 3, 1, 2),
                                            size=(img_size // patch_size, img_size // patch_size),
                                            mode='bilinear').flatten(2).transpose(-1, -2)
-            print('!!!!')
-            print(self.pos_embed.shape)
 
         else:
             self.pos_embed = None
@@ -72,6 +71,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         if self.pos_embed is not None:
             trunc_normal_(self.pos_embed, std=self.init_std)
         trunc_normal_(self.cls_token, std=self.init_std)
+        trunc_normal_(self.cls_pos_embed, std=self.init_std)
         trunc_normal_(self.mask_token, std=self.init_std)
         trunc_normal_(self.lm_head.weight, std=self.init_std)
         self.apply(self._init_weights)
@@ -108,6 +108,8 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
     def forward_features(self, x, bool_masked_pos):
         x = self.patch_embed(x, bool_masked_pos=bool_masked_pos)
         batch_size, seq_len, _ = x.size()
+
+        self.pos_embed = torch.cat([self.cls_pos_embed, self.pos_embed])
 
         cls_tokens = self.cls_token.expand(batch_size, -1, -1)  # stole cls_tokens impl from Phil Wang, thanks
         mask_token = self.mask_token.expand(batch_size, seq_len, -1)
