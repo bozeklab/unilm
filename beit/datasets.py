@@ -123,7 +123,7 @@ class DataAugmentationForBEiT(object):
         image = transforms.ToTensor()(img)
         for i in range(boxes.shape[0]):
             if boxes[i, 1] == -1:
-                crop = torch.rand(3, size)
+                crop = torch.rand(3, size[0], size[1])
             else:
                 crop = image[:, int(boxes[i, 1]): int(boxes[i, 3]), int(boxes[i, 0]): int(boxes[i, 2])]
                 crop = F.resize(crop, size=size)
