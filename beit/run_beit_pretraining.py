@@ -47,6 +47,7 @@ def get_args():
     parser.set_defaults(abs_pos_emb=False)
     parser.add_argument('--layer_scale_init_value', default=0.1, type=float, 
                         help="0.1 for base, 1e-5 for large. set 0 to disable layer scale")
+    parser.add_argument('--num_boxes', default=None, type=int, help='number of bounding boxes taken into consideration')
 
     parser.add_argument('--num_mask_patches', default=75, type=int,
                         help='number of the visual tokens/patches need be masked')
