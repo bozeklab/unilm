@@ -119,8 +119,6 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 
         x = torch.cat((cls_tokens, x), dim=1)
         if self.pos_embed is not None:
-            print(self.cls_pos_embed.shape)
-            print(self.pos_embed.shape)
             pos_embed = torch.cat([self.cls_pos_embed, self.pos_embed], dim=1)
             x = x + pos_embed
 
