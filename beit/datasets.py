@@ -126,7 +126,6 @@ class DataAugmentationForBEiT(object):
             else:
                 crop = image[:, int(boxes[i, 1]): int(boxes[i, 3]), int(boxes[i, 0]): int(boxes[i, 2])]
                 crop = F.resize(crop, size=size)
-                print(crop.shape)
             crops.append(crop.unsqueeze(dim=0))
         return torch.cat(crops, dim=0)
 
