@@ -69,7 +69,6 @@ class RandomHorizontalFlip:
         self.p = p
 
     def flip_boxes(self, boxes, width):
-        print(boxes[0])
         w = boxes[:, 2] - boxes[:, 0]
 
         boxes[:, 0::2] *= -1
@@ -77,14 +76,11 @@ class RandomHorizontalFlip:
 
         boxes[:, 0] -= w
         boxes[:, 2] += w
-        print(boxes[0])
         return boxes
 
     def __call__(self, img, boxes=None):
         r = random.random()
-        print(r)
         if r <= self.p:
-            print('!!!')
             if boxes is not None:
                 return F.hflip(img), self.flip_boxes(boxes, img.width)
             return F.hflip(img)
