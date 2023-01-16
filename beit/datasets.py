@@ -132,7 +132,7 @@ class DataAugmentationForBEiT(object):
 
     def __call__(self, image, boxes=None):
         for_patches = self.common_transform(image)
-        for_patches = self.random_hflip(for_patches)
+        for_patches = self.random_hflip(for_patches, boxes=boxes)
         for_patches, for_visual_tokens = self.crop_and_resize(img=for_patches, boxes=boxes)
         mask = self.masked_position_generator()
         if isinstance(for_patches, tuple):
