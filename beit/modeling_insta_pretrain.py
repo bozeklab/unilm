@@ -41,13 +41,13 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
                 self.pos_embed_w()[:, (patch_size - 1)][:, None, None].repeat(1, img_size, img_size, 1),
                 self.pos_embed_h()[:, (patch_size - 1)][:, None, None].repeat(1, img_size, img_size, 1),
             ), dim=3)
-            self.pos_embed = F.interpolate(pos_embed.permute(0, 3, 1, 2),
-                                           size=(img_size // patch_size, img_size // patch_size),
-                                           mode='bilinear').flatten(2).transpose(-1, -2)
+            pos_embed = F.interpolate(pos_embed.permute(0, 3, 1, 2),
+                                      size=(img_size // patch_size, img_size // patch_size),
+                                      mode='bilinear').flatten(2).transpose(-1, -2)
+            self.register_buffer('pos_embed ', pos_embed)
 
         else:
             self.pos_embed = None
-        self.pos_drop = nn.Dropout(p=drop_rate)
 
         if use_shared_rel_pos_bias:
             self.rel_pos_bias = RelativePositionBias(window_size=self.patch_embed.patch_shape, num_heads=num_heads)
