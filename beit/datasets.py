@@ -48,7 +48,7 @@ class DataAugmentationForBEiT(object):
             interpolation=args.train_interpolation, second_interpolation=args.second_interpolation,
         )
 
-        self.random_hflip = RandomHorizontalFlip(p=1.0)
+        self.random_hflip = RandomHorizontalFlip(p=0.5)
 
         self.patch_transform = transforms.Compose([
             transforms.ToTensor(),
