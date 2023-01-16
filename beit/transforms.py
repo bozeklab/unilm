@@ -86,7 +86,7 @@ class RandomHorizontalFlip:
         if r <= self.p:
             print('!!!')
             if boxes is not None:
-                return F.hflip(img), self.flip_boxes(boxes, img.shape[2])
+                return F.hflip(img), self.flip_boxes(boxes, img.width)
             return F.hflip(img)
         else:
             if boxes is not None:
