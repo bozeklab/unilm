@@ -49,6 +49,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 
         else:
             self.pos_embed = None
+            self.cls_pos_embed = None
 
         if use_shared_rel_pos_bias:
             self.rel_pos_bias = RelativePositionBias(window_size=self.patch_embed.patch_shape, num_heads=num_heads)
@@ -72,7 +73,6 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         if self.cls_pos_embed is not None:
             trunc_normal_(self.cls_pos_embed, std=self.init_std)
         trunc_normal_(self.cls_token, std=self.init_std)
-        trunc_normal_(self.cls_pos_embed, std=self.init_std)
         trunc_normal_(self.mask_token, std=self.init_std)
         trunc_normal_(self.lm_head.weight, std=self.init_std)
         self.apply(self._init_weights)
@@ -110,8 +110,6 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         x = self.patch_embed(x, bool_masked_pos=bool_masked_pos)
         batch_size, seq_len, _ = x.size()
 
-        self.pos_embed = torch.cat([self.cls_pos_embed, self.pos_embed])
-
         cls_tokens = self.cls_token.expand(batch_size, -1, -1)  # stole cls_tokens impl from Phil Wang, thanks
         mask_token = self.mask_token.expand(batch_size, seq_len, -1)
 
@@ -121,8 +119,8 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 
         x = torch.cat((cls_tokens, x), dim=1)
         if self.pos_embed is not None:
-            x = x + self.pos_embed
-        x = self.pos_drop(x)
+            pos_embed = torch.cat([self.cls_pos_embed, self.pos_embed])
+            x = x + pos_embed
 
         rel_pos_bias = self.rel_pos_bias() if self.rel_pos_bias is not None else None
         for blk in self.blocks:
