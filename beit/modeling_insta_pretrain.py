@@ -50,6 +50,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         else:
             self.pos_embed = None
             self.cls_pos_embed = None
+        self.pos_drop = nn.Dropout(p=drop_rate)
 
         if use_shared_rel_pos_bias:
             self.rel_pos_bias = RelativePositionBias(window_size=self.patch_embed.patch_shape, num_heads=num_heads)
@@ -106,6 +107,20 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
     def get_num_layers(self):
         return len(self.blocks)
 
+    def extract_box_feature(self, x, boxes, num_box, scale_factor):
+
+        b, c, h, w = x.shape
+        batch_index = torch.arange(0.0, b).repeat(num_box).view(num_box, -1)\
+            .transpose(0, 1).flatten(0, 1).to(x.device)
+        roi_box_info = boxes.view(-1, 5).to(x.device)
+
+        roi_info = torch.stack((batch_index, roi_box_info), dim = 1).to(x.device)
+        aligned_out = roi_align(x, roi_info, 8)
+
+        aligned_out.view(b, num_box, c, 8, 8)[torch.where(boxes[:, :, 0] == -1)] = 0
+        aligned_out.view(-1, c, 8, 8)
+
+
     def forward_features(self, x, bool_masked_pos):
         x = self.patch_embed(x, bool_masked_pos=bool_masked_pos)
         batch_size, seq_len, _ = x.size()
@@ -121,6 +136,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         if self.pos_embed is not None:
             pos_embed = torch.cat([self.cls_pos_embed, self.pos_embed], dim=1)
             x = x + pos_embed
+        x = self.pos_drop(x)
 
         rel_pos_bias = self.rel_pos_bias() if self.rel_pos_bias is not None else None
         for blk in self.blocks:

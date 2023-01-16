@@ -21,6 +21,7 @@ from timm.data.constants import \
 
 from beit.dataset_folder_with_segmentation import SegmentedImageFolder, pil_pkl_loader_classes, pil_pkl_loader
 from transforms import RandomResizedCropAndInterpolationWithTwoPic, RandomHorizontalFlip
+import torchvision.transforms.functional as F
 from timm.data import create_transform
 
 from dall_e.utils import map_pixels
@@ -46,7 +47,7 @@ class DataAugmentationForBEiT(object):
             interpolation=args.train_interpolation, second_interpolation=args.second_interpolation,
         )
 
-        self.random_hflip = RandomHorizontalFlip(p=1.0)
+        self.random_hflip = RandomHorizontalFlip(p=0.5)
 
         self.patch_transform = transforms.Compose([
             transforms.ToTensor(),
@@ -116,6 +117,17 @@ class DataAugmentationForBEiT(object):
             idx = random.sample(masked_boxes, num_boxes)
             return boxes[idx], torch.tensor([True] * num_boxes)
 
+    def take_crops(self, boxes, img, size):
+        crops = []
+        for i in boxes.shape[0]:
+            if boxes[i, 1] == -1:
+                crop = torch.rand(size)
+            else:
+                crop = img[:, int(boxes[i, 1]): int(boxes[i, 3]), int(boxes[i, 0]): int(boxes[i, 2])]
+                crop = F.resize(crop, size=size)
+            crops.append(crop.unsqueeze(dim=0))
+        return torch.cat(crops, dim=0)
+
     def __call__(self, image, boxes=None):
         for_patches = self.common_transform(image)
         for_patches = self.random_hflip(for_patches)
@@ -125,9 +137,9 @@ class DataAugmentationForBEiT(object):
             for_patches, boxes = for_patches
             boxes_mask = self.get_masks_for_boxes(boxes, mask, self.patch_size)
             boxes, attention_mask = self.choose_boxes(boxes, boxes_mask, self.num_boxes)
-
+            crops = self.take_crops(boxes, for_patches, 32)
             return \
-                self.patch_transform(for_patches), boxes, self.visual_token_transform(for_visual_tokens), \
+                self.patch_transform(for_patches), boxes, self.visual_token_transform(for_visual_tokens), crops, \
                 mask, attention_mask
         else:
             return \
