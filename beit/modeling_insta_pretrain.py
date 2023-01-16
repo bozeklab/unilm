@@ -28,8 +28,9 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 
         self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
         self.mask_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
-        self.cls_pos_embed = nn.Parameter(torch.zeros(1, 1, embed_dim))
         if use_abs_pos_emb:
+            self.cls_pos_embed = nn.Parameter(torch.zeros(1, 1, embed_dim))
+
             self.pos_embed_x = PositionalEncoding(embed_dim=embed_dim // 4, drop_rate=0., max_len=img_size)
             self.pos_embed_y = PositionalEncoding(embed_dim=embed_dim // 4, drop_rate=0., max_len=img_size)
             self.pos_embed_h = PositionalEncoding(embed_dim=embed_dim // 4, drop_rate=0., max_len=img_size)
@@ -42,8 +43,8 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
                 self.pos_embed_h()[:, (patch_size - 1)][:, None, None].repeat(1, img_size, img_size, 1),
             ), dim=3)
             pos_embed = F.interpolate(pos_embed.permute(0, 3, 1, 2),
-                                      size=(img_size // patch_size, img_size // patch_size),
-                                      mode='bilinear').flatten(2).transpose(-1, -2)
+                                           size=(img_size // patch_size, img_size // patch_size),
+                                           mode='bilinear').flatten(2).transpose(-1, -2)
             self.register_buffer('pos_embed ', pos_embed)
 
         else:
@@ -68,8 +69,8 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         self.init_std = init_std
         self.lm_head = nn.Linear(embed_dim, vocab_size)
 
-        if self.pos_embed is not None:
-            trunc_normal_(self.pos_embed, std=self.init_std)
+        if self.cls_pos_embed is not None:
+            trunc_normal_(self.cls_pos_embed, std=self.init_std)
         trunc_normal_(self.cls_token, std=self.init_std)
         trunc_normal_(self.cls_pos_embed, std=self.init_std)
         trunc_normal_(self.mask_token, std=self.init_std)

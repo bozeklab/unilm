@@ -23,5 +23,4 @@ class PositionalEncoding(nn.Module):
         Args:
             x: Tensor, shape [batch_size, seq_len, embedding_dim]
         """
-        print(self.pe)
         return self.pe.permute(1, 0, 2)
