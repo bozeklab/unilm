@@ -29,7 +29,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
         self.mask_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
         if use_abs_pos_emb:
-            self.cls_pos_embed = nn.Parameter(torch.zeros(1, embed_dim))
+            self.cls_pos_embed = nn.Parameter(torch.zeros(1, 1, embed_dim))
 
             self.pos_embed_x = PositionalEncoding(embed_dim=embed_dim // 4, drop_rate=0., max_len=img_size)
             self.pos_embed_y = PositionalEncoding(embed_dim=embed_dim // 4, drop_rate=0., max_len=img_size)
@@ -121,7 +121,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         if self.pos_embed is not None:
             print(self.cls_pos_embed.shape)
             print(self.pos_embed.shape)
-            pos_embed = torch.cat([self.cls_pos_embed, self.pos_embed])
+            pos_embed = torch.cat([self.cls_pos_embed, self.pos_embed], dim=1)
             x = x + pos_embed
 
         rel_pos_bias = self.rel_pos_bias() if self.rel_pos_bias is not None else None
