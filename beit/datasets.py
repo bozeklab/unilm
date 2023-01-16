@@ -106,8 +106,8 @@ class DataAugmentationForBEiT(object):
             fake_box = fake_box.expand(diff, -1)
             attention_mask = [True] * boxes_available + [False] * diff
             return torch.cat([boxes, fake_box]), torch.tensor(attention_mask)
-        if num_boxes < boxes_available and boxes_available >= len(masked_boxes):
-            diff = boxes_available - len(masked_boxes)
+        if num_boxes < boxes_available and num_boxes >= len(masked_boxes):
+            diff = num_boxes - len(masked_boxes)
             idx = random.sample(unmasked_boxes, diff)
             return torch.cat([boxes[masked_boxes], boxes[idx]]), torch.tensor([True] * num_boxes)
         if len(masked_boxes) == num_boxes:
