@@ -85,8 +85,8 @@ class DataAugmentationForBEiT(object):
             scaled_box = boxes[i] // patch_size[0]
             crop = mask[scaled_box[1]:scaled_box[3] + 1,
                         scaled_box[0]:scaled_box[2] + 1]
-            bmask.append(np.any(crop))
-        return bmask
+            bmask.append(torch.any(crop).unsqueeze(0))
+        return torch.cat(bmask, dim=0)
 
     def get_attention_mask(self, boxes, boxes_mask, num_boxes):
         def _unzip(zip_list):
