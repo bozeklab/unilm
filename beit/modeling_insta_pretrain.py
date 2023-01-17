@@ -180,7 +180,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         aggregated_x = self.add_box_feature(x=x, boxes_features=boxes_features, boxes_info=boxes)
 
         for blk in self.blocks:
-            aggregated_x = blk(aggregated_x, attention_mask=attention_mask[:, None, None, None, :], rel_pos_bias=None)
+            aggregated_x = blk(aggregated_x, attention_mask=attention_mask[:, None, None, :], rel_pos_bias=None)
 
         return self.norm(aggregated_x)
 
