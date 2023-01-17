@@ -135,7 +135,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 
     def add_box_feature(self, x, boxes_features, box_info):
         batch_size = x.shape[0]
-        num_box = boxes_features.shape[1]
+        num_box = box_info.shape[1]
         boxes_features = self.instance_embed(boxes_features).squeeze().view(batch_size, num_box, -1)
 
         x_coord = box_info[..., 0::2].float().mean(dim=2).long()
