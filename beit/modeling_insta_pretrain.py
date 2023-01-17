@@ -120,12 +120,10 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
             .transpose(0, 1).flatten(0, 1).to(x.device)
         roi_box_info = boxes.view(-1, 4).to(x.device)
 
-        print(batch_index.shape)
-        print(roi_box_info.shape)
         roi_info = torch.stack((batch_index, roi_box_info[:, 0],
                                 roi_box_info[:, 1], roi_box_info[:, 2],
                                 roi_box_info[:, 3]), dim=1).to(x.device)
-        aligned_out = roi_align(x=x, boxes=roi_info, spatial_scale=scale_factor,
+        aligned_out = roi_align(input=x, boxes=roi_info, spatial_scale=scale_factor,
                                 output_size=(self.patch_embed_size, self.patch_embed_size))
 
         aligned_out.view(batch_size, num_box, self.embed_dim, self.patch_embed_size, self.patch_embed_size)[
