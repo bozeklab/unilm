@@ -143,6 +143,7 @@ class Attention(nn.Module):
         if attention_mask is not None:
             print(rel_pos_bias)
             attn = attn.masked_fill(attention_mask == True, torch.finfo(attn.dtype).min)
+        attn = 0.0
         attn = attn.softmax(dim=-1)
         print(attn[0, 0])
         attn = self.attn_drop(attn)
