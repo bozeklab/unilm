@@ -173,22 +173,22 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         x = self.pos_drop(x)
 
         boxes_features = self.extract_box_feature(x=x[:, 1:], boxes=boxes, scale_factor=1. / self.patch_size)
-        aggregator_input = self.add_box_feature(x=x, boxes_features=boxes_features, box_info=boxes)
+        aggregated_x = self.add_box_feature(x=x, boxes_features=boxes_features, box_info=boxes)
 
-        rel_pos_bias = self.rel_pos_bias() if self.rel_pos_bias is not None else None
         for blk in self.blocks:
-            x = blk(x, rel_pos_bias=rel_pos_bias)
+            aggregated_x = blk(aggregated_x, rel_pos_bias=None)
 
-        return self.norm(x)
+        return self.norm(aggregated_x)
 
     def forward(self, x, boxes, bool_masked_pos, attention_mask, return_all_tokens=False):
         x = self.forward_features(x, boxes=boxes, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
-        x = x[:, 1:]
+        aggregated_feat, aggregated_box = x[:, :-self.num_box, :], x[:, -self.num_box:, :]
+        aggregated_feat = aggregated_feat[:, 1:]
         if return_all_tokens:
-            return self.lm_head(x)
+            return self.lm_head(aggregated_feat)
         else:
             # return the masked tokens
-            return self.lm_head(x[bool_masked_pos])
+            return self.lm_head(aggregated_feat[bool_masked_pos])
 
 
 @register_model
