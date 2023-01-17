@@ -137,8 +137,8 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         num_box = boxes_features.shape[1]
         boxes_features = self.instance_embed(boxes_features).squeeze().view(batch_size, num_box, -1)
 
-        x_coord = box_info[..., 0::2].mean(dim=2).long()
-        y_coord = box_info[..., 1::2].mean(dim=2).long()
+        x_coord = box_info[..., 0::2].float().mean(dim=2).long()
+        y_coord = box_info[..., 1::2].float().mean(dim=2).long()
         w = (box_info[..., 2] - box_info[..., 0]).long()
         h = (box_info[..., 3] - box_info[..., 1]).long()
 
