@@ -152,7 +152,6 @@ class Attention(nn.Module):
 
 
 class Block(nn.Module):
-
     def __init__(self, dim, num_heads, mlp_ratio=4., qkv_bias=False, qk_scale=None, drop=0., attn_drop=0.,
                  drop_path=0., init_values=None, act_layer=nn.GELU, norm_layer=nn.LayerNorm,
                  window_size=None, attn_head_dim=None):
@@ -178,7 +177,7 @@ class Block(nn.Module):
             x = x + self.drop_path(self.attn(self.norm1(x), attention_mask=attention_mask, rel_pos_bias=rel_pos_bias))
             x = x + self.drop_path(self.mlp(self.norm2(x)))
         else:
-            x = x + self.drop_path(self.gamma_1 * self.attn(self.norm1(x), rel_pos_bias=rel_pos_bias))
+            x = x + self.drop_path(self.gamma_1 * self.attn(self.norm1(x), attention_mask=attention_mask, rel_pos_bias=rel_pos_bias))
             x = x + self.drop_path(self.gamma_2 * self.mlp(self.norm2(x)))
         return x
 
