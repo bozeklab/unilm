@@ -59,7 +59,7 @@ class DataAugmentationForBEiT(object):
 
         if args.discrete_vae_type == "dall-e":
             self.visual_token_transform = transforms.Compose([
-                #transforms.ToTensor(),
+                transforms.ToTensor(),
                 map_pixels,
             ])
         elif args.discrete_vae_type == "customized":
@@ -120,13 +120,13 @@ class DataAugmentationForBEiT(object):
 
     def take_crops(self, boxes, img, size):
         crops = []
-        image = transforms.ToTensor()(img)
         for i in range(boxes.shape[0]):
             if boxes[i, 1] == -1:
                 crop = torch.rand(3, size[0], size[1])
             else:
-                crop = image[:, int(boxes[i, 1]): int(boxes[i, 3]), int(boxes[i, 0]): int(boxes[i, 2])]
+                crop = img[:, int(boxes[i, 1]): int(boxes[i, 3]), int(boxes[i, 0]): int(boxes[i, 2])]
                 crop = F.resize(crop, size=size)
+                crop = map_pixels(crop)
             crops.append(crop.unsqueeze(dim=0).float())
         return torch.cat(crops, dim=0)
 
@@ -142,13 +142,9 @@ class DataAugmentationForBEiT(object):
             boxes_mask = self.get_masks_for_boxes(boxes, mask, self.patch_size)
             boxes, attention_mask = self.get_attention_mask(boxes, boxes_mask, self.num_boxes)
             crops = self.take_crops(boxes, for_patches, (self.instance_size, self.instance_size))
-            print('!!!!')
-            print(for_visual_tokens.dtype == torch.float)
-            print(crops.dtype == torch.float)
-            print(crops.dtype)
             return \
                 self.patch_transform(for_patches), boxes, self.visual_token_transform(for_visual_tokens), \
-                self.visual_token_transform(crops), mask, attention_mask, self.get_masks_for_boxes(boxes, mask, self.patch_size)
+                crops, mask, attention_mask, self.get_masks_for_boxes(boxes, mask, self.patch_size)
         else:
             return \
                 self.patch_transform(for_patches), self.visual_token_transform(for_visual_tokens), \
