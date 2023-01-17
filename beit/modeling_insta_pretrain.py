@@ -167,6 +167,9 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         x = x * (1 - w) + mask_token * w
 
         x = torch.cat((cls_tokens, x), dim=1)
+
+        attention_mask = torch.cat([torch.ones_like(x).bool(), attention_mask])
+
         if self.pos_embed is not None:
             pos_embed = torch.cat([self.cls_pos_embed, self.pos_embed], dim=1)
             x = x + pos_embed
@@ -176,7 +179,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         aggregated_x = self.add_box_feature(x=x, boxes_features=boxes_features, boxes_info=boxes)
 
         for blk in self.blocks:
-            aggregated_x = blk(aggregated_x, attention_mask=attention_mask[:, None, None, :], rel_pos_bias=None)
+            aggregated_x = blk(aggregated_x, attention_mask=attention_mask[:, None, None, None, :], rel_pos_bias=None)
 
         return self.norm(aggregated_x)
 
