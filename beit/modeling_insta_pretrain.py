@@ -112,14 +112,14 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
     def get_num_layers(self):
         return len(self.blocks)
 
-    def extract_box_feature(self, x, boxes, scale_factor):
+    def extract_box_feature(self, x, boxes_info, scale_factor):
         h, w = self.patch_embed.patch_shape
-        num_box = boxes.shape[1]
+        num_box = boxes_info.shape[1]
         batch_size = x.shape[0]
         x = x.view(batch_size, h, w, self.embed_dim).permute(0, 3, 1, 2)
         batch_index = torch.arange(0.0, batch_size).repeat(num_box).view(num_box, -1) \
             .transpose(0, 1).flatten(0, 1).to(x.device)
-        roi_box_info = boxes.view(-1, 4).to(x.device)
+        roi_box_info = boxes_info.view(-1, 4).to(x.device)
 
         roi_info = torch.stack((batch_index, roi_box_info[:, 0],
                                 roi_box_info[:, 1], roi_box_info[:, 2],
@@ -128,20 +128,20 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
                                 output_size=(self.patch_embed_size, self.patch_embed_size))
 
         aligned_out.view(batch_size, num_box, self.embed_dim, self.patch_embed_size, self.patch_embed_size)[
-            torch.where(boxes[:, :, 0] == -1)] = 0
+            torch.where(boxes_info[:, :, 0] == -1)] = 0
         aligned_out.view(-1, self.embed_dim, self.patch_embed_size, self.patch_embed_size)
 
         return aligned_out
 
-    def add_box_feature(self, x, boxes_features, box_info):
+    def add_box_feature(self, x, boxes_features, boxes_info):
         batch_size = x.shape[0]
-        num_box = box_info.shape[1]
+        num_box = boxes_info.shape[1]
         boxes_features = self.instance_embed(boxes_features).squeeze().view(batch_size, num_box, -1)
 
-        x_coord = box_info[..., 0::2].float().mean(dim=2).long()
-        y_coord = box_info[..., 1::2].float().mean(dim=2).long()
-        w = (box_info[..., 2] - box_info[..., 0]).long()
-        h = (box_info[..., 3] - box_info[..., 1]).long()
+        x_coord = boxes_info[..., 0::2].float().mean(dim=2).long()
+        y_coord = boxes_info[..., 1::2].float().mean(dim=2).long()
+        w = (boxes_info[..., 2] - boxes_info[..., 0]).long()
+        h = (boxes_info[..., 3] - boxes_info[..., 1]).long()
 
         box_pos_embed = torch.cat((
             self.pos_embed_x()[..., None, :].repeat(1, 1, self.img_size, 1),
@@ -172,11 +172,11 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
             x = x + pos_embed
         x = self.pos_drop(x)
 
-        boxes_features = self.extract_box_feature(x=x[:, 1:], boxes=boxes, scale_factor=1. / self.patch_size)
-        aggregated_x = self.add_box_feature(x=x, boxes_features=boxes_features, box_info=boxes)
+        boxes_features = self.extract_box_feature(x=x[:, 1:], boxes_info=boxes, scale_factor=1. / self.patch_size)
+        aggregated_x = self.add_box_feature(x=x, boxes_features=boxes_features, boxes_info=boxes)
 
         for blk in self.blocks:
-            aggregated_x = blk(aggregated_x, rel_pos_bias=None)
+            aggregated_x = blk(aggregated_x, attention_mask=attention_mask, rel_pos_bias=None)
 
         return self.norm(aggregated_x)
 
