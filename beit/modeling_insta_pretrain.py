@@ -134,12 +134,12 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
     def add_box(self, out, boxes, box_info):
         batch_size = out.shape[0]
         num_box = boxes.shape[1]
-        boxes = self.box_embed(boxes).squeeze().view(batch_size, num_box, -1)
+        boxes = self.instance_embed(boxes).squeeze().view(batch_size, num_box, -1)
 
-        x_coord = (box_info[..., 1::2].mean(dim=2) * (self.img_size - 1)).long()
-        y_coord = (box_info[..., 2::2].mean(dim=2) * (self.img_size - 1)).long()
-        w = ((box_info[..., 3] - box_info[..., 1]) * (self.img_size - 1)).long()
-        h = ((box_info[..., 4] - box_info[..., 2]) * (self.img_size - 1)).long()
+        x_coord = box_info[..., 0::2].mean(dim=2).long()
+        y_coord = box_info[..., 1::2].mean(dim=2).long()
+        w = (box_info[..., 2] - box_info[..., 0]).long()
+        h = (box_info[..., 3] - box_info[..., 1]).long()
 
         box_pos_embed = torch.cat((
             self.pos_embed_x()[..., None, :].repeat(1, 1, self.img_size, 1),
