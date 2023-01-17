@@ -147,7 +147,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
             x = x + pos_embed
         x = self.pos_drop(x)
 
-        box_features = self.extract_box_feature(x, boxes[attention_mask], scale_factor=1. / self.patch_size)
+        box_features = self.extract_box_feature(x[:, 1:], boxes[attention_mask], scale_factor=1. / self.patch_size)
         print(box_features.shape)
 
         rel_pos_bias = self.rel_pos_bias() if self.rel_pos_bias is not None else None
