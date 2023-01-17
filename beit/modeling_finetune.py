@@ -141,9 +141,6 @@ class Attention(nn.Module):
         if rel_pos_bias is not None:
             attn = attn + rel_pos_bias
         if attention_mask is not None:
-            print('!!!')
-            print(attention_mask.shape)
-            print(attn.shape)
             attn = attn.masked_fill(attention_mask == False, torch.finfo(attn.dtype).min)
         attn = attn.softmax(dim=-1)
         attn = self.attn_drop(attn)
@@ -170,8 +167,8 @@ class Block(nn.Module):
         self.mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=drop)
 
         if init_values is not None and init_values > 0:
-            self.gamma_1 = nn.Parameter(init_values * torch.ones((dim)),requires_grad=True)
-            self.gamma_2 = nn.Parameter(init_values * torch.ones((dim)),requires_grad=True)
+            self.gamma_1 = nn.Parameter(init_values * torch.ones((dim)), requires_grad=True)
+            self.gamma_2 = nn.Parameter(init_values * torch.ones((dim)), requires_grad=True)
         else:
             self.gamma_1, self.gamma_2 = None, None
 
