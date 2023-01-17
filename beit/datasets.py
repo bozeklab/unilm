@@ -120,6 +120,7 @@ class DataAugmentationForBEiT(object):
 
     def take_crops(self, boxes, img, size):
         crops = []
+        image = transforms.ToTensor()(img)
         for i in range(boxes.shape[0]):
             if boxes[i, 1] == -1:
                 crop = torch.rand(3, size[0], size[1])
