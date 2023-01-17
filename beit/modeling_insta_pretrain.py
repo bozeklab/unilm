@@ -27,7 +27,8 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         self.patch_size = patch_size
 
         self.patch_embed = PatchEmbed(img_size=img_size, patch_size=patch_size, in_chans=in_chans, embed_dim=embed_dim)
-        self.instance_embed = PatchEmbed(img_size=patch_embed_size, in_chans=embed_dim, embed_dim=embed_dim)
+        self.instance_embed = PatchEmbed(img_size=patch_embed_size, patch_size=patch_embed_size,
+                                         in_chans=embed_dim, embed_dim=embed_dim)
 
         self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
         self.mask_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
