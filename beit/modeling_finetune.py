@@ -141,7 +141,7 @@ class Attention(nn.Module):
         if rel_pos_bias is not None:
             attn = attn + rel_pos_bias
         if attention_mask is not None:
-            attn = attn.masked_fill(attention_mask == False, torch.finfo(attn.dtype).min)
+            attn = attn.masked_fill(attention_mask == True, torch.finfo(attn.dtype).min)
         attn = attn.softmax(dim=-1)
         attn = self.attn_drop(attn)
 
