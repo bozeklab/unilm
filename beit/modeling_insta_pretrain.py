@@ -3,6 +3,8 @@ import torch
 import torch.nn as nn
 from functools import partial
 
+from torchvision.ops import roi_align
+
 from beit.positional_encoding import PositionalEncoding
 from modeling_finetune import Block, _cfg, PatchEmbed, RelativePositionBias
 from timm.models.registry import register_model
@@ -15,12 +17,15 @@ def trunc_normal_(tensor, mean=0., std=1.):
 
 
 class VisionInstaformerForMaskedImageModeling(nn.Module):
-    def __init__(self, img_size=224, patch_size=16, patch_embed_size=3, in_chans=3, vocab_size=8192, embed_dim=768, depth=12,
+    def __init__(self, img_size=224, patch_size=16, patch_embed_size=3, in_chans=3, vocab_size=8192, embed_dim=768,
+                 depth=12,
                  num_heads=12, mlp_ratio=4., qkv_bias=True, qk_scale=None, drop_rate=0., attn_drop_rate=0.,
                  drop_path_rate=0., norm_layer=None, init_values=None, attn_head_dim=None,
                  use_abs_pos_emb=True, use_rel_pos_bias=False, use_shared_rel_pos_bias=False, init_std=0.02, **kwargs):
         super().__init__()
         self.num_features = self.embed_dim = embed_dim  # num_features for consistency with other models
+        self.patch_embed_size = patch_embed_size
+        self.patch_size = patch_size
 
         self.patch_embed = PatchEmbed(img_size=img_size, patch_size=patch_size, in_chans=in_chans, embed_dim=embed_dim)
         self.instance_embed = PatchEmbed(img_size=patch_embed_size, in_chans=embed_dim, embed_dim=embed_dim)
@@ -42,8 +47,8 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
                 self.pos_embed_h()[:, (patch_size - 1)][:, None, None].repeat(1, img_size, img_size, 1),
             ), dim=3)
             pos_embed = F.interpolate(pos_embed.permute(0, 3, 1, 2),
-                                           size=(img_size // patch_size, img_size // patch_size),
-                                           mode='bilinear').flatten(2).transpose(-1, -2)
+                                      size=(img_size // patch_size, img_size // patch_size),
+                                      mode='bilinear').flatten(2).transpose(-1, -2)
             self.register_buffer('pos_embed', pos_embed)
 
         else:
@@ -106,21 +111,26 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
     def get_num_layers(self):
         return len(self.blocks)
 
-    # def extract_box_feature(self, x, boxes, num_box, scale_factor):
-    #     h, w = self.patch_embed.patch_shape
-    #     batch_size = x.shape[0]
-    #     batch_index = torch.arange(0.0, batch_size).repeat(num_box).view(num_box, -1)\
-    #         .transpose(0, 1).flatten(0, 1).to(x.device)
-    #     roi_box_info = boxes.view(-1, 5).to(x.device)
-    #
-    #     roi_info = torch.stack((batch_index, roi_box_info), dim = 1).to(x.device)
-    #     aligned_out = roi_align(x, roi_info, 8)
-    #
-    #     aligned_out.view(b, num_box, c, 8, 8)[torch.where(boxes[:, :, 0] == -1)] = 0
-    #     aligned_out.view(-1, c, 8, 8)
+    def extract_box_feature(self, x, boxes, scale_factor):
+        h, w = self.patch_embed.patch_shape
+        num_box = boxes.shape[1]
+        batch_size = x.shape[0]
+        x = x.view(batch_size, h, w, self.embed_dim).permute(0, 3, 1, 2)
+        batch_index = torch.arange(0.0, batch_size).repeat(num_box).view(num_box, -1) \
+            .transpose(0, 1).flatten(0, 1).to(x.device)
+        roi_box_info = boxes.view(-1, 5).to(x.device)
 
+        roi_info = torch.stack((batch_index, roi_box_info), dim=1).to(x.device)
+        aligned_out = roi_align(x=x, boxes=roi_info, spatial_scale=scale_factor,
+                                output_size=(self.patch_embed_size, self.patch_embed_size))
 
-    def forward_features(self, x, boxes, bool_masked_pos):
+        aligned_out.view(batch_size, num_box, self.embed_dim, self.patch_embed_size, self.patch_embed_size)[
+            torch.where(boxes[:, :, 0] == -1)] = 0
+        aligned_out.view(-1, self.embed_dim, self.patch_embed_size, self.patch_embed_size)
+
+        return aligned_out
+
+    def forward_features(self, x, boxes, bool_masked_pos, attention_mask):
         x = self.patch_embed(x, bool_masked_pos=bool_masked_pos)
         batch_size, seq_len, _ = x.size()
 
@@ -137,14 +147,17 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
             x = x + pos_embed
         x = self.pos_drop(x)
 
+        box_features = self.extract_box_feature(x, boxes[attention_mask], scale_factor=1. / self.patch_size)
+        print(box_features.shape)
+
         rel_pos_bias = self.rel_pos_bias() if self.rel_pos_bias is not None else None
         for blk in self.blocks:
             x = blk(x, rel_pos_bias=rel_pos_bias)
 
         return self.norm(x)
 
-    def forward(self, x, boxes, bool_masked_pos, return_all_tokens=False):
-        x = self.forward_features(x, boxes=boxes, bool_masked_pos=bool_masked_pos)
+    def forward(self, x, boxes, bool_masked_pos, attention_mask, return_all_tokens=False):
+        x = self.forward_features(x, boxes=boxes, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
         x = x[:, 1:]
         if return_all_tokens:
             return self.lm_head(x)
@@ -156,7 +169,8 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 @register_model
 def beit_instaformer_patch16_448_8k_vocab(pretrained=False, **kwargs):
     model = VisionInstaformerForMaskedImageModeling(
-        img_size=448, patch_size=16, patch_embed_size=3, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4, qkv_bias=True,
+        img_size=448, patch_size=16, patch_embed_size=3, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4,
+        qkv_bias=True,
         norm_layer=partial(nn.LayerNorm, eps=1e-6), vocab_size=8192, **kwargs)
     model.default_cfg = _cfg()
     if pretrained:
