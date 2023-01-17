@@ -131,7 +131,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 
         return aligned_out
 
-    def add_box(self, out, boxes, box_info):
+    def add_box_feature(self, out, boxes, box_info):
         batch_size = out.shape[0]
         num_box = boxes.shape[1]
         boxes = self.instance_embed(boxes).squeeze().view(batch_size, num_box, -1)
