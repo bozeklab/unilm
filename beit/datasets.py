@@ -86,6 +86,7 @@ class DataAugmentationForBEiT(object):
             crop = mask[scaled_box[1]:scaled_box[3] + 1,
                         scaled_box[0]:scaled_box[2] + 1]
             bmask.append(torch.any(torch.tensor(crop, dtype=torch.bool)).unsqueeze(0))
+        assert(len(bmask == 100))
         return torch.cat(bmask, dim=0)
 
     def get_attention_mask(self, boxes, boxes_mask, num_boxes):
