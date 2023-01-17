@@ -140,6 +140,7 @@ class DataAugmentationForBEiT(object):
         mask = self.masked_position_generator()
         if isinstance(for_patches, tuple):
             for_patches, boxes = for_patches
+            assert(boxes.shape[1] > 0, 'dupa')
             boxes_mask = self.get_masks_for_boxes(boxes, mask, self.patch_size)
             boxes, attention_mask = self.get_attention_mask(boxes, boxes_mask, self.num_boxes)
             crops = self.take_crops(boxes, for_patches, (self.instance_size, self.instance_size))
