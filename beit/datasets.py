@@ -142,6 +142,8 @@ class DataAugmentationForBEiT(object):
             boxes_mask = self.get_masks_for_boxes(boxes, mask, self.patch_size)
             boxes, attention_mask = self.get_attention_mask(boxes, boxes_mask, self.num_boxes)
             crops = self.take_crops(boxes, for_patches, (self.instance_size, self.instance_size))
+            print('!!!!')
+            print(crops.dtype)
             return \
                 self.patch_transform(for_patches), boxes, self.visual_token_transform(for_visual_tokens), \
                 self.visual_token_transform(crops), mask, attention_mask, self.get_masks_for_boxes(boxes, mask, self.patch_size)
