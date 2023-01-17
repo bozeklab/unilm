@@ -175,9 +175,6 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         boxes_features = self.extract_box_feature(x=x[:, 1:], boxes=boxes, scale_factor=1. / self.patch_size)
         aggregator_input = self.add_box_feature(x=x, boxes_features=boxes_features, box_info=boxes)
 
-        print('!!!!!')
-        print(aggregator_input.shape)
-
         rel_pos_bias = self.rel_pos_bias() if self.rel_pos_bias is not None else None
         for blk in self.blocks:
             x = blk(x, rel_pos_bias=rel_pos_bias)
@@ -198,8 +195,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 def beit_instaformer_patch16_448_8k_vocab(pretrained=False, **kwargs):
     model = VisionInstaformerForMaskedImageModeling(
         img_size=448, patch_size=16, patch_embed_size=3, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4,
-        qkv_bias=True,
-        norm_layer=partial(nn.LayerNorm, eps=1e-6), vocab_size=8192, **kwargs)
+        qkv_bias=True, norm_layer=partial(nn.LayerNorm, eps=1e-6), use_rel_pos_bias=False, vocab_size=8192, **kwargs)
     model.default_cfg = _cfg()
     if pretrained:
         checkpoint = torch.load(
