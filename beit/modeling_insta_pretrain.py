@@ -168,7 +168,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 
         x = torch.cat((cls_tokens, x), dim=1)
 
-        attention_mask = torch.cat([torch.ones_like(x).bool(), attention_mask])
+        attention_mask = torch.cat([torch.ones(batch_size, seq_len + 1).bool(), attention_mask])
 
         if self.pos_embed is not None:
             pos_embed = torch.cat([self.cls_pos_embed, self.pos_embed], dim=1)
