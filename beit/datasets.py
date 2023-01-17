@@ -50,16 +50,16 @@ class DataAugmentationForBEiT(object):
 
         self.random_hflip = RandomHorizontalFlip(p=0.5)
 
-        self.patch_transform = transforms.Compose([
-            transforms.ToTensor(),
+        #self.patch_transform = transforms.Compose([
+        #    transforms.ToTensor(),
             #transforms.Normalize(
             #    mean=torch.tensor(mean),
             #    std=torch.tensor(std))
-        ])
+        #])
 
         if args.discrete_vae_type == "dall-e":
             self.visual_token_transform = transforms.Compose([
-                transforms.ToTensor(),
+                #transforms.ToTensor(),
                 map_pixels,
             ])
         elif args.discrete_vae_type == "customized":
