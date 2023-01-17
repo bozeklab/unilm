@@ -117,7 +117,7 @@ class Attention(nn.Module):
         self.proj = nn.Linear(all_head_dim, dim)
         self.proj_drop = nn.Dropout(proj_drop)
 
-    def forward(self, x, attn_mask=None, rel_pos_bias=None):
+    def forward(self, x, attention_mask=None, rel_pos_bias=None):
         B, N, C = x.shape
         qkv_bias = None
         if self.q_bias is not None:
@@ -141,7 +141,7 @@ class Attention(nn.Module):
         if rel_pos_bias is not None:
             attn = attn + rel_pos_bias
 
-        attn = attn.masked_fill(attn_mask == False, torch.finfo(attn.dtype).min)
+        attn = attn.masked_fill(attention_mask == False, torch.finfo(attn.dtype).min)
         attn = attn.softmax(dim=-1)
         attn = self.attn_drop(attn)
 
@@ -173,9 +173,9 @@ class Block(nn.Module):
         else:
             self.gamma_1, self.gamma_2 = None, None
 
-    def forward(self, x, attn_mask=None, rel_pos_bias=None):
+    def forward(self, x, attention_mask=None, rel_pos_bias=None):
         if self.gamma_1 is None:
-            x = x + self.drop_path(self.attn(self.norm1(x), rel_pos_bias=rel_pos_bias))
+            x = x + self.drop_path(self.attn(self.norm1(x), attention_mask=attention_mask, rel_pos_bias=rel_pos_bias))
             x = x + self.drop_path(self.mlp(self.norm2(x)))
         else:
             x = x + self.drop_path(self.gamma_1 * self.attn(self.norm1(x), rel_pos_bias=rel_pos_bias))
