@@ -40,9 +40,11 @@ def train_one_epoch(model: torch.nn.Module, d_vae: torch.nn.Module,
                     param_group["lr"] = lr_schedule_values[it] * param_group["lr_scale"]
                 if wd_schedule_values is not None and param_group["weight_decay"] > 0:
                     param_group["weight_decay"] = wd_schedule_values[it]
-        samples, boxes, images, instances, bool_masked_pos, attention_mask = batch
+        samples, boxes, images, instances, bool_masked_pos, attention_mask, masked_boxes = batch
         images = images.to(device, non_blocking=True)
         samples = samples.to(device, non_blocking=True)
+        instances = instances.to(device, non_blocking=True)
+        attention_mask = attention_mask.to(device, non_blocking=True)
         bool_masked_pos = bool_masked_pos.to(device, non_blocking=True)
 
         with torch.no_grad():

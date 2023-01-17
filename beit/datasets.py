@@ -65,10 +65,10 @@ class DataAugmentationForBEiT(object):
         elif args.discrete_vae_type == "customized":
             self.visual_token_transform = transforms.Compose([
                 transforms.ToTensor(),
-                transforms.Normalize(
-                    mean=IMAGENET_INCEPTION_MEAN,
-                    std=IMAGENET_INCEPTION_STD,
-                ),
+                #transforms.Normalize(
+                #    mean=IMAGENET_INCEPTION_MEAN,
+                #    std=IMAGENET_INCEPTION_STD,
+                #),
             ])
         else:
             raise NotImplementedError()
@@ -143,8 +143,8 @@ class DataAugmentationForBEiT(object):
             boxes, attention_mask = self.get_attention_mask(boxes, boxes_mask, self.num_boxes)
             crops = self.take_crops(boxes, for_patches, (self.instance_size, self.instance_size))
             return \
-                self.patch_transform(for_patches), boxes, self.visual_token_transform(for_visual_tokens), crops, \
-                mask, attention_mask, self.get_masks_for_boxes(boxes, mask, self.patch_size)
+                self.patch_transform(for_patches), boxes, self.visual_token_transform(for_visual_tokens), \
+                self.visual_token_transform(crops), mask, attention_mask, self.get_masks_for_boxes(boxes, mask, self.patch_size)
         else:
             return \
                 self.patch_transform(for_patches), self.visual_token_transform(for_visual_tokens), \
