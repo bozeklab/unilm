@@ -183,7 +183,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
     def forward(self, x, boxes, bool_masked_pos, attention_mask, return_all_tokens=False):
         x = self.forward_features(x, boxes=boxes, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
         num_boxes = boxes.shape[1]
-        aggregated_feat, aggregated_box = x[:, :-num_box, :], x[:, -num_box:, :]
+        aggregated_feat, aggregated_box = x[:, :-num_boxes, :], x[:, -num_boxes:, :]
         aggregated_feat = aggregated_feat[:, 1:]
         if return_all_tokens:
             return self.lm_head(aggregated_feat)
