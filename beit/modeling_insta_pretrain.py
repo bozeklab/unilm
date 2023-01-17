@@ -131,10 +131,10 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 
         return aligned_out
 
-    def add_box_feature(self, out, boxes, box_info):
-        batch_size = out.shape[0]
-        num_box = boxes.shape[1]
-        boxes = self.instance_embed(boxes).squeeze().view(batch_size, num_box, -1)
+    def add_box_feature(self, x, boxes_features, box_info):
+        batch_size = x.shape[0]
+        num_box = boxes_features.shape[1]
+        boxes_features = self.instance_embed(boxes_features).squeeze().view(batch_size, num_box, -1)
 
         x_coord = box_info[..., 0::2].mean(dim=2).long()
         y_coord = box_info[..., 1::2].mean(dim=2).long()
@@ -146,11 +146,11 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
             self.pos_embed_y()[:, None].repeat(1, self.img_size, 1, 1),
         ), dim=3).squeeze()
 
-        boxes += torch.cat((
+        boxes_features += torch.cat((
             box_pos_embed[y_coord, x_coord], box_pos_embed[h, w]
         ), dim=2)
 
-        added_out = torch.cat((out, boxes), dim=1)
+        added_out = torch.cat((x, boxes_features), dim=1)
         return added_out
 
     def forward_features(self, x, boxes, bool_masked_pos, attention_mask):
@@ -170,8 +170,8 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
             x = x + pos_embed
         x = self.pos_drop(x)
 
-        box_features = self.extract_box_feature(x=x[:, 1:], boxes=boxes, scale_factor=1. / self.patch_size)
-        aggregator_input = self.add_box_feature(x=x, out=box_features, boxes=boxes)
+        boxes_features = self.extract_box_feature(x=x[:, 1:], boxes=boxes, scale_factor=1. / self.patch_size)
+        aggregator_input = self.add_box_feature(x=x, boxes_features=boxes_features, box_info=boxes)
 
         print('!!!!!')
         print(aggregator_input.shape)
