@@ -18,8 +18,7 @@ def trunc_normal_(tensor, mean=0., std=1.):
 
 class VisionInstaformerForMaskedImageModeling(nn.Module):
     def __init__(self, img_size=224, patch_size=16, patch_embed_size=3, in_chans=3, vocab_size=8192, embed_dim=768,
-                 depth=12,
-                 num_heads=12, mlp_ratio=4., qkv_bias=True, qk_scale=None, drop_rate=0., attn_drop_rate=0.,
+                 depth=12, num_heads=12, mlp_ratio=4., qkv_bias=True, qk_scale=None, drop_rate=0., attn_drop_rate=0.,
                  drop_path_rate=0., norm_layer=None, init_values=None, attn_head_dim=None,
                  use_abs_pos_emb=True, use_rel_pos_bias=False, use_shared_rel_pos_bias=False, init_std=0.02, **kwargs):
         super().__init__()
@@ -132,6 +131,28 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 
         return aligned_out
 
+    def add_box(self, out, boxes, box_info):
+        batch_size = out.shape[0]
+        num_box = boxes.shape[1]
+        boxes = self.box_embed(boxes).squeeze().view(batch_size, num_box, -1)
+
+        x_coord = (box_info[..., 1::2].mean(dim=2) * (self.img_size - 1)).long()
+        y_coord = (box_info[..., 2::2].mean(dim=2) * (self.img_size - 1)).long()
+        w = ((box_info[..., 3] - box_info[..., 1]) * (self.img_size - 1)).long()
+        h = ((box_info[..., 4] - box_info[..., 2]) * (self.img_size - 1)).long()
+
+        box_pos_embed = torch.cat((
+            self.pos_embed_x()[..., None, :].repeat(1, 1, self.img_size, 1),
+            self.pos_embed_y()[:, None].repeat(1, self.img_size, 1, 1),
+        ), dim=3).squeeze()
+
+        boxes += torch.cat((
+            box_pos_embed[y_coord, x_coord], box_pos_embed[h, w]
+        ), dim=2)
+
+        added_out = torch.cat((out, boxes), dim=1)
+        return added_out
+
     def forward_features(self, x, boxes, bool_masked_pos, attention_mask):
         x = self.patch_embed(x, bool_masked_pos=bool_masked_pos)
         batch_size, seq_len, _ = x.size()
@@ -149,9 +170,11 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
             x = x + pos_embed
         x = self.pos_drop(x)
 
-        box_features = self.extract_box_feature(x[:, 1:], boxes, scale_factor=1. / self.patch_size)
-        print(box_features.shape)
-        print(attention_mask)
+        box_features = self.extract_box_feature(x=x[:, 1:], boxes=boxes, scale_factor=1. / self.patch_size)
+        aggregator_input = self.add_box_feature(x=x, out=box_features, boxes=boxes)
+
+        print('!!!!!')
+        print(aggregator_input.shape)
 
         rel_pos_bias = self.rel_pos_bias() if self.rel_pos_bias is not None else None
         for blk in self.blocks:
