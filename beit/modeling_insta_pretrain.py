@@ -118,7 +118,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         x = x.view(batch_size, h, w, self.embed_dim).permute(0, 3, 1, 2)
         batch_index = torch.arange(0.0, batch_size).repeat(num_box).view(num_box, -1) \
             .transpose(0, 1).flatten(0, 1).to(x.device)
-        roi_box_info = boxes.view(-1, 5).to(x.device)
+        roi_box_info = boxes.view(-1, 4).to(x.device)
 
         roi_info = torch.stack((batch_index, roi_box_info), dim=1).to(x.device)
         aligned_out = roi_align(x=x, boxes=roi_info, spatial_scale=scale_factor,
@@ -147,7 +147,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
             x = x + pos_embed
         x = self.pos_drop(x)
 
-        box_features = self.extract_box_feature(x[:, 1:], boxes[attention_mask], scale_factor=1. / self.patch_size)
+        box_features = self.extract_box_feature(x[:, 1:], boxes, scale_factor=1. / self.patch_size)
         print(box_features.shape)
 
         rel_pos_bias = self.rel_pos_bias() if self.rel_pos_bias is not None else None
