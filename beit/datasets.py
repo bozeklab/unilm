@@ -79,35 +79,42 @@ class DataAugmentationForBEiT(object):
             min_num_patches=args.min_mask_patches_per_block,
         )
 
-    def get_masks_for_boxes(self, boxes, mask, patch_size):
+    @staticmethod
+    def _unzip(zip_list):
+        return [l[0] for l in zip_list]
+
+    @staticmethod
+    def _get_indices(boolean_list, value):
+        idx = list(filter(lambda x: x[1] == value, enumerate(boolean_list)))
+        return DataAugmentationForBEiT._unzip(idx)
+
+    def _masks_for_masked_boxes(self, boxes, mask, patch_size):
+        if boxes.numel() == 0:
+            return None
         bmask = []
         for i in range(boxes.shape[0]):
+            if boxes[i, 0] == -1:
+                bmask.append(torch.tensor([False]).unsqueeze(0))
+                continue
             scaled_box = boxes[i] // patch_size[0]
             crop = mask[scaled_box[1]:scaled_box[3] + 1,
                         scaled_box[0]:scaled_box[2] + 1]
             bmask.append(torch.any(torch.tensor(crop, dtype=torch.bool)).unsqueeze(0))
-        if len(bmask) == 0:
-            return torch.empty(dtype=torch.bool)
-        else:
             return torch.cat(bmask, dim=0)
 
-    def get_attention_mask(self, boxes, boxes_mask, num_boxes):
-        def _unzip(zip_list):
-            return [l[0] for l in zip_list]
+    def _attention_mask(self, boxes, boxes_mask, num_boxes):
+        fake_box = torch.tensor([-1, -1, -1, -1])
+        if boxes_mask is None:
+            return fake_box.expand(num_boxes, -1), torch.tensor([False] * num_boxes)
 
-        def _get_indices(boolean_list, value):
-            idx = list(filter(lambda x: x[1] == value, enumerate(boolean_list)))
-            return _unzip(idx)
-
-        masked_boxes = _get_indices(boxes_mask, True)
-        unmasked_boxes = _get_indices(boxes_mask, False)
+        masked_boxes = DataAugmentationForBEiT._get_indices(boxes_mask, True)
+        unmasked_boxes = DataAugmentationForBEiT._get_indices(boxes_mask, False)
 
         boxes_available = boxes.shape[0]
         if boxes_available == num_boxes:
             return boxes, torch.tensor([True] * num_boxes)
         if boxes_available < num_boxes:
             diff = num_boxes - boxes_available
-            fake_box = torch.tensor([-1, -1, -1, -1])
             fake_box = fake_box.expand(diff, -1)
             attention_mask = [True] * boxes_available + [False] * diff
             return torch.cat([boxes, fake_box]), torch.tensor(attention_mask)
@@ -121,7 +128,7 @@ class DataAugmentationForBEiT(object):
             idx = random.sample(masked_boxes, num_boxes)
             return boxes[idx], torch.tensor([True] * num_boxes)
 
-    def take_crops(self, boxes, img, size):
+    def _crops(self, boxes, img, size):
         crops = []
         image = transforms.ToTensor()(img)
         for i in range(boxes.shape[0]):
@@ -143,12 +150,16 @@ class DataAugmentationForBEiT(object):
         mask = self.masked_position_generator()
         if isinstance(for_patches, tuple):
             for_patches, boxes = for_patches
-            boxes_mask = self.get_masks_for_boxes(boxes, mask, self.patch_size)
-            boxes, attention_mask = self.get_attention_mask(boxes, boxes_mask, self.num_boxes)
-            crops = self.take_crops(boxes, for_patches, (self.instance_size, self.instance_size))
+            boxes_mask = self._masks_for_masked_boxes(boxes, mask, self.patch_size)
+            boxes, attention_mask = self._attention_mask(boxes, boxes_mask, self.num_boxes)
+            crops = self._crops(boxes, for_patches, (self.instance_size, self.instance_size))
+            if boxes_mask is None:
+                boxes_mask = torch.zeros(self.num_boxes).bool()
+            else:
+                boxes_mask = self._masks_for_masked_boxes(boxes, mask, self.patch_size)
             return \
                 self.patch_transform(for_patches), boxes, self.visual_token_transform(for_visual_tokens), \
-                crops, mask, attention_mask, self.get_masks_for_boxes(boxes, mask, self.patch_size)
+                crops, mask, attention_mask, boxes_mask
         else:
             return \
                 self.patch_transform(for_patches), self.visual_token_transform(for_visual_tokens), \
