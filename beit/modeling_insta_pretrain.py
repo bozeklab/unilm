@@ -17,7 +17,7 @@ def trunc_normal_(tensor, mean=0., std=1.):
 
 
 class VisionInstaformerForMaskedImageModeling(nn.Module):
-    def __init__(self, img_size=224, patch_size=16, patch_embed_size=3, in_chans=3, vocab_size=8192, embed_dim=768,
+    def __init__(self, img_size=224, patch_size=16, patch_embed_size=3, instance_size=32, in_chans=3, vocab_size=8192, embed_dim=768,
                  depth=12, num_heads=12, mlp_ratio=4., qkv_bias=True, qk_scale=None, drop_rate=0., attn_drop_rate=0.,
                  drop_path_rate=0., norm_layer=None, init_values=None, attn_head_dim=None,
                  use_abs_pos_emb=True, use_rel_pos_bias=False, use_shared_rel_pos_bias=False, init_std=0.02, **kwargs):
@@ -25,6 +25,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         self.num_features = self.embed_dim = embed_dim  # num_features for consistency with other models
         self.patch_embed_size = patch_embed_size
         self.patch_size = patch_size
+        self.instance_size = instance_size
         self.img_size = img_size
 
         self.patch_embed = PatchEmbed(img_size=img_size, patch_size=patch_size, in_chans=in_chans, embed_dim=embed_dim)
@@ -75,6 +76,8 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 
         self.init_std = init_std
         self.lm_head = nn.Linear(embed_dim, vocab_size)
+        self.insta_lm_head = nn.Linear(embed_dim,
+                                       (self.instance_size // 8) * (self.instance_size // 8) * vocab_size)
 
         if self.cls_pos_embed is not None:
             trunc_normal_(self.cls_pos_embed, std=self.init_std)
@@ -191,18 +194,17 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         aggregated_feat = aggregated_feat[:, 1:]
 
         if return_all_tokens:
-            return self.lm_head(aggregated_feat), self.lm_head(aggregated_box[attention_mask])
+            return self.lm_head(aggregated_feat), self.insta_lm_head(aggregated_box[attention_mask])
         else:
             # return the masked tokens
-
             instance_mask = torch.logical_and(attention_mask, boxes_mask)
-            return self.lm_head(aggregated_feat[bool_masked_pos]), self.lm_head(aggregated_box[instance_mask])
+            return self.lm_head(aggregated_feat[bool_masked_pos]), self.insta_lm_head(aggregated_box[instance_mask])
 
 
 @register_model
 def beit_instaformer_patch16_448_8k_vocab(pretrained=False, **kwargs):
     model = VisionInstaformerForMaskedImageModeling(
-        img_size=448, patch_size=16, patch_embed_size=3, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4,
+        img_size=448, patch_size=16, patch_embed_size=3, instance_size=32, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4,
         qkv_bias=True, norm_layer=partial(nn.LayerNorm, eps=1e-6), use_rel_pos_bias=False, vocab_size=8192, **kwargs)
     model.default_cfg = _cfg()
     if pretrained:
