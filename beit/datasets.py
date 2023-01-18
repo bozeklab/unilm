@@ -94,13 +94,13 @@ class DataAugmentationForBEiT(object):
         bmask = []
         for i in range(boxes.shape[0]):
             if boxes[i, 0] == -1:
-                bmask.append(torch.tensor([False]).unsqueeze(0))
+                bmask.append(torch.tensor([False].unsqueeze(0)))
                 continue
             scaled_box = boxes[i] // patch_size[0]
             crop = mask[scaled_box[1]:scaled_box[3] + 1,
                         scaled_box[0]:scaled_box[2] + 1]
             bmask.append(torch.any(torch.tensor(crop, dtype=torch.bool)).unsqueeze(0))
-            return torch.cat(bmask, dim=0)
+        return torch.cat(bmask, dim=0)
 
     def _attention_mask(self, boxes, boxes_mask, num_boxes):
         fake_box = torch.tensor([-1, -1, -1, -1])
