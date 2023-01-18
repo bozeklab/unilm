@@ -48,7 +48,6 @@ def train_one_epoch(model: torch.nn.Module, d_vae: torch.nn.Module,
         bool_masked_pos = bool_masked_pos.to(device, non_blocking=True)
         masked_boxes = masked_boxes.to(device, non_blocking=True)
 
-        batch_size = samples.shape[0]
         instance_img_size = instances.shape[-1]
 
         with torch.no_grad():
@@ -70,7 +69,8 @@ def train_one_epoch(model: torch.nn.Module, d_vae: torch.nn.Module,
             print(instance_img_size)
             print(insta_outputs.shape)
 
-            insta_outputs = insta_outputs.view(batch_size * (instance_img_size // 8) * (instance_img_size // 8),
+            valid_boxes_num = insta_outputs.shape[0]
+            insta_outputs = insta_outputs.view(valid_boxes_num * (instance_img_size // 8) * (instance_img_size // 8),
                                                labels.shape[0])
             insta_outputs = insta_outputs.flatten()
 
