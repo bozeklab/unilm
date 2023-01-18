@@ -67,9 +67,9 @@ def main(args):
 
     dataset_train = build_instaformer_pretraining_dataset(args)
     #print(len(dataset_train))
-    samples, _ = dataset_train[1358]
+    samples, _ = dataset_train[3358]
     print(len(samples))
-    img, boxes, patch_img, crops, mask, attention_mask = samples
+    img, boxes, patch_img, crops, mask, attention_mask, masked_boxes = samples
     print(img.shape)
     print(boxes.shape)
     print(patch_img.shape)
@@ -85,6 +85,8 @@ def main(args):
     with open(os.path.join(output_dir, f"crops.pkl"), 'wb') as outf:
         pickle.dump(crops, outf)
     with open(os.path.join(output_dir, f"attn_mask.pkl"), 'wb') as outf:
+        pickle.dump(attention_mask, outf)
+    with open(os.path.join(output_dir, f"mask_box.pkl"), 'wb') as outf:
         pickle.dump(attention_mask, outf)
     crop = T.ToPILImage()(img)
     crop.save(os.path.join(output_dir, f"dupa.png"))
