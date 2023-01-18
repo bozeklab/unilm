@@ -94,7 +94,7 @@ class DataAugmentationForBEiT(object):
         bmask = []
         for i in range(boxes.shape[0]):
             if boxes[i, 0] == -1:
-                bmask.append(torch.tensor([False]).unsqueeze(0))
+                bmask.append(torch.tensor(False).unsqueeze(0))
                 continue
             scaled_box = boxes[i] // patch_size[0]
             crop = mask[scaled_box[1]:scaled_box[3] + 1,
