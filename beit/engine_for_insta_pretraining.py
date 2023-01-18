@@ -46,11 +46,19 @@ def train_one_epoch(model: torch.nn.Module, d_vae: torch.nn.Module,
         instances = instances.to(device, non_blocking=True)
         attention_mask = attention_mask.to(device, non_blocking=True)
         bool_masked_pos = bool_masked_pos.to(device, non_blocking=True)
+        masked_boxes = masked_boxes.to(device, non_blocking=True)
 
         with torch.no_grad():
             input_ids = d_vae.get_codebook_indices(images).flatten(1)
             bool_masked_pos = bool_masked_pos.flatten(1).to(torch.bool)
             labels = input_ids[bool_masked_pos]
+
+        with torch.no_grad():
+            instances = instances[attention_mask]
+            instances = instances[masked_boxes]
+            instance_input_ids = d_vae.get_codebook_indices(instances).flatten(1)
+            print('!!!')
+            print(instance_input_ids.shape)
 
         with torch.cuda.amp.autocast():
             outputs = model(samples, boxes, bool_masked_pos=bool_masked_pos,
