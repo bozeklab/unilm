@@ -87,7 +87,7 @@ def main(args):
     with open(os.path.join(output_dir, f"attn_mask.pkl"), 'wb') as outf:
         pickle.dump(attention_mask, outf)
     with open(os.path.join(output_dir, f"mask_box.pkl"), 'wb') as outf:
-        pickle.dump(attention_mask, outf)
+        pickle.dump(masked_boxes, outf)
     crop = T.ToPILImage()(img)
     crop.save(os.path.join(output_dir, f"dupa.png"))
     #img_boxes = samples
