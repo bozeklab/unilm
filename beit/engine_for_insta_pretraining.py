@@ -71,7 +71,6 @@ def train_one_epoch(model: torch.nn.Module, d_vae: torch.nn.Module,
 
             insta_loss = nn.CrossEntropyLoss()(input=insta_outputs, target=instance_labels.flatten())
             total_loss = img_loss + insta_loss
-            print(total_loss)
 
         img_loss_value = img_loss.item()
         insta_loss_value = insta_loss.item()
@@ -84,7 +83,7 @@ def train_one_epoch(model: torch.nn.Module, d_vae: torch.nn.Module,
         optimizer.zero_grad()
         # this attribute is added by timm on one optimizer (adahessian)
         is_second_order = hasattr(optimizer, 'is_second_order') and optimizer.is_second_order
-        grad_norm = loss_scaler(total_loss_value, optimizer, clip_grad=max_norm,
+        grad_norm = loss_scaler(total_loss, optimizer, clip_grad=max_norm,
                                 parameters=model.parameters(), create_graph=is_second_order)
         loss_scale_value = loss_scaler.state_dict()["scale"]
 
