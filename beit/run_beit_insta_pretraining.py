@@ -179,7 +179,7 @@ def main(args):
     # prepare discrete vae
     d_vae = utils.create_d_vae(
         weight_path=args.discrete_vae_weight_path, d_vae_type=args.discrete_vae_type,
-        device=device, image_size=args.second_input_size)
+        device=device, image_size=args.second_input_size, patch_size=args.instance_size)
 
     if True:  # args.distributed:
         num_tasks = utils.get_world_size()

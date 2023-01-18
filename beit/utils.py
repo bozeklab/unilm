@@ -522,16 +522,16 @@ def auto_load_model(args, model, model_without_ddp, optimizer, loss_scaler, mode
                         _load_checkpoint_for_ema(model_ema, client_states['model_ema'])
 
 
-def create_d_vae(weight_path, d_vae_type, image_size, device):
+def create_d_vae(weight_path, d_vae_type, image_size, device, patch_size=None):
     if d_vae_type == "dall-e":
-        return get_dalle_vae(weight_path, image_size, device)
+        return get_dalle_vae(weight_path, image_size, device, patch_size)
     elif d_vae_type == "customized":
         return get_d_vae(weight_path, image_size, device)
     else:
         raise NotImplementedError()
 
 
-def get_dalle_vae(weight_path, image_size, device):
+def get_dalle_vae(weight_path, image_size, device, patch_size=None):
     vae = Dalle_VAE(image_size)
     vae.load_model(model_dir=weight_path, device=device)
     return vae

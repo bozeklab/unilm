@@ -204,19 +204,25 @@ from dall_e import load_model
 
 
 class Dalle_VAE(BasicVAE):
-    def __init__(self, image_size):
+    def __init__(self, image_size, patch_size=None):
         super().__init__()
         self.encoder = None
         self.decoder = None
         self.image_size = image_size
+        self.patch_size = patch_size
 
     def load_model(self, model_dir, device):
         self.encoder = load_model(os.path.join(model_dir, "encoder.pkl"), device)
         self.decoder = load_model(os.path.join(model_dir, "decoder.pkl"), device)
 
-    def decode(self, img_seq):
+    def decode(self, img_seq, img=True):
+        if img or self.patch_size is None:
+            size = self.image_size
+        else:
+            size = self.patch_size
+
         bsz = img_seq.size()[0]
-        img_seq = img_seq.view(bsz, self.image_size // 8, self.image_size // 8)
+        img_seq = img_seq.view(bsz, size // 8, size // 8)
         z = F.one_hot(img_seq, num_classes=self.encoder.vocab_size).permute(0, 3, 1, 2).float()
         return self.decoder(z).float()
 
