@@ -50,11 +50,13 @@ class DataAugmentationForBEiT(object):
 
         self.random_hflip = RandomHorizontalFlip(p=0.5)
 
+        self.normalize = transforms.Normalize(
+            mean=torch.tensor(mean),
+            std=torch.tensor(std))
+
         self.patch_transform = transforms.Compose([
             transforms.ToTensor(),
-            #transforms.Normalize(
-            #    mean=torch.tensor(mean),
-            #    std=torch.tensor(std))
+            self.normalize
         ])
 
         if args.discrete_vae_type == "dall-e":
@@ -65,10 +67,7 @@ class DataAugmentationForBEiT(object):
         elif args.discrete_vae_type == "customized":
             self.visual_token_transform = transforms.Compose([
                 transforms.ToTensor(),
-                #transforms.Normalize(
-                #    mean=IMAGENET_INCEPTION_MEAN,
-                #    std=IMAGENET_INCEPTION_STD,
-                #),
+                self.normalize
             ])
         else:
             raise NotImplementedError()
@@ -99,7 +98,6 @@ class DataAugmentationForBEiT(object):
             scaled_box = boxes[i] // patch_size[0]
             crop = mask[scaled_box[1]:scaled_box[3] + 1,
                         scaled_box[0]:scaled_box[2] + 1]
-            print(torch.any(torch.tensor(crop, dtype=torch.bool)))
             bmask.append(torch.any(torch.tensor(crop, dtype=torch.bool)).unsqueeze(0))
         return torch.cat(bmask, dim=0)
 
@@ -138,7 +136,7 @@ class DataAugmentationForBEiT(object):
             else:
                 crop = image[:, int(boxes[i, 1]): int(boxes[i, 3]), int(boxes[i, 0]): int(boxes[i, 2])]
                 crop = F.resize(crop, size=size)
-                #crop = map_pixels(crop)
+                crop = map_pixels(crop)
             crops.append(crop.unsqueeze(dim=0).float())
         return torch.cat(crops, dim=0)
 
