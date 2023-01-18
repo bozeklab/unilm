@@ -65,17 +65,15 @@ def train_one_epoch(model: torch.nn.Module, d_vae: torch.nn.Module,
                                 boxes_mask=masked_boxes, return_all_tokens=False)
             img_loss = nn.CrossEntropyLoss()(input=img_outputs, target=labels)
 
-            print('!!!!')
-            print(instance_img_size)
-            print(insta_outputs.shape)
-            print(img_outputs.shape[-1])
-
             valid_boxes_num = insta_outputs.shape[0]
             insta_outputs = insta_outputs.view(valid_boxes_num * (instance_img_size // 8) * (instance_img_size // 8),
                                                img_outputs.shape[-1])
-            insta_outputs = insta_outputs.flatten()
 
-            insta_loss = nn.CrossEntropyLoss()(input=insta_outputs, target=instance_labels)
+            print('!!!')
+            print(insta_outputs.shape)
+            print(instance_labels.flatten(1))
+
+            insta_loss = nn.CrossEntropyLoss()(input=insta_outputs, target=instance_labels.flatten(1))
             total_loss = img_loss + insta_loss
 
         img_loss_value = img_loss.item()
