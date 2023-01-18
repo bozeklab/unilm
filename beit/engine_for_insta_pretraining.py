@@ -56,37 +56,45 @@ def train_one_epoch(model: torch.nn.Module, d_vae: torch.nn.Module,
         with torch.no_grad():
             valid_instances = torch.logical_and(attention_mask, masked_boxes)
             instances = instances[valid_instances]
-            instance_input_ids = d_vae.get_codebook_indices(instances).flatten(1)
-            print('!!!')
-            print(instance_input_ids.shape)
+            instance_labels = d_vae.get_codebook_indices(instances).flatten(1)
 
         with torch.cuda.amp.autocast():
-            outputs = model(samples, boxes, bool_masked_pos=bool_masked_pos,
-                            attention_mask=attention_mask, return_all_tokens=False)
-            loss = nn.CrossEntropyLoss()(input=outputs, target=labels)
+            img_outputs, insta_outputs = model(samples, boxes, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask,
+                                boxes_mask=masked_boxes, return_all_tokens=False)
+            img_loss = nn.CrossEntropyLoss()(input=img_outputs, target=labels)
+            insta_loss = nn.CrossEntropyLoss()(input=insta_outputs, target=instance_labels)
+            total_loss = img_loss + insta_loss
 
-        loss_value = loss.item()
+        img_loss_value = img_loss.item()
+        insta_loss_value = insta_loss.item()
+        total_loss_value = total_loss.item()
 
-        if not math.isfinite(loss_value):
-            print("Loss is {}, stopping training".format(loss_value))
+        if not math.isfinite(total_loss_value):
+            print("Loss is {}, stopping training".format(total_loss_value))
             sys.exit(1)
 
         optimizer.zero_grad()
         # this attribute is added by timm on one optimizer (adahessian)
         is_second_order = hasattr(optimizer, 'is_second_order') and optimizer.is_second_order
-        grad_norm = loss_scaler(loss, optimizer, clip_grad=max_norm,
+        grad_norm = loss_scaler(total_loss_value, optimizer, clip_grad=max_norm,
                                 parameters=model.parameters(), create_graph=is_second_order)
         loss_scale_value = loss_scaler.state_dict()["scale"]
 
         torch.cuda.synchronize()
 
-        mlm_acc = (outputs.max(-1)[1] == labels).float().mean().item()
+        img_mlm_acc = (img_outputs.max(-1)[1] == labels).float().mean().item()
+        insta_mlm_acc = (insta_outputs.max(-1)[1] == instance_labels).float().mean().item()
 
-        metric_logger.update(mlm_acc=mlm_acc)
+        metric_logger.update(mlm_acc=img_mlm_acc)
+        metric_logger.update(insta_mlm_acc=insta_mlm_acc)
         if log_writer is not None:
-            log_writer.update(mlm_acc=mlm_acc, head="loss")
+            log_writer.update(img_mlm_acc=img_mlm_acc, head="img loss")
+            log_writer.update(insta_mlm_acc=insta_mlm_acc, head="instance loss")
 
-        metric_logger.update(loss=loss_value)
+        metric_logger.update(img_loss=img_loss_value)
+        metric_logger.update(insta_loss=insta_loss_value)
+        metric_logger.update(total_loss=total_loss_value)
+
         metric_logger.update(loss_scale=loss_scale_value)
         min_lr = 10.
         max_lr = 0.
@@ -104,7 +112,10 @@ def train_one_epoch(model: torch.nn.Module, d_vae: torch.nn.Module,
         metric_logger.update(grad_norm=grad_norm)
 
         if log_writer is not None:
-            log_writer.update(loss=loss_value, head="loss")
+            log_writer.update(img_loss=img_loss_value, head="img loss")
+            log_writer.update(insta_loss=insta_loss_value, head="insta loss")
+            log_writer.update(total_loss=total_loss_value, head="total loss")
+
             log_writer.update(loss_scale=loss_scale_value, head="opt")
             log_writer.update(lr=max_lr, head="opt")
             log_writer.update(min_lr=min_lr, head="opt")
