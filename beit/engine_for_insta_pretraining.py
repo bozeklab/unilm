@@ -68,6 +68,7 @@ def train_one_epoch(model: torch.nn.Module, d_vae: torch.nn.Module,
             print('!!!!')
             print(instance_img_size)
             print(insta_outputs.shape)
+            print(labels.shape[0])
 
             valid_boxes_num = insta_outputs.shape[0]
             insta_outputs = insta_outputs.view(valid_boxes_num * (instance_img_size // 8) * (instance_img_size // 8),
