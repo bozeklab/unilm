@@ -54,10 +54,8 @@ def train_one_epoch(model: torch.nn.Module, d_vae: torch.nn.Module,
             labels = input_ids[bool_masked_pos]
 
         with torch.no_grad():
-            print(attention_mask.shape)
-            print(masked_boxes.shape)
-            instances = instances[attention_mask]
-            instances = instances[masked_boxes]
+            valid_instances = torch.logical_and(attention_mask, masked_boxes)
+            instances = instances[valid_instances]
             instance_input_ids = d_vae.get_codebook_indices(instances).flatten(1)
             print('!!!')
             print(instance_input_ids.shape)
