@@ -71,9 +71,9 @@ def train_one_epoch(model: torch.nn.Module, d_vae: torch.nn.Module,
 
             print('!!!')
             print(insta_outputs.shape)
-            print(instance_labels.flatten(1).shape)
+            print(instance_labels.flatten().shape)
 
-            insta_loss = nn.CrossEntropyLoss()(input=insta_outputs, target=instance_labels.flatten(1))
+            insta_loss = nn.CrossEntropyLoss()(input=insta_outputs, target=instance_labels.flatten())
             total_loss = img_loss + insta_loss
 
         img_loss_value = img_loss.item()
