@@ -99,6 +99,7 @@ class DataAugmentationForBEiT(object):
             scaled_box = boxes[i] // patch_size[0]
             crop = mask[scaled_box[1]:scaled_box[3] + 1,
                         scaled_box[0]:scaled_box[2] + 1]
+            print(torch.any(torch.tensor(crop, dtype=torch.bool)))
             bmask.append(torch.any(torch.tensor(crop, dtype=torch.bool)).unsqueeze(0))
         return torch.cat(bmask, dim=0)
 
@@ -137,7 +138,7 @@ class DataAugmentationForBEiT(object):
             else:
                 crop = image[:, int(boxes[i, 1]): int(boxes[i, 3]), int(boxes[i, 0]): int(boxes[i, 2])]
                 crop = F.resize(crop, size=size)
-                crop = map_pixels(crop)
+                #crop = map_pixels(crop)
             crops.append(crop.unsqueeze(dim=0).float())
         return torch.cat(crops, dim=0)
 
