@@ -17,7 +17,7 @@ def get_args():
     parser = argparse.ArgumentParser('BEiT inference script', add_help=False)
 
     # Model parameters
-    parser.add_argument('--model', default=' beit_base_patch16_448_8k_vocab', type=str, metavar='MODEL',
+    parser.add_argument('--model', default='beit_instaformer_patch16_448_8k_vocab', type=str, metavar='MODEL',
                         help='Name of model to train')
 
     parser.add_argument('--input_size', default=448, type=int, help='images input size')
