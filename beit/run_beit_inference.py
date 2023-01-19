@@ -76,7 +76,7 @@ def infere(model, dataset, patch_size, device):
         boxes, classes = boxes_and_labels
 
         img = img.to(device, non_blocking=True).unsqueeze(0)
-        boxes = boxes.to(device, non_blocking=True).float()
+        boxes = boxes.float()
         bool_masked_pos = torch.tensor(bool_masked_pos)
         bool_masked_pos = torch.zeros_like(bool_masked_pos).bool().to(device, non_blocking=True).unsqueeze(0)
         bool_masked_pos = bool_masked_pos.flatten(1)
