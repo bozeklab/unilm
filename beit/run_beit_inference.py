@@ -101,14 +101,14 @@ def infere(model, dataset, patch_size, device):
 
                 x = model.forward_features(x=img, boxes=b, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
                 aggregated_box = x[:, -num_boxes:, :]
-                boxes_out.append(aggregated_box.squeeze())
+                boxes_out.append(aggregated_box[attention_mask].squeeze())
                 #batch_size, seq_len, C = x.shape
                 #x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
         #aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), spatial_scale=0.0625, boxes=[boxes], output_size=(3, 3))
         #m = nn.AvgPool2d(3, stride=1)
         #aligned_boxes = m(aligned_boxes).squeeze()
-
         aligned_boxes = torch.cat(boxes_out).cpu()
+
         #boxes = boxes.cpu()
 
         for i in range(aligned_boxes.shape[0]):
