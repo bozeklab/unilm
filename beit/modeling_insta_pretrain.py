@@ -111,7 +111,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 
     @torch.jit.ignore
     def no_weight_decay(self):
-        return {'pos_embed', 'cls_token'}
+        return {'pos_embed', 'cls_token', 'cls_pos_embed'}
 
     def get_num_layers(self):
         return len(self.blocks)
