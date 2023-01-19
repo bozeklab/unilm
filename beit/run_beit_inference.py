@@ -127,6 +127,7 @@ def main(args):
 
     device = torch.device(args.device)
     model = get_model(args)
+    torch.distributed.init_process_group(backend='nccl')
     model = torch.nn.parallel.DistributedDataParallel(model)
     patch_size = model.patch_embed.patch_size
     print("Patch size = %s" % str(patch_size))
