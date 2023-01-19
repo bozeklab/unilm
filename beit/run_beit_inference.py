@@ -89,7 +89,7 @@ def infere(model, dataset, patch_size, device):
             for b in boxes_split:
                 if b.shape[0] == num_boxes:
                     attention_mask = torch.tensor(num_boxes * [True])
-                    boxes_mask = torch.tensor(boxes_mask * [True])
+                    boxes_mask = torch.tensor(num_boxes * [True])
                 else:
                     padding_length = num_boxes - b.shape[0]
                     attention_mask = torch.tensor(b.shape[0] * [True] + padding_length * [False])
