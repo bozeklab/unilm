@@ -84,6 +84,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         trunc_normal_(self.cls_token, std=self.init_std)
         trunc_normal_(self.mask_token, std=self.init_std)
         trunc_normal_(self.lm_head.weight, std=self.init_std)
+        trunc_normal_(self.insta_lm_head.weight, std=self.init_std)
         self.apply(self._init_weights)
         self.fix_init_weight()
 
