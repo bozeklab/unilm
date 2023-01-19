@@ -89,21 +89,17 @@ def infere(model, dataset, patch_size, device):
             for b in boxes_split:
                 if b.shape[0] == num_boxes:
                     attention_mask = torch.tensor(num_boxes * [True])
-                    boxes_mask = torch.tensor(num_boxes * [True])
                 else:
                     padding_length = num_boxes - b.shape[0]
                     attention_mask = torch.tensor(b.shape[0] * [True] + padding_length * [False])
-                    boxes_mask = torch.tensor(b.shape[0] * [True] + padding_length * [False])
                     fake_box = torch.tensor([-1, -1, -1, -1])
                     fake_box = fake_box.expand(padding_length, -1)
                     b = torch.cat([b, fake_box], dim=0)
 
                 attention_mask = attention_mask.unsqueeze(0).to(device, non_blocking=True)
-                boxes_mask = boxes_mask.unsqueeze(0).to(device, non_blocking=True)
                 b = b.unsqueeze(0).to(device, non_blocking=True)
 
-                x = model.forward_features(x=img, boxes=b, bool_masked_pos=bool_masked_pos,
-                                           attention_mask=attention_mask, boxes_mask=boxes_mask)
+                x = model.forward_features(x=img, boxes=b, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
                 _, aggregated_box = x[:, -num_boxes:, :]
                 boxes_out.append(aggregated_box.squeeze())
                 #batch_size, seq_len, C = x.shape
