@@ -127,6 +127,7 @@ def main(args):
 
     device = torch.device(args.device)
     model = get_model(args)
+    model = torch.nn.parallel.DistributedDataParallel(model)
     patch_size = model.patch_embed.patch_size
     print("Patch size = %s" % str(patch_size))
     args.window_size = (args.input_size // patch_size[0], args.input_size // patch_size[1])
