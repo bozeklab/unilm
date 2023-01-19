@@ -162,8 +162,8 @@ def main(args):
 
     embeddings, labels, images = infere(model, dataset_train, patch_size, device)
     output_dict = {'embeddings': embeddings, 'labels': labels, 'images': images}
-    #with open('outputs/tumor.pickle', 'wb') as f:
-    #   pickle.dump(output_dict, f)
+    with open('outputs/tumor_insta.pickle', 'wb') as f:
+       pickle.dump(output_dict, f)
 
 
 if __name__ == '__main__':
