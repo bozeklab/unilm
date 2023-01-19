@@ -100,7 +100,7 @@ def infere(model, dataset, patch_size, device):
                 b = b.unsqueeze(0).to(device, non_blocking=True)
 
                 x = model.forward_features(x=img, boxes=b, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
-                _, aggregated_box = x[:, -num_boxes:, :]
+                aggregated_box = x[:, -num_boxes:, :]
                 boxes_out.append(aggregated_box.squeeze())
                 #batch_size, seq_len, C = x.shape
                 #x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
@@ -127,7 +127,6 @@ def main(args):
 
     device = torch.device(args.device)
     model = get_model(args)
-    print(model.state_dict().keys())
     patch_size = model.patch_embed.patch_size
     print("Patch size = %s" % str(patch_size))
     args.window_size = (args.input_size // patch_size[0], args.input_size // patch_size[1])

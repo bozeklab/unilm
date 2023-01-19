@@ -206,7 +206,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 def beit_instaformer_patch16_448_8k_vocab(pretrained=False, **kwargs):
     model = VisionInstaformerForMaskedImageModeling(
         img_size=448, patch_size=16, patch_embed_size=3, instance_size=32, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4,
-        qkv_bias=True, norm_layer=partial(nn.LayerNorm, eps=1e-6), use_rel_pos_bias=False, vocab_size=8192, **kwargs)
+        qkv_bias=True, norm_layer=partial(nn.LayerNorm, eps=1e-6), use_abs_pos_emb=True, use_rel_pos_bias=False, vocab_size=8192, **kwargs)
     model.default_cfg = _cfg()
     if pretrained:
         checkpoint = torch.load(
