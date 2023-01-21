@@ -10,6 +10,7 @@ from beit.run_beit_pretraining import get_model
 from torchvision.ops import roi_align
 import torchvision.transforms as transforms
 from PIL import Image
+import torchvision.transforms.functional as F
 
 from torch import nn
 
@@ -117,6 +118,7 @@ def infere(model, dataset, patch_size, device):
             labels.append(label)
             box = boxes[i].numpy().tolist()
             crop = nonnormalized_img[:, int(box[1]):int(box[3]), int(box[0]):int(box[2])]
+            crop = F.resize(crop, size=32)
             images.append(crop.permute(1, 2, 0).numpy())
 
     return embeddings, labels, images
