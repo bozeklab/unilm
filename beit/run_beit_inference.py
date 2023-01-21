@@ -31,7 +31,7 @@ def get_args():
                         help='Drop path rate (default: 0.1)')
     parser.add_argument('--rel_pos_bias', action='store_true')
     parser.add_argument('--disable_rel_pos_bias', action='store_false', dest='rel_pos_bias')
-    #parser.set_defaults(rel_pos_bias=True)
+    parser.set_defaults(rel_pos_bias=True)
     parser.add_argument('--abs_pos_emb', action='store_true')
     parser.set_defaults(abs_pos_emb=False)
     parser.add_argument('--layer_scale_init_value', default=0.1, type=float,
@@ -88,6 +88,8 @@ def infere(model, dataset, patch_size, device):
         with torch.cuda.amp.autocast():
             x = model.forward_features(x=img)
             x = x[:, 1:]
+            print('!!!')
+            print(x.shape)
             batch_size, seq_len, C = x.shape
             x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
         aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), spatial_scale=0.05357, boxes=[boxes], output_size=(3, 3))
