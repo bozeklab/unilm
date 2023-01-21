@@ -88,8 +88,6 @@ def infere(model, dataset, patch_size, device):
         with torch.cuda.amp.autocast():
             x = model.forward_features(x=img)
             x = x[:, 1:]
-            print('!!!')
-            print(x.shape)
             batch_size, seq_len, C = x.shape
             x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
         aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), spatial_scale=0.05357, boxes=[boxes], output_size=(3, 3))
