@@ -9,16 +9,17 @@ from beit.datasets import build_beit_inference_dataset
 from beit.run_beit_pretraining import get_model
 from torchvision.ops import roi_align
 import torchvision.transforms as transforms
-from PIL import Image
 import torchvision.transforms.functional as F
+from PIL import Image
 
 from torch import nn
+
 
 def get_args():
     parser = argparse.ArgumentParser('BEiT inference script', add_help=False)
 
     # Model parameters
-    parser.add_argument('--model', default='beit_instaformer_patch16_448_8k_vocab', type=str, metavar='MODEL',
+    parser.add_argument('--model', default='beit_base_patch16_384', type=str, metavar='MODEL',
                         help='Name of model to train')
 
     parser.add_argument('--input_size', default=448, type=int, help='images input size')
@@ -76,41 +77,25 @@ def infere(model, dataset, patch_size, device):
         img, nonnormalized_img, bool_masked_pos, boxes_and_labels = sample
         boxes, classes = boxes_and_labels
 
+        img = F.resize(img, size=384)
+
         img = img.to(device, non_blocking=True).unsqueeze(0)
-        boxes = boxes.float()
+        boxes = boxes.to(device, non_blocking=True).float()
         bool_masked_pos = torch.tensor(bool_masked_pos)
         bool_masked_pos = torch.zeros_like(bool_masked_pos).bool().to(device, non_blocking=True).unsqueeze(0)
         bool_masked_pos = bool_masked_pos.flatten(1)
 
-        num_boxes = 100
-        boxes_split = torch.split(boxes, num_boxes, dim=0)
-        boxes_out = []
-
         with torch.cuda.amp.autocast():
-            for b in boxes_split:
-                if b.shape[0] == num_boxes:
-                    attention_mask = torch.tensor(num_boxes * [True])
-                else:
-                    padding_length = num_boxes - b.shape[0]
-                    attention_mask = torch.tensor(b.shape[0] * [True] + padding_length * [False])
-                    fake_box = torch.tensor([-1, -1, -1, -1])
-                    fake_box = fake_box.expand(padding_length, -1)
-                    b = torch.cat([b, fake_box], dim=0)
+            x = model.forward_features(x=img, bool_masked_pos=bool_masked_pos)
+            x = x[:, 1:]
+            batch_size, seq_len, C = x.shape
+            x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
+        aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), spatial_scale=0.0625, boxes=[boxes], output_size=(3, 3))
+        m = nn.AvgPool2d(3, stride=1)
+        aligned_boxes = m(aligned_boxes).squeeze()
 
-                attention_mask = attention_mask.unsqueeze(0).to(device, non_blocking=True)
-                b = b.unsqueeze(0).to(device, non_blocking=True)
-
-                x = model.forward_features(x=img, boxes=b, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
-                aggregated_box = x[:, -num_boxes:, :]
-                boxes_out.append(aggregated_box[attention_mask].squeeze())
-                #batch_size, seq_len, C = x.shape
-                #x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
-        #aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), spatial_scale=0.0625, boxes=[boxes], output_size=(3, 3))
-        #m = nn.AvgPool2d(3, stride=1)
-        #aligned_boxes = m(aligned_boxes).squeeze()
-        aligned_boxes = torch.cat(boxes_out).cpu()
-
-        #boxes = boxes.cpu()
+        aligned_boxes = aligned_boxes.cpu()
+        boxes = boxes.cpu()
 
         for i in range(aligned_boxes.shape[0]):
             embeddings.append(aligned_boxes[i].numpy())
@@ -118,7 +103,6 @@ def infere(model, dataset, patch_size, device):
             labels.append(label)
             box = boxes[i].numpy().tolist()
             crop = nonnormalized_img[:, int(box[1]):int(box[3]), int(box[0]):int(box[2])]
-            crop = F.resize(crop, size=32)
             images.append(crop.permute(1, 2, 0).numpy())
 
     return embeddings, labels, images
@@ -164,7 +148,7 @@ def main(args):
 
     embeddings, labels, images = infere(model, dataset_train, patch_size, device)
     output_dict = {'embeddings': embeddings, 'labels': labels, 'images': images}
-    with open('outputs/tumor_insta.pickle', 'wb') as f:
+    with open('outputs/tumor.pickle', 'wb') as f:
        pickle.dump(output_dict, f)
 
 
