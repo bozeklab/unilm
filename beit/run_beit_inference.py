@@ -163,6 +163,7 @@ def main(args):
     print(f"Length of dataset == {len(dataset_train)}")
 
     embeddings, labels, images = infere(model, dataset_train, patch_size, device)
+    #labels = [l.item() for l in labels]
     output_dict = {'embeddings': embeddings, 'labels': labels, 'images': images}
     with open('outputs/tumor_insta_cs.pickle', 'wb') as f:
        pickle.dump(output_dict, f)
