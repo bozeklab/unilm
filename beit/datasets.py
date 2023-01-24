@@ -175,8 +175,8 @@ class DataAugmentationForBEiT(object):
 
 
 class DataAugmentationForBEITDataset(object):
-    def __init__(self, args, num_boxes, finetune=False):
-        self.num_boxes = num_boxes
+    def __init__(self, args, finetune=False):
+        self.num_boxes = args.num_boxes
         self.finetune = finetune
 
         imagenet_default_mean_and_std = args.imagenet_default_mean_and_std
