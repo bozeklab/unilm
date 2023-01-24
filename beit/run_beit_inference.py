@@ -35,7 +35,7 @@ def get_args():
     parser.set_defaults(abs_pos_emb=False)
     parser.add_argument('--layer_scale_init_value', default=0.1, type=float,
                         help="0.1 for base, 1e-5 for large. set 0 to disable layer scale")
-
+    parser.add_argument('--num_boxes', default=None, type=int, help='number of bounding boxes taken into consideration')
     parser.add_argument('--data_path', default='/Users/piotrwojcik/data/he/', type=str,
                         help='dataset path')
     parser.add_argument('--imagenet_default_mean_and_std', default=False, action='store_true')
