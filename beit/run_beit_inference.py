@@ -64,7 +64,7 @@ tumor_categories = ['plasma cell', 'eosinophil', 'macrophage', 'vessel', 'apopto
 
 
 @torch.no_grad()
-def infere(model, dataset, patch_size, device):
+def infere(model, dataset, device):
     embeddings = []
     labels = []
     images = []
@@ -162,7 +162,7 @@ def main(args):
     dataset_train = build_instaformer_dataset(args, finetune=False)
     print(f"Length of dataset == {len(dataset_train)}")
 
-    embeddings, labels, images = infere(model, dataset_train, patch_size, device)
+    embeddings, labels, images = infere(model, dataset_train, device)
     output_dict = {'embeddings': embeddings, 'labels': labels, 'images': images}
     with open('outputs/tumor_insta_cs.pickle', 'wb') as f:
        pickle.dump(output_dict, f)
