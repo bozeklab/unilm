@@ -174,8 +174,11 @@ class DataAugmentationForBEiT(object):
         return repr
 
 
-class DataAugmentationForBEITInference(object):
-    def __init__(self, args):
+class DataAugmentationForBEITDataset(object):
+    def __init__(self, args, num_boxes, finetune=False):
+        self.num_boxes = num_boxes
+        self.finetune = finetune
+
         imagenet_default_mean_and_std = args.imagenet_default_mean_and_std
         mean = IMAGENET_INCEPTION_MEAN if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_MEAN
         std = IMAGENET_INCEPTION_STD if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_STD
@@ -193,6 +196,30 @@ class DataAugmentationForBEITInference(object):
         )
 
     def __call__(self, image, boxes=None):
+        if self.finetune:
+            fake_box = torch.tensor([-1, -1, -1, -1])
+
+            if boxes is None:
+                return [self.patch_transform(image),
+                        transforms.ToTensor()(image),
+                        torch.tensor([True] * self.num_boxes),
+                        fake_box.expand(self.num_boxes, -1)]
+            else:
+                boxes_available = boxes.shape[0]
+                if boxes.shape[0] <= self.num_boxes:
+                    padding_length = self.num_boxes - boxes_available
+                    fake_box = fake_box.expand(padding_length, -1)
+                    return [self.patch_transform(image),
+                            transforms.ToTensor()(image),
+                            torch.tensor([True] * boxes_available + [False] * padding_length),
+                            torch.cat([boxes, fake_box])]
+                else:
+                    idx = random.sample(range(boxes_available), self.num_boxes)
+                    return [self.patch_transform(image),
+                            transforms.ToTensor()(image),
+                            torch.tensor([True] * self.num_boxes),
+                            boxes[idx]]
+
         return [self.patch_transform(image),
                 transforms.ToTensor()(image),
                 self.masked_position_generator(),
@@ -215,8 +242,8 @@ def build_instaformer_pretraining_dataset(args):
                                 transform=transform)
 
 
-def build_beit_inference_dataset(args):
-    transform = DataAugmentationForBEITInference(args)
+def build_instaformer_dataset(args, finetune=False):
+    transform = DataAugmentationForBEITDataset(args, finetune=False)
     return SegmentedImageFolder(root=args.data_path, loader=pil_pkl_loader_classes,
                                 transform=transform)
 

@@ -1,6 +1,6 @@
 import argparse
 
-from beit.datasets import build_beit_inference_dataset, build_instaformer_pretraining_dataset
+from beit.datasets import build_instaformer_pretraining_dataset
 
 import os
 import numpy as np
