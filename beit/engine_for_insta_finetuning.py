@@ -188,7 +188,6 @@ def evaluate_f1_whole(args, model, device):
 
     print(labels_other)
     print(labels_inflammatory)
-    print(labels_inflammatory)
 
     print(f"Other class F1 {f1_score(labels_other, pred_other)}")
     print(f"Inflammatory class F1 {f1_score(labels_inflammatory, pred_inflammatory)}")
