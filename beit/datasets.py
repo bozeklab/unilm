@@ -188,6 +188,9 @@ class DataAugmentationForBEITDataset(object):
         # spindle-shaped
         classes[classes == 5] = 3
         classes[classes == 6] = 3
+
+        print(classes)
+        print()
         return classes
 
     def __init__(self, args, finetune=False):
@@ -226,7 +229,6 @@ class DataAugmentationForBEITDataset(object):
             else:
                 boxes, classes = boxes
                 classes = DataAugmentationForBEITDataset._merge_classes(classes)
-                print(classes)
                 boxes_available = boxes.shape[0]
                 if boxes.shape[0] <= self.num_boxes:
                     padding_length = self.num_boxes - boxes_available
