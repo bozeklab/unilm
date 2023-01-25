@@ -18,6 +18,7 @@ import torch
 from timm.utils import accuracy
 
 import utils
+from beit.datasets import build_instaformer_dataset
 from beit.run_beit_inference import _flatten_list
 from sklearn.metrics import f1_score
 
@@ -129,15 +130,17 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
 
 
 @torch.no_grad()
-def evaluate_f1_whole(dataset, model, device):
+def evaluate_f1_whole(args, model, device):
+    dataset = build_instaformer_dataset(args=args, data_root=args.eval_data_path)
+
     predictions = []
     labels = []
 
     model.eval()
     for i in range(len(dataset)):
         sample, _ = dataset[i]
-        sample = _flatten_list(sample)
-        img, _, boxes, classes = sample
+        img, _, _, boxes_and_labels = sample
+        boxes, classes = boxes_and_labels
 
         img = img.to(device, non_blocking=True).unsqueeze(0)
         boxes = boxes.float()
