@@ -181,8 +181,8 @@ class DataAugmentationForBEITDataset(object):
         classes[classes == 3] = 2
 
         # spindle-shaped
-        classes[classes == 5] = 4
-        classes[classes == 6] = 4
+        classes[classes == 5] = 3
+        classes[classes == 6] = 3
         return classes
 
     def __init__(self, args, finetune=False):
