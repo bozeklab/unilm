@@ -137,8 +137,7 @@ def evaluate_f1_whole(dataset, model, device):
     for i in range(len(dataset)):
         sample, _ = dataset[i]
         sample = _flatten_list(sample)
-        img, _, boxes_and_labels = sample
-        boxes, classes = boxes_and_labels
+        img, _, boxes, classes = sample
 
         img = img.to(device, non_blocking=True).unsqueeze(0)
         boxes = boxes.float()
