@@ -137,7 +137,7 @@ def evaluate(data_loader, model, device):
     model.eval()
 
     for batch in metric_logger.log_every(data_loader, 10, header):
-        img, _, _, attention_mask, boxes_and_labels = batch
+        img, _, attention_mask, boxes_and_labels = batch
 
         boxes, classes = boxes_and_labels
 
