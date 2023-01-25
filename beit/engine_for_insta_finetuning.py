@@ -141,7 +141,7 @@ def evaluate(data_loader, model, device):
 
         boxes, classes = boxes_and_labels
 
-        img = boxes.to(device, non_blocking=True)
+        img = img.to(device, non_blocking=True)
         boxes = boxes.to(device, non_blocking=True)
         attention_mask = attention_mask.to(device, non_blocking=True)
         classes = classes.to(device, non_blocking=True)
