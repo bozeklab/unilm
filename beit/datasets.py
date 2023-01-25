@@ -247,9 +247,11 @@ class DataAugmentationForBEITDataset(object):
                     self.masked_position_generator(),
                     boxes]
         else:
+            boxes, classes = boxes
+            classes = DataAugmentationForBEITDataset._merge_classes(classes)
             return [self.patch_transform(image),
                     transforms.ToTensor()(image),
-                    boxes]
+                    (boxes, classes)]
 
 
 
