@@ -172,8 +172,8 @@ def evaluate_f1_whole(args, model, device):
     types = ['other', 'inflammatory', 'epithelial', 'spindle']
 
     for i in range(4):
-        _labels = labels.copy()
-        _predictions = predictions.copy()
+        _labels = labels
+        _predictions = predictions
 
         _labels_idx = _labels == i
         _labels[_labels_idx] = 1
