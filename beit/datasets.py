@@ -175,6 +175,16 @@ class DataAugmentationForBEiT(object):
 
 
 class DataAugmentationForBEITDataset(object):
+    @staticmethod
+    def _merge_classes(classes):
+        # epithelial class
+        classes[classes == 3] = 2
+
+        # spindle-shaped
+        classes[classes == 5] = 4
+        classes[classes == 6] = 4
+        return classes
+
     def __init__(self, args, finetune=False):
         self.num_boxes = args.num_boxes
         self.finetune = finetune
@@ -211,6 +221,7 @@ class DataAugmentationForBEITDataset(object):
             else:
                 boxes, classes = boxes
                 classes = classes.type(torch.int64) - 1
+                classes = DataAugmentationForBEITDataset._merge_classes(classes)
                 boxes_available = boxes.shape[0]
                 if boxes.shape[0] <= self.num_boxes:
                     padding_length = self.num_boxes - boxes_available
