@@ -150,7 +150,7 @@ def evaluate(data_loader, model, device):
             output = model(x=img, boxes=boxes, attention_mask=attention_mask)
             loss = criterion(output, classes[attention_mask])
 
-        acc1 = accuracy(output, classes[attention_mask], topk=(1))
+        acc1 = accuracy(output, classes[attention_mask], topk=(1,))
 
         batch_size = img.shape[0]
         metric_logger.update(loss=loss.item())
