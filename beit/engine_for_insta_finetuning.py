@@ -169,30 +169,21 @@ def evaluate_f1_whole(args, model, device):
     predictions = torch.cat(predictions).cpu()
     labels = torch.cat(labels).cpu()
 
-    labels_other_idx = labels == 0
-    labels_inflammatory_idx = labels == 1
-    labels_epithelial_idx = labels == 2
-    labels_spindle_idx = labels == 3
+    types = ['other', 'inflammatory', 'epithelial', 'spindle']
 
-    labels_other = labels[labels_other_idx]
-    pred_other = predictions[labels_other_idx]
+    for i in range(4):
+        _labels = labels.copy()
+        _predictions = predictions.copy()
 
-    labels_inflammatory = labels[labels_inflammatory_idx]
-    pred_inflammatory = predictions[labels_inflammatory_idx]
+        _labels_idx = _labels == i
+        _labels[_labels_idx] = 1
+        _labels[~_labels_idx] = 0
 
-    labels_epithelial = labels[labels_epithelial_idx]
-    pred_epithelial = predictions[labels_epithelial_idx]
+        _pred_idx = _predictions == i
+        _predictions[_pred_idx] = 1
+        _predictions[~_pred_idx] = 0
 
-    labels_spindle = labels[labels_spindle_idx]
-    pred_spindle = predictions[labels_spindle_idx]
-
-    print(labels_other)
-    print(labels_inflammatory)
-
-    print(f"Other class F1 {f1_score(labels_other, pred_other)}")
-    print(f"Inflammatory class F1 {f1_score(labels_inflammatory, pred_inflammatory)}")
-    print(f"Epithelial class F1 {f1_score(labels_epithelial, pred_epithelial)}")
-    print(f"Spindle class F1 {f1_score(labels_spindle, pred_spindle)}")
+        print(f"{types[i]} class F1 {f1_score(_labels, _predictions)}")
     print()
 
 
