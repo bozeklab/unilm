@@ -62,7 +62,7 @@ def train_one_epoch(model: torch.nn.Module, d_vae: torch.nn.Module,
 
         with torch.cuda.amp.autocast():
             img_outputs, insta_outputs = model(samples, boxes, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask,
-                                boxes_mask=masked_boxes, return_all_tokens=False)
+                                               boxes_mask=masked_boxes, return_all_tokens=False)
             img_loss = nn.CrossEntropyLoss()(input=img_outputs, target=labels)
 
             valid_boxes_num = insta_outputs.shape[0]

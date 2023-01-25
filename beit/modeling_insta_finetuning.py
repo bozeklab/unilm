@@ -17,7 +17,7 @@ def trunc_normal_(tensor, mean=0., std=1.):
 
 
 class VisionInstaformerForMaskedImageModeling(nn.Module):
-    def __init__(self, img_size=224, patch_size=16, patch_embed_size=3, instance_size=32, in_chans=3, num_classes=1000,
+    def __init__(self, img_size=224, patch_size=16, patch_embed_size=3, instance_size=32, in_chans=3, num_classes=7,
                  embed_dim=768, depth=12, num_heads=12, mlp_ratio=4., qkv_bias=True, qk_scale=None, drop_rate=0., attn_drop_rate=0.,
                  drop_path_rate=0., norm_layer=None, init_values=None, attn_head_dim=None,
                  use_abs_pos_emb=True, use_rel_pos_bias=False, use_shared_rel_pos_bias=False, init_std=0.02, **kwargs):
@@ -196,7 +196,9 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         num_boxes = boxes.shape[1]
         _, aggregated_box = x[:, :-num_boxes, :], x[:, -num_boxes:, :]
 
-        return self.head(self.head_mlp(aggregated_box[attention_mask]))
+        pre_head = nn.GELU(self.head_mlp(aggregated_box[attention_mask]))
+
+        return self.head(pre_head)
 
 
 @register_model
