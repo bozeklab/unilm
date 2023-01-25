@@ -186,6 +186,7 @@ def evaluate_f1_whole(args, model, device):
     labels_spindle = labels[labels_spindle_idx]
     pred_spindle = predictions[labels_spindle_idx]
 
+    print(labels_other)
     print(labels_inflammatory)
     print(labels_inflammatory)
 
