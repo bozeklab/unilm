@@ -175,8 +175,8 @@ def evaluate_f1_whole(args, model, device):
         _labels = labels
         _predictions = predictions
 
-        print(_labels)
-        print(_predictions)
+        print(_labels[200])
+        print(_predictions[200])
 
         _labels_idx = _labels == i
         _labels[_labels_idx] = 1
@@ -185,10 +185,8 @@ def evaluate_f1_whole(args, model, device):
         _pred_idx = _predictions == i
         _predictions[_pred_idx] = 1
         _predictions[~_pred_idx] = 0
+        print(f"{types[i]} class F1 {f1_score(_labels.numpy(), _predictions.numpy(), zero_division=1)}")
 
-
-        print(f"{types[i]} class F1 {f1_score(_labels.numpy(), _predictions.numpy())}")
-    print()
 
 
 
