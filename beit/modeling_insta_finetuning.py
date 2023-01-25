@@ -77,8 +77,8 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 
         self.init_std = init_std
 
-        mlp_hidden_dim = int(embed_dim * mlp_ratio)
-        self.head_mlp = Mlp(in_features=embed_dim, hidden_features=mlp_hidden_dim, act_layer=nn.GELU, act_on_last=True)
+        #mlp_hidden_dim = int(embed_dim * mlp_ratio)
+        #self.head_mlp = Mlp(in_features=embed_dim, hidden_features=mlp_hidden_dim, act_layer=nn.GELU, act_on_last=True)
         self.head = nn.Linear(embed_dim, num_classes)
 
         if self.cls_pos_embed is not None:
@@ -190,9 +190,9 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         num_boxes = boxes.shape[1]
         _, aggregated_box = x[:, :-num_boxes, :], x[:, -num_boxes:, :]
 
-        pre_head = self.head_mlp(aggregated_box[attention_mask])
+        #pre_head = self.head_mlp(aggregated_box[attention_mask])
 
-        return self.head(pre_head)
+        return self.head(aggregated_box[attention_mask])
 
 
 @register_model
