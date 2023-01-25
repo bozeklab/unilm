@@ -177,8 +177,8 @@ class DataAugmentationForBEiT(object):
 class DataAugmentationForBEITDataset(object):
     @staticmethod
     def _merge_classes(classes):
+        print(classes)
         classes = classes.type(torch.int64) - 1
-
         print('!!!')
         print(classes)
 
@@ -189,8 +189,6 @@ class DataAugmentationForBEITDataset(object):
         classes[classes == 5] = 3
         classes[classes == 6] = 3
 
-        print(classes)
-        print()
         return classes
 
     def __init__(self, args, finetune=False):
