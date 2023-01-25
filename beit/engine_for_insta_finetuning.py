@@ -18,7 +18,8 @@ import torch
 from timm.utils import accuracy
 
 import utils
-
+from beit.run_beit_inference import _flatten_list
+from sklearn.metrics import f1_score
 
 
 def train_class_batch(model, img, boxes, attention_mask, classes, criterion):
@@ -125,6 +126,46 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
     metric_logger.synchronize_between_processes()
     print("Averaged stats:", metric_logger)
     return {k: meter.global_avg for k, meter in metric_logger.meters.items()}
+
+
+@torch.no_grad()
+def evaluate_f1_whole(dataset, model, device):
+    predictions = []
+    labels = []
+
+    model.eval()
+    for i in range(len(dataset)):
+        sample, _ = dataset[i]
+        sample = _flatten_list(sample)
+        img, _, boxes_and_labels = sample
+        boxes, classes = boxes_and_labels
+
+        img = img.to(device, non_blocking=True).unsqueeze(0)
+        boxes = boxes.float()
+
+        num_boxes = 100
+        boxes_split = torch.split(boxes, num_boxes, dim=0)
+
+        with torch.cuda.amp.autocast():
+            for b in boxes_split:
+                if b.shape[0] == num_boxes:
+                    attention_mask = torch.tensor(num_boxes * [True])
+                else:
+                    padding_length = num_boxes - b.shape[0]
+                    attention_mask = torch.tensor(b.shape[0] * [True] + padding_length * [False])
+                    fake_box = torch.tensor([-1, -1, -1, -1])
+                    fake_box = fake_box.expand(padding_length, -1)
+                    b = torch.cat([b, fake_box], dim=0)
+
+                attention_mask = attention_mask.unsqueeze(0).to(device, non_blocking=True)
+                b = b.unsqueeze(0).to(device, non_blocking=True)
+
+                output = model(x=img, boxes=b, attention_mask=attention_mask)
+                print(output.shape)
+                print(classes[attention_mask].shape)
+                print(output)
+                print(classes[attention_mask])
+                #predictions.append(aggregated_box[attention_mask].squeeze())
 
 
 @torch.no_grad()
