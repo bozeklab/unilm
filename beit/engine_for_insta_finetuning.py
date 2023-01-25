@@ -22,7 +22,6 @@ import utils
 
 def train_class_batch(model, img, boxes, attention_mask, classes, criterion):
     outputs = model(x=img, boxes=boxes, attention_mask=attention_mask)
-    print(classes[attention_mask])
     loss = criterion(outputs, classes[attention_mask])
     return loss, outputs[attention_mask]
 
