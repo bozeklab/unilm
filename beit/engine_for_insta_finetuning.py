@@ -170,10 +170,13 @@ def evaluate_f1_whole(args, model, device):
     labels = torch.cat(labels).cpu()
 
     types = ['other', 'inflammatory', 'epithelial', 'spindle']
-
+    torch.set_printoptions(threshold=10_000)
     for i in range(4):
         _labels = labels
         _predictions = predictions
+
+        print(_labels)
+        print(_predictions)
 
         _labels_idx = _labels == i
         _labels[_labels_idx] = 1
