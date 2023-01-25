@@ -200,27 +200,30 @@ class DataAugmentationForBEITDataset(object):
 
         if self.finetune:
             fake_box = torch.tensor([-1, -1, -1, -1])
+            fake_class = torch.tensor([-1])
 
             if boxes is None:
                 return [self.patch_transform(image),
                         transforms.ToTensor()(image),
                         torch.tensor([True] * self.num_boxes),
-                        fake_box.expand(self.num_boxes, -1)]
+                        (fake_box.expand(self.num_boxes, -1), fake_class.expand(self.num_boxes, -1))]
             else:
                 boxes_available = boxes.shape[0]
+                boxes, classes = boxes
                 if boxes.shape[0] <= self.num_boxes:
                     padding_length = self.num_boxes - boxes_available
                     fake_box = fake_box.expand(padding_length, -1)
+                    fake_class = fake_class.expand(padding_length)
                     return [self.patch_transform(image),
                             transforms.ToTensor()(image),
                             torch.tensor([True] * boxes_available + [False] * padding_length),
-                            torch.cat([boxes, fake_box])]
+                            (torch.cat([boxes, fake_box]), torch.cat([classes, fake_class]))]
                 else:
                     idx = random.sample(range(boxes_available), self.num_boxes)
                     return [self.patch_transform(image),
                             transforms.ToTensor()(image),
                             torch.tensor([True] * self.num_boxes),
-                            boxes[idx]]
+                            (boxes[idx], classes[idx])]
 
         return [self.patch_transform(image),
                 transforms.ToTensor()(image),
