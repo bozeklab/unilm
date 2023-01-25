@@ -408,6 +408,7 @@ def main(args, ds_init):
     print('!!!')
     print(args.weight_decay)
     print(args.weight_decay_end)
+    print(args.epochs)
     wd_schedule_values = utils.cosine_scheduler(
         args.weight_decay, args.weight_decay_end, args.epochs, num_training_steps_per_epoch)
     print(wd_schedule_values)
