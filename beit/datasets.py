@@ -269,8 +269,8 @@ def build_instaformer_pretraining_dataset(args):
                                 transform=transform)
 
 
-def build_instaformer_dataset(args, finetune=False, data_root=None):
-    transform = DataAugmentationForBEITDataset(args, finetune=finetune)
+def build_instaformer_dataset(args, eval_f1=False, finetune=False, data_root=None):
+    transform = DataAugmentationForBEITDataset(args, eval_f1=eval_f1, finetune=finetune)
     if data_root is None:
         data_root = args.data_path
     return SegmentedImageFolder(root=data_root, loader=pil_pkl_loader_classes,
