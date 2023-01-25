@@ -209,8 +209,8 @@ class DataAugmentationForBEITDataset(object):
                         torch.tensor([True] * self.num_boxes),
                         (fake_box.expand(self.num_boxes, -1), fake_class.expand(self.num_boxes, -1))]
             else:
-                boxes_available = boxes.shape[0]
                 boxes, classes = boxes
+                boxes_available = boxes.shape[0]
                 if boxes.shape[0] <= self.num_boxes:
                     padding_length = self.num_boxes - boxes_available
                     fake_box = fake_box.expand(padding_length, -1)
