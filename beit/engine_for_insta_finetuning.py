@@ -11,11 +11,11 @@
 # --------------------------------------------------------'
 import math
 import sys
-from typing import Iterable, Optional
+from typing import Iterable
 
 import torch
 
-from timm.utils import accuracy, ModelEma
+from timm.utils import accuracy
 
 import utils
 
