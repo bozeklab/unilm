@@ -163,12 +163,12 @@ def evaluate_f1_whole(args, model, device):
                 b = b.unsqueeze(0).to(device, non_blocking=True)
 
                 logits = model(x=img, boxes=b, attention_mask=attention_mask)
-                output = logits.max(1).indices
-                print(output.shape)
-                print(classes.shape)
-                print(output)
-                print(classes)
-                #predictions.append(aggregated_box[attention_mask].squeeze())
+                pred = logits.max(1).indices
+                predictions.append(pred)
+                labels.append(classes)
+        predictions = torch.cat(predictions)
+        labels = torch.cat(labels)
+        print(predictions.shape, labels.shape)
 
 
 @torch.no_grad()
