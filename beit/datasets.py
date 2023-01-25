@@ -204,7 +204,7 @@ class DataAugmentationForBEITDataset(object):
                 mean=torch.tensor(mean),
                 std=torch.tensor(std))])
 
-        if not self.finetune and self.eval_f1:
+        if not self.finetune and not self.eval_f1:
             self.masked_position_generator = MaskingGenerator(
                 args.window_size, num_masking_patches=args.num_mask_patches,
                 max_num_patches=args.max_mask_patches_per_block,
