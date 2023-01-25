@@ -27,11 +27,9 @@ from timm.utils import ModelEma
 from optim_factory import create_optimizer, get_parameter_groups, LayerDecayValueAssigner
 
 from datasets import build_instaformer_dataset
-from engine_for_insta_finetuning import train_one_epoch, evaluate
+from engine_for_insta_finetuning import train_one_epoch, evaluate, evaluate_f1_whole
 from utils import NativeScalerWithGradNormCount as NativeScaler
 import utils
-from scipy import interpolate
-import modeling_insta_finetuning
 
 
 def get_args():
