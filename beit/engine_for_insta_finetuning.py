@@ -165,7 +165,7 @@ def evaluate_f1_whole(args, model, device):
                 logits = model(x=img, boxes=b, attention_mask=attention_mask)
                 pred = logits.max(1).indices
                 predictions.append(pred)
-                labels.append(classes)
+            labels.append(classes)
     predictions = torch.cat(predictions)
     labels = torch.cat(labels)
     print(predictions.shape, labels.shape)
