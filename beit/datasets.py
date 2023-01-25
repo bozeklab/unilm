@@ -177,15 +177,13 @@ class DataAugmentationForBEiT(object):
 class DataAugmentationForBEITDataset(object):
     @staticmethod
     def _merge_classes(classes):
-        print(classes)
         classes = classes.type(torch.int64) - 1
-        print('!!!')
-        print(classes)
 
         # epithelial class
         classes[classes == 3] = 2
 
         # spindle-shaped
+        classes[classes == 4] = 3
         classes[classes == 5] = 3
         classes[classes == 6] = 3
 
