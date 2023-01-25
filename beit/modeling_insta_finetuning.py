@@ -191,6 +191,8 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         _, aggregated_box = x[:, :-num_boxes, :], x[:, -num_boxes:, :]
 
         pre_head = self.head_mlp(aggregated_box[attention_mask])
+        print('!!!')
+        print(pre_head.shape)
 
         return self.head(pre_head)
 
