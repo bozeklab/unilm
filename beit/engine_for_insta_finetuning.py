@@ -175,8 +175,8 @@ def evaluate_f1_whole(args, model, device):
         _labels = labels
         _predictions = predictions
 
-        print(_labels[200])
-        print(_predictions[200])
+        print(_labels[:200])
+        print(_predictions[:200])
 
         _labels_idx = _labels == i
         _labels[_labels_idx] = 1
