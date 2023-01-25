@@ -22,8 +22,9 @@ import utils
 
 def train_class_batch(model, img, boxes, attention_mask, classes, criterion):
     outputs = model(x=img, boxes=boxes, attention_mask=attention_mask)
+    print(classes)
     loss = criterion(outputs, classes[attention_mask])
-    return loss, outputs[attention_mask]
+    return loss, outputs
 
 
 def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
