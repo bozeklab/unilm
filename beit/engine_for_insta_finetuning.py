@@ -20,9 +20,19 @@ from timm.utils import accuracy
 import utils
 
 
+def _merge_classes(classes):
+    # epithelial class
+    classes[classes == 3] = 2
+
+    # spindle-shaped
+    classes[classes == 5] = 4
+    classes[classes == 6] = 4
+    return classes
+
+
 def train_class_batch(model, img, boxes, attention_mask, classes, criterion):
     outputs = model(x=img, boxes=boxes, attention_mask=attention_mask)
-    loss = criterion(outputs, classes[attention_mask])
+    loss = criterion(outputs, _merge_classes(classes[attention_mask]))
     return loss, outputs
 
 
@@ -150,7 +160,7 @@ def evaluate(data_loader, model, device):
             output = model(x=img, boxes=boxes, attention_mask=attention_mask)
             loss = criterion(output, classes[attention_mask])
 
-        [acc1] = accuracy(output, classes[attention_mask], topk=(1,))
+        [acc1] = accuracy(output, _merge_classes(classes[attention_mask], topk=(1,)))
 
         batch_size = img.shape[0]
         metric_logger.update(loss=loss.item())
