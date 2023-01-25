@@ -85,8 +85,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
             trunc_normal_(self.cls_pos_embed, std=self.init_std)
         trunc_normal_(self.cls_token, std=self.init_std)
         trunc_normal_(self.mask_token, std=self.init_std)
-        trunc_normal_(self.lm_head.weight, std=self.init_std)
-        trunc_normal_(self.insta_lm_head.weight, std=self.init_std)
+        trunc_normal_(self.head.weight, std=self.init_std)
         self.apply(self._init_weights)
         self.fix_init_weight()
 
@@ -161,16 +160,11 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         added_out = torch.cat((x, boxes_features), dim=1)
         return added_out
 
-    def forward_features(self, x, boxes, bool_masked_pos, attention_mask):
-        x = self.patch_embed(x, bool_masked_pos=bool_masked_pos)
+    def forward_features(self, x, boxes, attention_mask):
+        x = self.patch_embed(x)
         batch_size, seq_len, _ = x.size()
 
         cls_tokens = self.cls_token.expand(batch_size, -1, -1)  # stole cls_tokens impl from Phil Wang, thanks
-        mask_token = self.mask_token.expand(batch_size, seq_len, -1)
-
-        # replace the masked visual tokens by mask_token
-        w = bool_masked_pos.unsqueeze(-1).type_as(mask_token)
-        x = x * (1 - w) + mask_token * w
 
         x = torch.cat((cls_tokens, x), dim=1)
 
@@ -190,9 +184,9 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 
         return self.norm(aggregated_x)
 
-    def forward(self, x, boxes, bool_masked_pos, attention_mask, boxes_mask):
+    def forward(self, x, boxes, attention_mask):
 
-        x = self.forward_features(x, boxes=boxes, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
+        x = self.forward_features(x, boxes=boxes, attention_mask=attention_mask)
         num_boxes = boxes.shape[1]
         _, aggregated_box = x[:, :-num_boxes, :], x[:, -num_boxes:, :]
 

@@ -15,30 +15,24 @@ from typing import Iterable, Optional
 
 import torch
 
-from timm.data import Mixup
 from timm.utils import accuracy, ModelEma
 
 import utils
 
 
-def train_class_batch(model, samples, target, criterion):
-    outputs = model(samples)
-    loss = criterion(outputs, target)
-    return loss, outputs
-
-
-def get_loss_scale_for_deepspeed(model):
-    optimizer = model.optimizer
-    return optimizer.loss_scale if hasattr(optimizer, "loss_scale") else optimizer.cur_scale
+def train_class_batch(model, img, boxes, attention_mask, classes, criterion):
+    outputs = model(x=img, boxes=boxes, attention_mask=attention_mask)
+    loss = criterion(outputs, classes[attention_mask])
+    return loss, outputs[attention_mask]
 
 
 def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
                     data_loader: Iterable, optimizer: torch.optim.Optimizer,
-                    device: torch.device, epoch: int, loss_scaler, max_norm: float = 0,
-                    model_ema: Optional[ModelEma] = None, mixup_fn: Optional[Mixup] = None, log_writer=None,
+                    device: torch.device, epoch: int, loss_scaler, max_norm: float = 0, log_writer=None,
                     start_steps=None, lr_schedule_values=None, wd_schedule_values=None,
                     num_training_steps_per_epoch=None, update_freq=None):
     model.train(True)
+
     metric_logger = utils.MetricLogger(delimiter="  ")
     metric_logger.add_meter('lr', utils.SmoothedValue(window_size=1, fmt='{value:.6f}'))
     metric_logger.add_meter('min_lr', utils.SmoothedValue(window_size=1, fmt='{value:.6f}'))
@@ -51,7 +45,7 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
     else:
         optimizer.zero_grad()
 
-    for data_iter_step, (samples, targets) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
+    for data_iter_step, (img, _, _, attention_mask, boxes_and_labels) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
         step = data_iter_step // update_freq
         if step >= num_training_steps_per_epoch:
             continue
@@ -64,20 +58,16 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
                 if wd_schedule_values is not None and param_group["weight_decay"] > 0:
                     param_group["weight_decay"] = wd_schedule_values[it]
 
-        samples = samples.to(device, non_blocking=True)
-        targets = targets.to(device, non_blocking=True)
+        boxes, classes = boxes_and_labels
 
-        if mixup_fn is not None:
-            samples, targets = mixup_fn(samples, targets)
+        img = boxes.to(device, non_blocking=True)
+        boxes = boxes.to(device, non_blocking=True)
+        attention_mask = attention_mask.to(device, non_blocking=True)
+        classes = classes.to(device, non_blocking=True)
 
-        if loss_scaler is None:
-            samples = samples.half()
-            loss, output = train_class_batch(
-                model, samples, targets, criterion)
-        else:
-            with torch.cuda.amp.autocast():
-                loss, output = train_class_batch(
-                    model, samples, targets, criterion)
+        with torch.cuda.amp.autocast():
+            loss, output = train_class_batch(model, img=img, boxes=boxes, classes=classes,
+                                             attention_mask=attention_mask, criterion=criterion)
 
         loss_value = loss.item()
 
@@ -85,37 +75,20 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
             print("Loss is {}, stopping training".format(loss_value))
             sys.exit(1)
 
-        if loss_scaler is None:
-            loss /= update_freq
-            model.backward(loss)
-            model.step()
-
-            if (data_iter_step + 1) % update_freq == 0:
-                # model.zero_grad()
-                # Deepspeed will call step() & model.zero_grad() automatic
-                if model_ema is not None:
-                    model_ema.update(model)
-            grad_norm = None
-            loss_scale_value = get_loss_scale_for_deepspeed(model)
-        else:
-            # this attribute is added by timm on one optimizer (adahessian)
-            is_second_order = hasattr(optimizer, 'is_second_order') and optimizer.is_second_order
-            loss /= update_freq
-            grad_norm = loss_scaler(loss, optimizer, clip_grad=max_norm,
-                                    parameters=model.parameters(), create_graph=is_second_order,
-                                    update_grad=(data_iter_step + 1) % update_freq == 0)
-            if (data_iter_step + 1) % update_freq == 0:
-                optimizer.zero_grad()
-                if model_ema is not None:
-                    model_ema.update(model)
-            loss_scale_value = loss_scaler.state_dict()["scale"]
+        # this attribute is added by timm on one optimizer (adahessian)
+        is_second_order = hasattr(optimizer, 'is_second_order') and optimizer.is_second_order
+        loss /= update_freq
+        grad_norm = loss_scaler(loss, optimizer, clip_grad=max_norm,
+                                parameters=model.parameters(), create_graph=is_second_order,
+                                update_grad=(data_iter_step + 1) % update_freq == 0)
+        if (data_iter_step + 1) % update_freq == 0:
+            optimizer.zero_grad()
+        loss_scale_value = loss_scaler.state_dict()["scale"]
 
         torch.cuda.synchronize()
 
-        if mixup_fn is None:
-            class_acc = (output.max(-1)[-1] == targets).float().mean()
-        else:
-            class_acc = None
+        class_acc = (output.max(-1)[-1] == classes[attention_mask]).float().mean()
+
         metric_logger.update(loss=loss_value)
         metric_logger.update(class_acc=class_acc)
         metric_logger.update(loss_scale=loss_scale_value)
@@ -162,19 +135,22 @@ def evaluate(data_loader, model, device):
     model.eval()
 
     for batch in metric_logger.log_every(data_loader, 10, header):
-        images = batch[0]
-        target = batch[-1]
-        images = images.to(device, non_blocking=True)
-        target = target.to(device, non_blocking=True)
+        img, _, _, attention_mask, boxes_and_labels = batch
 
+        boxes, classes = boxes_and_labels
+
+        img = boxes.to(device, non_blocking=True)
+        boxes = boxes.to(device, non_blocking=True)
+        attention_mask = attention_mask.to(device, non_blocking=True)
+        classes = classes.to(device, non_blocking=True)
         # compute output
         with torch.cuda.amp.autocast():
-            output = model(images)
-            loss = criterion(output, target)
+            output = model(x=img, boxes=boxes, attention_mask=attention_mask)
+            loss = criterion(output, classes[attention_mask])
 
-        acc1 = accuracy(output, target, topk=(1))
+        acc1 = accuracy(output, classes[attention_mask], topk=(1))
 
-        batch_size = images.shape[0]
+        batch_size = img.shape[0]
         metric_logger.update(loss=loss.item())
         metric_logger.meters['acc1'].update(acc1.item(), n=batch_size)
     # gather the stats from all processes
