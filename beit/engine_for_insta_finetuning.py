@@ -45,7 +45,9 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
     else:
         optimizer.zero_grad()
 
-    for data_iter_step, (img, _, _, attention_mask, boxes_and_labels) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
+    for data_iter_step, (batch, _) in enumerate(metric_logger.log_every(data_loader, print_freq, header)):
+        img, _, _, attention_mask, boxes_and_labels = batch
+
         step = data_iter_step // update_freq
         if step >= num_training_steps_per_epoch:
             continue
