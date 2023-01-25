@@ -189,9 +189,10 @@ class DataAugmentationForBEITDataset(object):
 
         return classes
 
-    def __init__(self, args, finetune=False):
+    def __init__(self, args, finetune=False, eval_f1=False):
         self.num_boxes = args.num_boxes
         self.finetune = finetune
+        self.eval_f1 = eval_f1
 
         imagenet_default_mean_and_std = args.imagenet_default_mean_and_std
         mean = IMAGENET_INCEPTION_MEAN if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_MEAN
@@ -203,7 +204,7 @@ class DataAugmentationForBEITDataset(object):
                 mean=torch.tensor(mean),
                 std=torch.tensor(std))])
 
-        if not self.finetune:
+        if not self.finetune and self.eval_f1:
             self.masked_position_generator = MaskingGenerator(
                 args.window_size, num_masking_patches=args.num_mask_patches,
                 max_num_patches=args.max_mask_patches_per_block,
@@ -240,11 +241,16 @@ class DataAugmentationForBEITDataset(object):
                             transforms.ToTensor()(image),
                             torch.tensor([True] * self.num_boxes),
                             (boxes[idx], classes[idx])]
+        if not self.eval_f1:
+            return [self.patch_transform(image),
+                    transforms.ToTensor()(image),
+                    self.masked_position_generator(),
+                    boxes]
+        else:
+            return [self.patch_transform(image),
+                    transforms.ToTensor()(image),
+                    boxes]
 
-        return [self.patch_transform(image),
-                transforms.ToTensor()(image),
-                self.masked_position_generator(),
-                boxes]
 
 
 def build_beit_pretraining_dataset(args):

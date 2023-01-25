@@ -131,7 +131,7 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
 
 @torch.no_grad()
 def evaluate_f1_whole(args, model, device):
-    dataset = build_instaformer_dataset(args=args, data_root=args.eval_data_path)
+    dataset = build_instaformer_dataset(args=args, eval_f1=True, data_root=args.eval_data_path)
 
     predictions = []
     labels = []
@@ -139,7 +139,7 @@ def evaluate_f1_whole(args, model, device):
     model.eval()
     for i in range(len(dataset)):
         sample, _ = dataset[i]
-        img, _, _, boxes_and_labels = sample
+        img, _, boxes_and_labels = sample
         boxes, classes = boxes_and_labels
 
         img = img.to(device, non_blocking=True).unsqueeze(0)
