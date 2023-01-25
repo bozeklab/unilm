@@ -232,11 +232,11 @@ def main(args, ds_init):
 
     cudnn.benchmark = True
 
-    dataset_train, args.nb_classes = dataset_train = build_instaformer_dataset(args=args, finetune=True)
+    dataset_train = build_instaformer_dataset(args=args, finetune=True)
     if args.disable_eval_during_finetuning:
         dataset_val = None
     else:
-        dataset_val, _ = build_instaformer_dataset(args=args, finetune=True)
+        dataset_val = build_instaformer_dataset(args=args, finetune=True)
 
     if True:  # args.distributed:
         num_tasks = utils.get_world_size()
