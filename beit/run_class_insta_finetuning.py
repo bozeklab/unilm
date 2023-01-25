@@ -405,6 +405,9 @@ def main(args, ds_init):
     )
     if args.weight_decay_end is None:
         args.weight_decay_end = args.weight_decay
+    print('!!!')
+    print(args.weight_decay)
+    print(args.weight_decay_end)
     wd_schedule_values = utils.cosine_scheduler(
         args.weight_decay, args.weight_decay_end, args.epochs, num_training_steps_per_epoch)
     print(wd_schedule_values)
