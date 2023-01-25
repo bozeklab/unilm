@@ -162,7 +162,8 @@ def evaluate_f1_whole(args, model, device):
                 attention_mask = attention_mask.unsqueeze(0).to(device, non_blocking=True)
                 b = b.unsqueeze(0).to(device, non_blocking=True)
 
-                output = model(x=img, boxes=b, attention_mask=attention_mask).max(1)
+                logits = model(x=img, boxes=b, attention_mask=attention_mask)
+                output = logits.max(1).indices
                 print(output.shape)
                 print(classes.shape)
                 print(output)
