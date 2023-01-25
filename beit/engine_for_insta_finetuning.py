@@ -62,7 +62,7 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
 
         boxes, classes = boxes_and_labels
 
-        img = boxes.to(device, non_blocking=True)
+        img = img.to(device, non_blocking=True)
         boxes = boxes.to(device, non_blocking=True)
         attention_mask = attention_mask.to(device, non_blocking=True)
         classes = classes.to(device, non_blocking=True)
