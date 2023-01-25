@@ -233,6 +233,8 @@ def main(args, ds_init):
     cudnn.benchmark = True
 
     dataset_train = build_instaformer_dataset(args=args, finetune=True)
+    print('!!!!!')
+    print(len(dataset_train))
     if args.disable_eval_during_finetuning:
         dataset_val = None
     else:
