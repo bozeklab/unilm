@@ -186,6 +186,9 @@ def evaluate_f1_whole(args, model, device):
     labels_spindle = labels[labels_spindle_idx]
     pred_spindle = predictions[labels_spindle_idx]
 
+    print(labels_other)
+    print(pred_other)
+
     print(f"Other class F1 {f1_score(labels_other, pred_other)}")
     print(f"Inflammatory class F1 {f1_score(labels_inflammatory, pred_inflammatory)}")
     print(f"Epithelial class F1 {f1_score(labels_epithelial, pred_epithelial)}")
