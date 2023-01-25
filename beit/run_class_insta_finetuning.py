@@ -31,7 +31,7 @@ from engine_for_insta_finetuning import train_one_epoch, evaluate
 from utils import NativeScalerWithGradNormCount as NativeScaler
 import utils
 from scipy import interpolate
-import modeling_finetune
+import modeling_insta_finetuning
 
 
 def get_args():
