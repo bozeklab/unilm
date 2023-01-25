@@ -150,6 +150,8 @@ def get_args():
     # Dataset parameters
     parser.add_argument('--data_path', default='/datasets01/imagenet_full_size/061417/', type=str,
                         help='dataset path')
+    parser.add_argument('--num_mask_patches', default=75, type=int,
+                        help='number of the visual tokens/patches need be masked')
     parser.add_argument('--eval_data_path', default=None, type=str,
                         help='dataset path for evaluation')
     parser.add_argument('--nb_classes', default=0, type=int,
