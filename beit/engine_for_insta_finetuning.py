@@ -166,8 +166,8 @@ def evaluate_f1_whole(args, model, device):
                 pred = logits.max(1).indices
                 predictions.append(pred)
             labels.append(classes)
-    predictions = torch.cat(predictions)
-    labels = torch.cat(labels)
+    predictions = torch.cat(predictions).cpu()
+    labels = torch.cat(labels).cpu()
 
     labels_other_idx = labels == 0
     labels_inflammatory_idx = labels == 1
