@@ -211,7 +211,6 @@ class DataAugmentationForBEITDataset(object):
             else:
                 boxes, classes = boxes
                 classes = classes.type(torch.int64) - 1
-                print(classes)
                 boxes_available = boxes.shape[0]
                 if boxes.shape[0] <= self.num_boxes:
                     padding_length = self.num_boxes - boxes_available
