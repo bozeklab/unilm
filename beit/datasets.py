@@ -189,11 +189,12 @@ class DataAugmentationForBEITDataset(object):
                 mean=torch.tensor(mean),
                 std=torch.tensor(std))])
 
-        self.masked_position_generator = MaskingGenerator(
-            args.window_size, num_masking_patches=args.num_mask_patches,
-            max_num_patches=args.max_mask_patches_per_block,
-            min_num_patches=args.min_mask_patches_per_block,
-        )
+        if not self.finetune:
+            self.masked_position_generator = MaskingGenerator(
+                args.window_size, num_masking_patches=args.num_mask_patches,
+                max_num_patches=args.max_mask_patches_per_block,
+                min_num_patches=args.min_mask_patches_per_block,
+            )
 
     def __call__(self, image, boxes=None):
         assert(boxes is None or isinstance(boxes, tuple))
@@ -248,7 +249,7 @@ def build_instaformer_pretraining_dataset(args):
 
 
 def build_instaformer_dataset(args, finetune=False):
-    transform = DataAugmentationForBEITDataset(args, finetune=False)
+    transform = DataAugmentationForBEITDataset(args, finetune=finetune)
     return SegmentedImageFolder(root=args.data_path, loader=pil_pkl_loader_classes,
                                 transform=transform)
 
