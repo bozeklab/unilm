@@ -179,6 +179,7 @@ def evaluate_f1_whole(args, model, device):
         print(_predictions[:200])
 
         _labels_idx = _labels == i
+        print(_labels_idx[:200])
         _labels[_labels_idx] = 1
         _labels[~_labels_idx] = 0
 
