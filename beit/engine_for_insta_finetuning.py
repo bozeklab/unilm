@@ -136,7 +136,7 @@ def evaluate(data_loader, model, device):
     # switch to evaluation mode
     model.eval()
 
-    for batch in metric_logger.log_every(data_loader, 10, header):
+    for (batch, _) in metric_logger.log_every(data_loader, 10, header):
         img, _, attention_mask, boxes_and_labels = batch
 
         boxes, classes = boxes_and_labels
