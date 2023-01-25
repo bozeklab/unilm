@@ -172,14 +172,10 @@ def evaluate_f1_whole(args, model, device):
     types = ['other', 'inflammatory', 'epithelial', 'spindle']
     torch.set_printoptions(threshold=10_000)
     for i in range(4):
-        _labels = labels
-        _predictions = predictions
-
-        print(_labels[:200])
-        print(_predictions[:200])
+        _labels = labels.clone()
+        _predictions = predictions.clone()
 
         _labels_idx = _labels == i
-        print(_labels_idx[:200])
         _labels[_labels_idx] = 1
         _labels[~_labels_idx] = 0
 
