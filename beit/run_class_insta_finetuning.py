@@ -31,6 +31,8 @@ from engine_for_insta_finetuning import train_one_epoch, evaluate, evaluate_f1_w
 from utils import NativeScalerWithGradNormCount as NativeScaler
 import utils
 
+import modeling_insta_finetuning
+
 
 def get_args():
     parser = argparse.ArgumentParser('BEiT fine-tuning and evaluation script for image classification', add_help=False)
