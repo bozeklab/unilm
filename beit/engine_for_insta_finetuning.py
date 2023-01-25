@@ -163,6 +163,7 @@ def evaluate_f1_whole(args, model, device):
                 b = b.unsqueeze(0).to(device, non_blocking=True)
 
                 output = model(x=img, boxes=b, attention_mask=attention_mask)
+                attention_mask = attention_mask.squeeze()
                 print(output.shape)
                 print(classes[attention_mask].shape)
                 print(output)
