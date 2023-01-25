@@ -26,8 +26,8 @@ from timm.loss import LabelSmoothingCrossEntropy, SoftTargetCrossEntropy
 from timm.utils import ModelEma
 from optim_factory import create_optimizer, get_parameter_groups, LayerDecayValueAssigner
 
-from datasets import build_dataset, build_instaformer_dataset
-from engine_for_finetuning import train_one_epoch, evaluate
+from datasets import build_instaformer_dataset
+from engine_for_insta_finetuning import train_one_epoch, evaluate
 from utils import NativeScalerWithGradNormCount as NativeScaler
 import utils
 from scipy import interpolate
