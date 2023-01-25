@@ -233,8 +233,6 @@ def main(args, ds_init):
     cudnn.benchmark = True
 
     dataset_train = build_instaformer_dataset(args=args, finetune=True)
-    print('!!!!!')
-    print(len(dataset_train))
     if args.disable_eval_during_finetuning:
         dataset_val = None
     else:
@@ -407,11 +405,6 @@ def main(args, ds_init):
     )
     if args.weight_decay_end is None:
         args.weight_decay_end = args.weight_decay
-    print('!!!')
-    print(args.weight_decay)
-    print(args.weight_decay_end)
-    print(args.epochs)
-    print(num_training_steps_per_epoch)
     wd_schedule_values = utils.cosine_scheduler(
         args.weight_decay, args.weight_decay_end, args.epochs, num_training_steps_per_epoch)
     print(wd_schedule_values)
@@ -446,9 +439,8 @@ def main(args, ds_init):
             log_writer.set_step(epoch * num_training_steps_per_epoch * args.update_freq)
         train_stats = train_one_epoch(
             model, criterion, data_loader_train, optimizer,
-            device, epoch, loss_scaler, args.clip_grad, model_ema, mixup_fn,
-            log_writer=log_writer, start_steps=epoch * num_training_steps_per_epoch,
-            lr_schedule_values=lr_schedule_values, wd_schedule_values=wd_schedule_values,
+            device, epoch, loss_scaler, args.clip_grad, log_writer=log_writer,
+            start_steps=epoch * num_training_steps_per_epoch, lr_schedule_values=lr_schedule_values, wd_schedule_values=wd_schedule_values,
             num_training_steps_per_epoch=num_training_steps_per_epoch, update_freq=args.update_freq,
         )
         if args.output_dir and args.save_ckpt:
