@@ -168,7 +168,32 @@ def evaluate_f1_whole(args, model, device):
             labels.append(classes)
     predictions = torch.cat(predictions)
     labels = torch.cat(labels)
-    print(predictions.shape, labels.shape)
+
+    labels_other_idx = labels == 0
+    labels_inflammatory_idx = labels == 1
+    labels_epithelial_idx = labels == 2
+    labels_spindle_idx = labels == 2
+
+    labels_other = labels[labels_other_idx]
+    pred_other = predictions[labels_other_idx]
+
+    labels_inflammatory = labels[labels_inflammatory_idx]
+    pred_inflammatory = predictions[labels_inflammatory_idx]
+
+    labels_epithelial = labels[labels_epithelial_idx]
+    pred_epithelial = predictions[labels_epithelial_idx]
+
+    labels_spindle = labels[labels_spindle_idx]
+    pred_spindle = predictions[labels_spindle_idx]
+
+    print(f"Other class F1 {f1_score(labels_other, pred_other)}")
+    print(f"Inflammatory class F1 {f1_score(labels_inflammatory, pred_inflammatory)}")
+    print(f"Epithelial class F1 {f1_score(labels_epithelial, pred_epithelial)}")
+    print(f"Spindle class F1 {f1_score(labels_spindle, pred_spindle)}")
+    print()
+
+
+
 
 
 @torch.no_grad()
