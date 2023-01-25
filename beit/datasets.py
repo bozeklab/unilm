@@ -177,6 +177,11 @@ class DataAugmentationForBEiT(object):
 class DataAugmentationForBEITDataset(object):
     @staticmethod
     def _merge_classes(classes):
+        classes = classes.type(torch.int64) - 1
+
+        print('!!!')
+        print(classes)
+
         # epithelial class
         classes[classes == 3] = 2
 
@@ -220,7 +225,6 @@ class DataAugmentationForBEITDataset(object):
                         (fake_box.expand(self.num_boxes, -1), fake_class.expand(self.num_boxes, -1))]
             else:
                 boxes, classes = boxes
-                classes = classes.type(torch.int64) - 1
                 classes = DataAugmentationForBEITDataset._merge_classes(classes)
                 print(classes)
                 boxes_available = boxes.shape[0]
