@@ -196,6 +196,8 @@ class DataAugmentationForBEITDataset(object):
         )
 
     def __call__(self, image, boxes=None):
+        assert(boxes is None or isinstance(boxes, tuple))
+
         if self.finetune:
             fake_box = torch.tensor([-1, -1, -1, -1])
 
