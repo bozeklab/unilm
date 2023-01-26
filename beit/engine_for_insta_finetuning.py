@@ -169,8 +169,8 @@ def evaluate_f1_whole(args, model, device):
     predictions = torch.cat(predictions).cpu()
     labels = torch.cat(labels).cpu()
 
-    #types = ['other', 'inflammatory', 'epithelial', 'spindle']
-    types = ['neoplastic ', 'inflammatory', 'soft', 'dead', 'epithelial']
+    types = ['other', 'inflammatory', 'epithelial', 'spindle']
+    #types = ['neoplastic ', 'inflammatory', 'soft', 'dead', 'epithelial']
     print(f"all dataset class F1 {f1_score(labels.numpy(), predictions.numpy(), zero_division=1, average='weighted')}")
     for i in range(4):
         _labels = labels.clone()
