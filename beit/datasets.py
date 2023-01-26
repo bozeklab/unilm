@@ -249,7 +249,8 @@ class DataAugmentationForBEITDataset(object):
                     boxes]
         else:
             boxes, classes = boxes
-            classes = DataAugmentationForBEITDataset._merge_classes(classes)
+            #classes = DataAugmentationForBEITDataset._merge_classes(classes)
+            classes = classes.type(torch.int64)
             return [self.patch_transform(image),
                     transforms.ToTensor()(image),
                     (boxes, classes)]
