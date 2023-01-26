@@ -25,8 +25,6 @@ from sklearn.metrics import f1_score, accuracy_score
 
 def train_class_batch(model, img, boxes, attention_mask, classes, criterion):
     outputs = model(x=img, boxes=boxes, attention_mask=attention_mask)
-    print('!!!')
-    print(outputs.shape)
     loss = criterion(outputs, classes[attention_mask])
     return loss, outputs
 
