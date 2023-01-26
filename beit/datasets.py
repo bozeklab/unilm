@@ -234,7 +234,6 @@ class DataAugmentationForBEITDataset(object):
                     return [self.patch_transform(image),
                             transforms.ToTensor()(image),
                             torch.tensor([True] * boxes_available + [False] * padding_length),
-                            print(classes)
                             (torch.cat([boxes, fake_box]), torch.cat([classes, fake_class]))]
                 else:
                     idx = random.sample(range(boxes_available), self.num_boxes)
