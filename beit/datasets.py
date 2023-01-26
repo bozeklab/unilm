@@ -226,6 +226,7 @@ class DataAugmentationForBEITDataset(object):
             else:
                 boxes, classes = boxes
                 #classes = DataAugmentationForBEITDataset._merge_classes(classes)
+                classes = classes.type(torch.int64)
                 boxes_available = boxes.shape[0]
                 if boxes.shape[0] <= self.num_boxes:
                     padding_length = self.num_boxes - boxes_available
