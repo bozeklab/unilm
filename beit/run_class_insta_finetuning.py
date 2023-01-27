@@ -32,6 +32,7 @@ from utils import NativeScalerWithGradNormCount as NativeScaler
 import utils
 
 import modeling_insta_finetuning
+import modeling_insta_finetune_from_pt
 
 
 def get_args():

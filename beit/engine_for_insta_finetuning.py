@@ -189,9 +189,6 @@ def evaluate_f1_whole(args, model, device):
     print(f"Accuracy on the whole ds: {accuracy_score(labels.numpy(), predictions.numpy())}")
 
 
-
-
-
 @torch.no_grad()
 def evaluate(data_loader, model, device):
     criterion = torch.nn.CrossEntropyLoss()
