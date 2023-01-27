@@ -100,9 +100,12 @@ def infere(model, dataset, device):
                 attention_mask = attention_mask.unsqueeze(0).to(device, non_blocking=True)
                 b = b.unsqueeze(0).to(device, non_blocking=True)
 
-                x = model.forward_features(x=img, boxes=b, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
-                aggregated_box = x[:, -num_boxes:, :]
-                boxes_out.append(aggregated_box[attention_mask].squeeze())
+                x = model.forward_features(x=img, boxes=b, attention_mask=attention_mask)
+                boxes_out.append(x)
+
+                #x = model.forward_features(x=img, boxes=b, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
+                #aggregated_box = x[:, -num_boxes:, :]
+                #boxes_out.append(aggregated_box[attention_mask].squeeze())
                 #batch_size, seq_len, C = x.shape
                 #x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
         #aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), spatial_scale=0.0625, boxes=[boxes], output_size=(3, 3))
@@ -165,7 +168,7 @@ def main(args):
 
     embeddings, labels, images = infere(model, dataset_train, device)
     output_dict = {'embeddings': embeddings, 'labels': labels, 'images': images}
-    with open('outputs/tumor_insta_cs.pickle', 'wb') as f:
+    with open('outputs/tumor_insta_pannuke.pickle', 'wb') as f:
        pickle.dump(output_dict, f)
 
 
