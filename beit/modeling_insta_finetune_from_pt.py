@@ -5,6 +5,7 @@ from functools import partial
 
 from torchvision.ops import roi_align
 
+from beit.modeling_pretrain import trunc_normal_
 from beit.positional_encoding import PositionalEncoding
 from modeling_finetune import Block, _cfg, PatchEmbed, RelativePositionBias, Mlp
 from timm.models.registry import register_model
@@ -150,6 +151,6 @@ class VisionTransformerFromPretrained(nn.Module):
 def beit_instaformer_patch16_pt(pretrained=False, **kwargs):
     model = VisionTransformerFromPretrained(
         img_size=448, patch_size=16, patch_embed_size=3, instance_size=32, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4,
-        qkv_bias=True, norm_layer=partial(nn.LayerNorm, eps=1e-6), use_rel_pos_bias=False, **kwargs)
+        qkv_bias=True, norm_layer=partial(nn.LayerNorm, eps=1e-6), use_rel_pos_bias=True, **kwargs)
     model.default_cfg = _cfg()
     return model
