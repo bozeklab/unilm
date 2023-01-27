@@ -23,6 +23,7 @@ class VisionTransformerFromPretrained(nn.Module):
                  use_mean_pooling=True, init_scale=0.001):
         super().__init__()
         self.num_classes = num_classes
+        self.img_size = img_size
         self.num_features = self.embed_dim = embed_dim  # num_features for consistency with other models
 
         self.patch_embed = PatchEmbed(
@@ -100,8 +101,9 @@ class VisionTransformerFromPretrained(nn.Module):
 
     def extract_alligned_rois(self, x, boxes):
             batch_size, seq_len, C = x.shape
-            x = x.view(batch_size, img.shape[2] // self.patch_size[0], img.shape[3] // self.patch_size[1], C)
-            aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), spatial_scale=1 / self.patch_size[0], boxes=[boxes], output_size=(3, 3))
+            x = x.view(batch_size, self.img_size // self.patch_size[0], self.img_size // self.patch_size[1], C)
+            aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), spatial_scale=1 / self.patch_size[0],
+                                      boxes=[boxes], output_size=(3, 3))
             m = nn.AvgPool2d(3, stride=1)
             return m(aligned_boxes)
 
