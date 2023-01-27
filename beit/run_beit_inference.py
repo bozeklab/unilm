@@ -10,6 +10,8 @@ from beit.run_beit_pretraining import get_model
 from torchvision.ops import roi_align
 import torchvision.transforms as transforms
 from PIL import Image
+import modeling_insta_finetuning
+import modeling_insta_finetune_from_pt
 import torchvision.transforms.functional as F
 
 from torch import nn
