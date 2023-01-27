@@ -73,9 +73,6 @@ def infere(model, dataset, device):
         sample = _flatten_list(sample)
         img, nonnormalized_img, bool_masked_pos, boxes_and_labels = sample
         boxes, classes = boxes_and_labels
-        print(boxes.shape)
-        print(classes.shape)
-        print()
 
         img = img.to(device, non_blocking=True).unsqueeze(0)
         boxes = boxes.float()
@@ -115,6 +112,10 @@ def infere(model, dataset, device):
         aligned_boxes = torch.cat(boxes_out).cpu()
 
         #boxes = boxes.cpu()
+
+        print(aligned_boxes.shape)
+        print(classes.shape)
+        print()
 
         for j in range(aligned_boxes.shape[0]):
             embeddings.append(aligned_boxes[j].numpy())
