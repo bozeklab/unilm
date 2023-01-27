@@ -163,8 +163,6 @@ def evaluate_f1_whole(args, model, device):
                 b = b.unsqueeze(0).to(device, non_blocking=True)
 
                 logits = model(x=img, boxes=b, attention_mask=attention_mask)
-                print('!!!!')
-                print(logits.shape)
                 pred = logits.max(1).indices
                 predictions.append(pred)
             labels.append(classes)
