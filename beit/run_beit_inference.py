@@ -116,8 +116,9 @@ def infere(model, dataset, device):
         for i in range(aligned_boxes.shape[0]):
             embeddings.append(aligned_boxes[i].numpy())
             print(classes)
-            label = classes[0][i]
-            #label = classes[i]
+            #label = classes[0][i]
+            label = classes[i]
+            print(label)
             #labels.append(label.item())
             labels.append(label)
             box = boxes[i].numpy().tolist()
