@@ -73,6 +73,8 @@ def infere(model, dataset, device):
         sample = _flatten_list(sample)
         img, nonnormalized_img, bool_masked_pos, boxes_and_labels = sample
         boxes, classes = boxes_and_labels
+        print(boxes)
+        print(classes)
 
         img = img.to(device, non_blocking=True).unsqueeze(0)
         boxes = boxes.float()
@@ -113,15 +115,13 @@ def infere(model, dataset, device):
 
         #boxes = boxes.cpu()
 
-        for i in range(aligned_boxes.shape[0]):
-            embeddings.append(aligned_boxes[i].numpy())
-            print(classes)
+        for j in range(aligned_boxes.shape[0]):
+            embeddings.append(aligned_boxes[j].numpy())
             #label = classes[0][i]
-            label = classes[i]
-            print(label)
-            #labels.append(label.item())
-            labels.append(label)
-            box = boxes[i].numpy().tolist()
+            label = classes[j]
+            labels.append(label.item())
+            #labels.append(label)
+            box = boxes[j].numpy().tolist()
 
             crop = nonnormalized_img[:, int(box[1]):int(box[3]), int(box[0]):int(box[2])]
             crop = F.resize(crop, size=(32, 32))
