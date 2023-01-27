@@ -147,7 +147,7 @@ class VisionTransformerFromPretrained(nn.Module):
 
 
 @register_model
-def beit_instaformer_patch16(pretrained=False, **kwargs):
+def beit_instaformer_patch16_pt(pretrained=False, **kwargs):
     model = VisionTransformerFromPretrained(
         img_size=448, patch_size=16, patch_embed_size=3, instance_size=32, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4,
         qkv_bias=True, norm_layer=partial(nn.LayerNorm, eps=1e-6), use_rel_pos_bias=False, **kwargs)
