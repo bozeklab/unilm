@@ -115,9 +115,10 @@ def infere(model, dataset, device):
 
         for i in range(aligned_boxes.shape[0]):
             embeddings.append(aligned_boxes[i].numpy())
-            #label = classes[0][i]
-            label = classes[i]
-            labels.append(label.item())
+            label = classes[0][i]
+            #label = classes[i]
+            #labels.append(label.item())
+            labels.append(label)
             box = boxes[i].numpy().tolist()
 
             crop = nonnormalized_img[:, int(box[1]):int(box[3]), int(box[0]):int(box[2])]
