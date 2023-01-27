@@ -128,6 +128,8 @@ class VisionTransformerFromPretrained(nn.Module):
 
     def forward(self, x, boxes, attention_mask):
         x = self.forward_features(x, boxes, attention_mask)
+        print('!!!!')
+        print(x.shape)
         x = self.head(x)
         return x
 
