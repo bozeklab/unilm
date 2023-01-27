@@ -129,8 +129,6 @@ class VisionTransformerFromPretrained(nn.Module):
     def forward(self, x, boxes, attention_mask):
         x = self.forward_features(x, boxes, attention_mask)
         x = self.head(x)
-        print('!!!!')
-        print(x.shape)
         return x
 
     def get_intermediate_layers(self, x):
