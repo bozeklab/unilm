@@ -183,7 +183,7 @@ def evaluate_f1_whole(args, model, device):
         _pred_idx = _predictions == i
         _predictions[_pred_idx] = 1
         _predictions[~_pred_idx] = 0
-        cls_acc = accuracy_score(labels.numpy(), predictions.numpy())
+        cls_acc = accuracy_score(_labels.numpy(), _predictions.numpy())
         print(f"{types[i]} class F1 {f1_score(_labels.numpy(), _predictions.numpy(), zero_division=1)}")
         print(f"{types[i]} class accuracy {cls_acc}, base line {cls_acc / 0.8062} ")
     print(f"Accuracy on the whole ds: {accuracy_score(labels.numpy(), predictions.numpy())}")
