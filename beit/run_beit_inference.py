@@ -103,8 +103,7 @@ def infere(model, dataset, device):
 
                 x = model.forward_features(x=img, boxes=b, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
                 aggregated_box = x[:, -num_boxes:, :]
-                print(aggregated_box[attention_mask].shape)
-                boxes_out.append(aggregated_box[attention_mask].squeeze())
+                boxes_out.append(aggregated_box[attention_mask])
                 #batch_size, seq_len, C = x.shape
                 #x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
         #aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), spatial_scale=0.0625, boxes=[boxes], output_size=(3, 3))
