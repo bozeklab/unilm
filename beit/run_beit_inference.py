@@ -61,10 +61,6 @@ def _flatten_list(nested_list):
     return flattened_list
 
 
-tumor_categories = ['plasma cell', 'eosinophil', 'macrophage', 'vessel', 'apoptotic bodies', 'epithelial cell',
-                    'normal small lymphocyte', 'large leucocyte', 'stroma', 'immune cells', 'unknown', 'erythrocyte', 'mitose', 'positive', 'tumor']
-
-
 @torch.no_grad()
 def infere(model, dataset, device):
     embeddings = []

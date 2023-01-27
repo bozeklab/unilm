@@ -160,7 +160,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         return added_out
 
     def forward_features(self, x, boxes, bool_masked_pos, attention_mask):
-        x = self.patch_embed(x, bool_masked_pos=bool_masked_pos)
+        x = self.patch_embed(x)
         batch_size, seq_len, _ = x.size()
 
         cls_tokens = self.cls_token.expand(batch_size, -1, -1)  # stole cls_tokens impl from Phil Wang, thanks
