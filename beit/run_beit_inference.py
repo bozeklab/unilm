@@ -123,6 +123,8 @@ def infere(model, dataset, device):
             label = classes[i]
             labels.append(label)
             box = boxes[i].numpy().tolist()
+            print(int(box[1]), int(box[3]), int(box[0]), int(box[2]))
+
             crop = nonnormalized_img[:, int(box[1]):int(box[3]), int(box[0]):int(box[2])]
             crop = F.resize(crop, size=(32, 32))
             images.append(crop.permute(1, 2, 0).numpy())
