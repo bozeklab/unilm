@@ -124,12 +124,10 @@ class VisionTransformerFromPretrained(nn.Module):
 
         x = self.norm(x)
         x = x[:, 1:]
-        return self.extract_alligned_rois(x, boxes[attention_mask])
+        return self.extract_alligned_rois(x, boxes[attention_mask]).squeeze()
 
     def forward(self, x, boxes, attention_mask):
         x = self.forward_features(x, boxes, attention_mask)
-        print('!!!!')
-        print(x.shape)
         x = self.head(x)
         return x
 
