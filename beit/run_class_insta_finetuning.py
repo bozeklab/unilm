@@ -300,6 +300,8 @@ def main(args, ds_init):
         drop_rate=args.drop,
         drop_path_rate=args.drop_path,
         attn_drop_rate=args.attn_drop_rate,
+        use_rel_pos_bias=args.rel_pos_bias,
+        use_shared_rel_pos_bias=args.rel_pos_bias,
         drop_block_rate=None,
         use_mean_pooling=args.use_mean_pooling,
         init_scale=args.init_scale,
