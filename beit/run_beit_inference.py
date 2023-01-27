@@ -78,6 +78,9 @@ def infere(model, dataset, device):
         img, nonnormalized_img, bool_masked_pos, boxes_and_labels = sample
         boxes, classes = boxes_and_labels
 
+        print(i)
+        print(boxes)
+
         img = img.to(device, non_blocking=True).unsqueeze(0)
         boxes = boxes.float()
         bool_masked_pos = torch.tensor(bool_masked_pos)
@@ -123,7 +126,6 @@ def infere(model, dataset, device):
             label = classes[i]
             labels.append(label)
             box = boxes[i].numpy().tolist()
-            print(int(box[1]), int(box[3]), int(box[0]), int(box[2]))
 
             crop = nonnormalized_img[:, int(box[1]):int(box[3]), int(box[0]):int(box[2])]
             crop = F.resize(crop, size=(32, 32))
