@@ -103,6 +103,7 @@ def infere(model, dataset, device):
 
                 x = model.forward_features(x=img, boxes=b, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
                 aggregated_box = x[:, -num_boxes:, :]
+                print(aggregated_box[attention_mask].shape)
                 boxes_out.append(aggregated_box[attention_mask].squeeze())
                 #batch_size, seq_len, C = x.shape
                 #x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
@@ -112,10 +113,6 @@ def infere(model, dataset, device):
         aligned_boxes = torch.cat(boxes_out).cpu()
 
         #boxes = boxes.cpu()
-
-        print(aligned_boxes.shape)
-        print(classes.shape)
-        print()
 
         for j in range(aligned_boxes.shape[0]):
             embeddings.append(aligned_boxes[j].numpy())
