@@ -328,6 +328,7 @@ def main(args, ds_init):
         if checkpoint_model is None:
             checkpoint_model = checkpoint
         state_dict = model.state_dict()
+        print(state_dict)
         for k in ['head.weight', 'head.bias']:
             if k in checkpoint_model and checkpoint_model[k].shape != state_dict[k].shape:
                 print(f"Removing key {k} from pretrained checkpoint")
