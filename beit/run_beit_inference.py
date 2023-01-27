@@ -73,8 +73,9 @@ def infere(model, dataset, device):
         sample = _flatten_list(sample)
         img, nonnormalized_img, bool_masked_pos, boxes_and_labels = sample
         boxes, classes = boxes_and_labels
-        print(boxes)
-        print(classes)
+        print(boxes.shape)
+        print(classes.shape)
+        print()
 
         img = img.to(device, non_blocking=True).unsqueeze(0)
         boxes = boxes.float()
