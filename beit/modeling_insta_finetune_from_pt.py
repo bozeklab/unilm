@@ -24,6 +24,7 @@ class VisionTransformerFromPretrained(nn.Module):
         super().__init__()
         self.num_classes = num_classes
         self.img_size = img_size
+        self.patch_size = patch_size
         self.num_features = self.embed_dim = embed_dim  # num_features for consistency with other models
 
         self.patch_embed = PatchEmbed(
