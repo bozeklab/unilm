@@ -146,8 +146,10 @@ class Attention(nn.Module):
         if attention_mask is not None:
             attn = attn.masked_fill(attention_mask == False, torch.finfo(attn.dtype).min)
         attn = attn.softmax(dim=-1)
+        print('!!!')
         attn = self.attn_drop(attn)
         if return_attention:
+            print(attn)
             return attn
 
         x = (attn @ v).transpose(1, 2).reshape(B, N, -1)
