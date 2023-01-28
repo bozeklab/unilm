@@ -31,7 +31,7 @@ from engine_for_insta_finetuning import train_one_epoch, evaluate, evaluate_f1_w
 from utils import NativeScalerWithGradNormCount as NativeScaler
 import utils
 
-import modeling_insta_finetuning
+import modeling_insta_finetune
 import modeling_insta_finetune_from_pt
 
 

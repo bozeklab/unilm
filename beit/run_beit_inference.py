@@ -10,7 +10,7 @@ from beit.run_beit_pretraining import get_model
 from torchvision.ops import roi_align
 import torchvision.transforms as transforms
 from PIL import Image
-import modeling_insta_finetuning
+import modeling_insta_finetune
 import modeling_insta_finetune_from_pt
 import random
 import torchvision.transforms as T

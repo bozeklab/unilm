@@ -16,7 +16,7 @@ def trunc_normal_(tensor, mean=0., std=1.):
     __call_trunc_normal_(tensor, mean=mean, std=std, a=-std, b=std)
 
 
-class VisionInstaformerForMaskedImageModeling(nn.Module):
+class VisionInstaformer(nn.Module):
     def __init__(self, img_size=224, patch_size=16, patch_embed_size=3, instance_size=32, in_chans=3, num_classes=4,
                  embed_dim=768, depth=12, num_heads=12, mlp_ratio=4., qkv_bias=True, qk_scale=None, drop_rate=0., attn_drop_rate=0.,
                  drop_path_rate=0., norm_layer=None, init_values=None, attn_head_dim=None,
@@ -77,9 +77,9 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 
         self.init_std = init_std
 
-        #mlp_hidden_dim = int(embed_dim * mlp_ratio)
-        #self.head_mlp = Mlp(in_features=embed_dim, hidden_features=mlp_hidden_dim, act_layer=nn.GELU, act_on_last=True)
         self.head = nn.Linear(embed_dim, num_classes)
+        print('!!!')
+        print(self.head)
 
         if self.cls_pos_embed is not None:
             trunc_normal_(self.cls_pos_embed, std=self.init_std)
@@ -217,7 +217,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 
 @register_model
 def beit_instaformer_patch16(pretrained=False, **kwargs):
-    model = VisionInstaformerForMaskedImageModeling(
+    model = VisionInstaformer(
         img_size=448, patch_size=16, patch_embed_size=3, instance_size=32, embed_dim=768, depth=12, num_heads=12, mlp_ratio=4,
         qkv_bias=True, norm_layer=partial(nn.LayerNorm, eps=1e-6), use_rel_pos_bias=False, **kwargs)
     model.default_cfg = _cfg()
