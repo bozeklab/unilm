@@ -179,7 +179,7 @@ class Block(nn.Module):
 
     def forward(self, x, attention_mask=None, return_attention=True, rel_pos_bias=None):
         if return_attention:
-            return self.attn(self.norm1(x), rel_pos_bias=rel_pos_bias, return_attention=True)
+            return self.attn(self.norm1(x), attention_mask=attention_mask, rel_pos_bias=rel_pos_bias, return_attention=True)
 
         if self.gamma_1 is None:
             x = x + self.drop_path(self.attn(self.norm1(x), attention_mask=attention_mask, rel_pos_bias=rel_pos_bias))
