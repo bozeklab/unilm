@@ -185,8 +185,12 @@ class VisionInstaformer(nn.Module):
     def get_last_selfattention(self, x, boxes, attention_mask):
         x = self.patch_embed(x)
         batch_size, seq_len, _ = x.size()
+
         cls_tokens = self.cls_token.expand(batch_size, -1, -1)
         x = torch.cat((cls_tokens, x), dim=1)
+
+        attn_prefix = torch.ones(batch_size, seq_len + 1).bool().to(x.device)
+        attention_mask = torch.cat([attn_prefix, attention_mask], dim=1)
 
         if self.pos_embed is not None:
             pos_embed = torch.cat([self.cls_pos_embed, self.pos_embed], dim=1)
