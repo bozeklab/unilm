@@ -101,7 +101,8 @@ def infere(model, dataset, device):
                 #x = model.forward_features(x=img, boxes=b, attention_mask=attention_mask)
                 #boxes_out.append(x)
 
-                x = model.forward_features(x=img, boxes=b, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
+                #x = model.forward_features(x=img, boxes=b, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
+                x = model.forward_features(x=img, boxes=b, attention_mask=attention_mask)
                 aggregated_box = x[:, -num_boxes:, :]
                 boxes_out.append(aggregated_box[attention_mask])
                 #batch_size, seq_len, C = x.shape
@@ -168,7 +169,7 @@ def main(args):
 
     embeddings, labels, images = infere(model, dataset_train, device)
     output_dict = {'embeddings': embeddings, 'labels': labels, 'images': images}
-    with open('outputs/tumor_insta_455.pickle', 'wb') as f:
+    with open('outputs/tumor_insta_4448.pickle', 'wb') as f:
        pickle.dump(output_dict, f)
 
 
