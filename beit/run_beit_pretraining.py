@@ -141,6 +141,7 @@ def get_model(args):
     model = create_model(
         args.model,
         pretrained=False,
+        num_classes=args.nb_classes,
         drop_path_rate=args.drop_path,
         drop_block_rate=None,
         use_shared_rel_pos_bias=args.rel_pos_bias,
