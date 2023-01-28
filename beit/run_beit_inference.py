@@ -115,7 +115,7 @@ def infere(model, dataset, device):
                     uimg = T.ToPILImage()(nonnormalized_img)
                     with open(f"attn_dump/attn_{i}.pickle", 'wb') as f:
                         pickle.dump(attn, f)
-                    uimg.save(f"attn_dump/attn_{i}.png", 'wb')
+                    uimg.save(f"attn_dump/attn_{i}.png")
 
                 x = model.forward_features(x=img, boxes=b, attention_mask=attention_mask)
                 aggregated_box = x[:, -num_boxes:, :]
