@@ -205,8 +205,8 @@ class VisionInstaformer(nn.Module):
                 aggregated_x = blk(aggregated_x, attention_mask=attention_mask[:, None, None, :], rel_pos_bias=None)
             else:
                 # return attention of the last block
-                aggregated_x = blk(aggregated_x, attention_mask=attention_mask[:, None, None, :],
-                                   rel_pos_bias=None, return_attention=True)
+                return blk(aggregated_x, attention_mask=attention_mask[:, None, None, :],
+                           rel_pos_bias=None, return_attention=True)
 
     def forward(self, x, boxes, attention_mask):
 
