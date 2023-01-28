@@ -22,8 +22,6 @@ class VisionInstaformer(nn.Module):
                  drop_path_rate=0., norm_layer=None, init_values=None, attn_head_dim=None,
                  use_abs_pos_emb=True, use_rel_pos_bias=False, use_shared_rel_pos_bias=False, init_std=0.02, **kwargs):
         super().__init__()
-        print('!!!')
-        print(num_classes)
         self.num_classes = num_classes
         self.num_features = self.embed_dim = embed_dim  # num_features for consistency with other models
         self.patch_embed_size = patch_embed_size
@@ -80,8 +78,6 @@ class VisionInstaformer(nn.Module):
         self.init_std = init_std
 
         self.head = nn.Linear(embed_dim, num_classes)
-        print('!!!')
-        print(self.head)
 
         if self.cls_pos_embed is not None:
             trunc_normal_(self.cls_pos_embed, std=self.init_std)
@@ -191,8 +187,10 @@ class VisionInstaformer(nn.Module):
         batch_size, seq_len, _ = x.size()
         cls_tokens = self.cls_token.expand(batch_size, -1, -1)
         x = torch.cat((cls_tokens, x), dim=1)
+
         if self.pos_embed is not None:
-            x = x + self.pos_embed
+            pos_embed = torch.cat([self.cls_pos_embed, self.pos_embed], dim=1)
+            x = x + pos_embed
         x = self.pos_drop(x)
 
         boxes_features = self.extract_box_feature(x=x[:, 1:], boxes_info=boxes, scale_factor=1. / self.patch_size)
