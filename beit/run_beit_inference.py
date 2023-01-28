@@ -112,8 +112,6 @@ def infere(model, dataset, device):
                 #x = model.forward_features(x=img, boxes=b, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
                 if (i in attn_idx) and (bi == 0):
                     attn = model.get_last_selfattention(x=img, boxes=b, attention_mask=attention_mask)
-                    print('returned')
-                    print(attn)
                     uimg = T.ToPILImage()(nonnormalized_img)
                     with open(f"attn_dump/attn_{i}.pickle", 'wb') as f:
                         pickle.dump(attn, f)
