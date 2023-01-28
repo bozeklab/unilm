@@ -12,9 +12,12 @@ import torchvision.transforms as transforms
 from PIL import Image
 import modeling_insta_finetuning
 import modeling_insta_finetune_from_pt
+import random
+import torchvision.transforms as T
 import torchvision.transforms.functional as F
 
 from torch import nn
+
 
 def get_args():
     parser = argparse.ArgumentParser('BEiT inference script', add_help=False)
@@ -68,6 +71,9 @@ def infere(model, dataset, device):
     images = []
 
     model.eval()
+
+    attn_idx = random.sample(range(len(dataset)), 5)
+
     for i in range(len(dataset)):
         sample, _ = dataset[i]
         sample = _flatten_list(sample)
@@ -85,7 +91,7 @@ def infere(model, dataset, device):
         boxes_out = []
 
         with torch.cuda.amp.autocast():
-            for b in boxes_split:
+            for bi, b in enumerate(boxes_split):
                 if b.shape[0] == num_boxes:
                     attention_mask = torch.tensor(num_boxes * [True])
                 else:
@@ -102,6 +108,13 @@ def infere(model, dataset, device):
                 #boxes_out.append(x)
 
                 #x = model.forward_features(x=img, boxes=b, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
+                if (i in attn_idx) and (bi == 0):
+                    attn = model.get_last_selfattention(x=img, boxes=b, attention_mask=attention_mask)
+                    uimg = T.ToPILImage()(nonnormalized_img)
+                    with open(f"attn_dump/attn_{i}.pickle", 'wb') as f:
+                        pickle.dump(attn, f)
+                    uimg.save(f"attn_dump/attn_{i}.png", 'wb')
+
                 x = model.forward_features(x=img, boxes=b, attention_mask=attention_mask)
                 aggregated_box = x[:, -num_boxes:, :]
                 boxes_out.append(aggregated_box[attention_mask])

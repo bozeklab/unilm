@@ -120,7 +120,7 @@ class Attention(nn.Module):
         self.proj = nn.Linear(all_head_dim, dim)
         self.proj_drop = nn.Dropout(proj_drop)
 
-    def forward(self, x, attention_mask=None, rel_pos_bias=None):
+    def forward(self, x, attention_mask=None, return_attention=False, rel_pos_bias=None):
         B, N, C = x.shape
         qkv_bias = None
         if self.q_bias is not None:
@@ -147,6 +147,8 @@ class Attention(nn.Module):
             attn = attn.masked_fill(attention_mask == False, torch.finfo(attn.dtype).min)
         attn = attn.softmax(dim=-1)
         attn = self.attn_drop(attn)
+        if return_attention:
+            return attn
 
         x = (attn @ v).transpose(1, 2).reshape(B, N, -1)
         x = self.proj(x)

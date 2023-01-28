@@ -184,6 +184,26 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
 
         return self.norm(aggregated_x)
 
+    def get_last_selfattention(self, x, boxes, attention_mask):
+        x = self.patch_embed(x)
+        batch_size, seq_len, _ = x.size()
+        cls_tokens = self.cls_token.expand(batch_size, -1, -1)
+        x = torch.cat((cls_tokens, x), dim=1)
+        if self.pos_embed is not None:
+            x = x + self.pos_embed
+        x = self.pos_drop(x)
+
+        boxes_features = self.extract_box_feature(x=x[:, 1:], boxes_info=boxes, scale_factor=1. / self.patch_size)
+        aggregated_x = self.add_box_feature(x=x, boxes_features=boxes_features, boxes_info=boxes)
+
+        for i, blk in enumerate(self.blocks):
+            if i < len(self.blocks) - 1:
+                aggregated_x = blk(aggregated_x, attention_mask=attention_mask[:, None, None, :], rel_pos_bias=None)
+            else:
+                # return attention of the last block
+                aggregated_x = blk(aggregated_x, attention_mask=attention_mask[:, None, None, :],
+                                   rel_pos_bias=None, return_attention=True)
+
     def forward(self, x, boxes, attention_mask):
 
         x = self.forward_features(x, boxes=boxes, attention_mask=attention_mask)
