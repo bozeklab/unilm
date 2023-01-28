@@ -169,7 +169,7 @@ def main(args):
 
     embeddings, labels, images = infere(model, dataset_train, device)
     output_dict = {'embeddings': embeddings, 'labels': labels, 'images': images}
-    with open('outputs/tumor_insta_4448.pickle', 'wb') as f:
+    with open('outputs/tumor_insta_448_ft.pickle', 'wb') as f:
        pickle.dump(output_dict, f)
 
 
