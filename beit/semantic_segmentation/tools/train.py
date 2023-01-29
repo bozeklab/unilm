@@ -65,6 +65,8 @@ def parse_args():
 
 
 def main():
+    print(DATASETS)
+
     args = parse_args()
 
     cfg = Config.fromfile(args.config)
