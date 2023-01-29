@@ -19,7 +19,7 @@ crop_size = (512, 512)
 
 model = dict(
     backbone=dict(
-        type='BEiT',
+        type='MyBEiT',
         img_size=512,
         patch_size=16,
         embed_dim=768,
