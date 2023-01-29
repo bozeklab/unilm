@@ -386,6 +386,8 @@ def load_checkpoint(model,
             num_extra_tokens = dst_num_pos - (dst_patch_shape[0] * 2 - 1) * (dst_patch_shape[1] * 2 - 1)
             src_size = int((src_num_pos - num_extra_tokens) ** 0.5)
             dst_size = int((dst_num_pos - num_extra_tokens) ** 0.5)
+            print(src_size, src_size)
+            print(dst_size, dst_size)
             if src_size != dst_size:
                 if rank == 0:
                     print("Position interpolate for %s from %dx%d to %dx%d" % (
