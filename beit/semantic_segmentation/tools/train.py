@@ -65,7 +65,7 @@ def parse_args():
 
 
 def main():
-    print(DATASETS)
+    print(mmseg.datasets.DATASETS)
 
     args = parse_args()
 
