@@ -10,6 +10,8 @@ import torch
 from mmcv.runner import init_dist
 from mmcv.utils import Config, DictAction, get_git_hash
 
+import mmseg
+
 from mmseg import __version__
 from mmseg.apis import set_random_seed
 from mmcv_custom import train_segmentor
