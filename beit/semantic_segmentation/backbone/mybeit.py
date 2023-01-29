@@ -281,7 +281,7 @@ class RelativePositionBias(nn.Module):
         return relative_position_bias.permute(2, 0, 1).contiguous()  # nH, Wh*Ww, Wh*Ww
 
 
-@BACKBONES.register_module(force=True)
+@BACKBONES.register_module()
 class MyBEiT(nn.Module):
     """ Vision Transformer with support for patch or hybrid CNN input stage
     """
@@ -289,7 +289,7 @@ class MyBEiT(nn.Module):
                  num_heads=12, mlp_ratio=4., qkv_bias=False, qk_scale=None, drop_rate=0., attn_drop_rate=0.,
                  drop_path_rate=0., hybrid_backbone=None, norm_layer=None, init_values=None, use_checkpoint=False, 
                  use_abs_pos_emb=True, use_rel_pos_bias=False, use_shared_rel_pos_bias=False,
-                 out_indices=[3, 5, 7, 11]):
+                 out_indices=[3, 5, 7, 11], pretrained=None):
         super().__init__()
         norm_layer = norm_layer or partial(nn.LayerNorm, eps=1e-6)
         self.num_classes = num_classes
