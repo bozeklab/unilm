@@ -19,7 +19,7 @@ from mmseg.datasets import build_dataset
 from mmseg.models import build_segmentor
 from mmseg.utils import collect_env, get_root_logger
 
-from backbone import mybeit
+from backbone import mybeit, beit_instaformer
 from datasets import pan_nuke_dataset
 
 
