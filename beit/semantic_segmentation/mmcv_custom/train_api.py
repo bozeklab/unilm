@@ -65,7 +65,7 @@ def train_segmentor(model,
     if cfg.optimizer_config.get("type", None) and cfg.optimizer_config["type"] == "DistOptimizerHook":
         if cfg.optimizer_config.get("use_fp16", False):
             print('!!!')
-            cfg.optimizer_config.get("use_fp16", False)
+            print(cfg.optimizer_config.get("use_fp16", None))
             model, optimizer = apex.amp.initialize(
                 model.cuda(), optimizer, opt_level="O1")
             for m in model.modules():
