@@ -1,5 +1,5 @@
 # dataset settings
-dataset_type = 'PanukeDataset'
+dataset_type = 'PanNukeDataset'
 data_root = '/home/pwojcik/unilm/beit/beit_pt_segmentation/mmsegmentation/data/loveDA/'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
