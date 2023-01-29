@@ -20,7 +20,7 @@ from mmseg.models import build_segmentor
 from mmseg.utils import collect_env, get_root_logger
 
 from backbone import mybeit
-form datasets import pan_nuke_dataset
+from datasets import pan_nuke_dataset
 
 
 def parse_args():
