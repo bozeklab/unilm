@@ -15,11 +15,11 @@ _base_ = [
     '../../_base_/models/upernet_beit.py', '../../_base_/datasets/panuke_448x448.py',
     '../../_base_/default_runtime.py', '../../_base_/schedules/schedule_300.py'
 ]
-crop_size = (640, 640)
+crop_size = (448, 448)
 
 model = dict(
     backbone=dict(
-        type='BEiTInstaformer',
+        type='BEiTInstdaformer',
         img_size=448,
         patch_size=16,
         embed_dim=768,
