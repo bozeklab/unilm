@@ -353,7 +353,7 @@ class BEiTInstaformer(nn.Module):
         if self.pos_embed is not None:
             trunc_normal_(self.pos_embed, std=.02)
         if self.cls_pos_embed is not None:
-            trunc_normal_(self.cls_pos_embed, std=self.init_std)
+            trunc_normal_(self.cls_pos_embed, std=.02)
         trunc_normal_(self.cls_token, std=.02)
         # trunc_normal_(self.mask_token, std=.02)
         self.out_indices = out_indices
