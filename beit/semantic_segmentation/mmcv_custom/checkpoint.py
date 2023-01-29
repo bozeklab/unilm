@@ -327,6 +327,7 @@ def load_checkpoint(model,
     Returns:
         dict or OrderedDict: The loaded checkpoint.
     """
+    print('!!!!!!!!!!!!!!!!!!!!!!!')
     checkpoint = _load_checkpoint(filename, map_location)
     # OrderedDict is a subclass of dict
     if not isinstance(checkpoint, dict):
@@ -447,9 +448,6 @@ def load_checkpoint(model,
         # height (== width) for the new position embedding
         new_size = int(num_patches ** 0.5)
         # class_token and dist_token are kept unchanged
-        print('!!!')
-        print(orig_size)
-        print(new_size)
         if orig_size != new_size:
             if rank == 0:
                 print("Position interpolate from %dx%d to %dx%d" % (orig_size, orig_size, new_size, new_size))
