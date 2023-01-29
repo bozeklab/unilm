@@ -14,6 +14,5 @@ class PanNukeDataset(CustomDataset):
   PALETTE = [[128, 128, 128], [129, 127, 38], [120, 69, 125], [53, 125, 34], [0, 11, 123]]
 
   def __init__(self, split, **kwargs):
-    super().__init__(img_suffix='.png', seg_map_suffix='.png',
-                     split=split, **kwargs)
+    super().__init__(img_suffix='.png', seg_map_suffix='.png', **kwargs)
     assert osp.exists(self.img_dir) and self.split is not None
