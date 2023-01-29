@@ -12,7 +12,7 @@
 # --------------------------------------------------------'
 # recommand use this config for BEiT models which are self-supervised pretrained and then intermediate fine-tuned on imagenet
 _base_ = [
-    '../../_base_/models/upernet_beit.py', '../../_base_/datasets/loveda_640x640.py',
+    '../../_base_/models/upernet_beit.py', '../../_base_/datasets/panuke_640x640.py',
     '../../_base_/default_runtime.py', '../../_base_/schedules/schedule_160k.py'
 ]
 crop_size = (640, 640)
