@@ -19,7 +19,7 @@ crop_size = (448, 448)
 
 model = dict(
     backbone=dict(
-        type='BEiTInstdaformer',
+        type='BEiTInstaformer',
         img_size=448,
         patch_size=16,
         embed_dim=768,
@@ -35,12 +35,12 @@ model = dict(
     ),
     decode_head=dict(
         in_channels=[768, 768, 768, 768],
-        num_classes=7,
+        num_classes=5,
         channels=768,
     ),
     auxiliary_head=dict(
         in_channels=768,
-        num_classes=7
+        num_classes=5
     ), 
     test_cfg = dict(mode='slide', crop_size=crop_size, stride=(426, 426))
 )
