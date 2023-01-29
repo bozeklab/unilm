@@ -9,10 +9,10 @@ from mmcv.runner import build_optimizer, build_runner
 from mmseg.core import DistEvalHook, EvalHook
 from mmseg.datasets import build_dataloader, build_dataset
 from mmseg.utils import get_root_logger
-try:
-    import apex
-except:
-    print('apex is not installed')
+#try:
+#    import apex
+#except:
+#    print('apex is not installed')
 
 
 def set_random_seed(seed, deterministic=False):
@@ -62,13 +62,13 @@ def train_segmentor(model,
     optimizer = build_optimizer(model, cfg.optimizer)
 
     # use apex fp16 optimizer
-    if cfg.optimizer_config.get("type", None) and cfg.optimizer_config["type"] == "DistOptimizerHook":
-        if cfg.optimizer_config.get("use_fp16", False):
-            model, optimizer = apex.amp.initialize(
-                model.cuda(), optimizer, opt_level="O1")
-            for m in model.modules():
-                if hasattr(m, "fp16_enabled"):
-                    m.fp16_enabled = True
+#    if cfg.optimizer_config.get("type", None) and cfg.optimizer_config["type"] == "DistOptimizerHook":
+#        if cfg.optimizer_config.get("use_fp16", False):
+#            model, optimizer = apex.amp.initialize(
+#                model.cuda(), optimizer, opt_level="O1")
+#            for m in model.modules():
+#                if hasattr(m, "fp16_enabled"):
+#                    m.fp16_enabled = True
 
     # put model on gpus
     if distributed:
