@@ -332,6 +332,7 @@ class BEiTInstaformer(nn.Module):
             self.register_buffer('pos_embed', pos_embed)
         else:
             self.pos_embed = None
+            self.cls_pos_embed = None
         self.pos_drop = nn.Dropout(p=drop_rate)
 
         if use_shared_rel_pos_bias:
@@ -351,6 +352,8 @@ class BEiTInstaformer(nn.Module):
 
         if self.pos_embed is not None:
             trunc_normal_(self.pos_embed, std=.02)
+        if self.cls_pos_embed is not None:
+            trunc_normal_(self.cls_pos_embed, std=self.init_std)
         trunc_normal_(self.cls_token, std=.02)
         # trunc_normal_(self.mask_token, std=.02)
         self.out_indices = out_indices
@@ -445,7 +448,8 @@ class BEiTInstaformer(nn.Module):
         cls_tokens = self.cls_token.expand(batch_size, -1, -1)  # stole cls_tokens impl from Phil Wang, thanks
         x = torch.cat((cls_tokens, x), dim=1)
         if self.pos_embed is not None:
-            x = x + self.pos_embed
+            pos_embed = torch.cat([self.cls_pos_embed, self.pos_embed], dim=1)
+            x = x + pos_embed
         x = self.pos_drop(x)
 
         rel_pos_bias = self.rel_pos_bias() if self.rel_pos_bias is not None else None
