@@ -173,8 +173,8 @@ def evaluate_f1_whole(args, model, device):
     types = ['other', 'inflammatory', 'epithelial', 'spindle']
     #types = ['neoplastic ', 'inflammatory', 'soft', 'dead', 'epithelial']
     rdx = random.sample(range(len(labels)), 6467)
-    predictions = predictions[rdx]
-    labels = labels[rdx]
+    predictions = predictions[:6000]
+    labels = labels[:6000]
 
     print(f"All dataset size {labels.shape[0]}")
     print(f"all dataset class F1 {f1_score(labels.numpy(), predictions.numpy(), zero_division=1, average='weighted')}")
