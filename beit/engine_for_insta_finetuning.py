@@ -171,6 +171,7 @@ def evaluate_f1_whole(args, model, device):
 
     types = ['other', 'inflammatory', 'epithelial', 'spindle']
     #types = ['neoplastic ', 'inflammatory', 'soft', 'dead', 'epithelial']
+    print(f"All dataset size {labels.shape[0]}")
     print(f"all dataset class F1 {f1_score(labels.numpy(), predictions.numpy(), zero_division=1, average='weighted')}")
     for i in range(len(types)):
         _labels = labels.clone()
@@ -185,7 +186,7 @@ def evaluate_f1_whole(args, model, device):
         _predictions[~_pred_idx] = 0
         cls_acc = accuracy_score(_labels.numpy(), _predictions.numpy())
         print(f"{types[i]} class F1 {f1_score(_labels.numpy(), _predictions.numpy(), zero_division=1)}")
-        print(f"{types[i]} class accuracy {cls_acc}, base line {cls_acc / 0.8062} ")
+        print(f"{types[i]} class accuracy {cls_acc}")
     print(f"Accuracy on the whole ds: {accuracy_score(labels.numpy(), predictions.numpy())}")
 
 
