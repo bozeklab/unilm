@@ -426,6 +426,7 @@ def main(args, ds_init):
 
     if args.eval:
         test_stats = evaluate(data_loader_val, model, device)
+        evaluate_f1_whole(args, model, device)
         print(f"Accuracy of the network on the {len(dataset_val)} test images: {test_stats['acc1']:.1f}%")
         exit(0)
 
