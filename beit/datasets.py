@@ -180,12 +180,12 @@ class DataAugmentationForBEITDataset(object):
         classes = classes.type(torch.int64) - 1
 
         # epithelial class
-        classes[classes == 3] = 2
+        #classes[classes == 3] = 2
 
         # spindle-shaped
-        classes[classes == 4] = 3
-        classes[classes == 5] = 3
-        classes[classes == 6] = 3
+        ##classes[classes == 4] = 3
+        #classes[classes == 5] = 3
+        #classes[classes == 6] = 3
 
 
         return classes
