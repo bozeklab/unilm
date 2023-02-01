@@ -195,6 +195,9 @@ class DataAugmentationForBEITDataset(object):
         self.finetune = finetune
         self.eval_f1 = eval_f1
         self.random_hflip = RandomHorizontalFlip(p=0.5)
+        self.common_transform = transforms.Compose([
+            transforms.ColorJitter(0.4, 0.4, 0.4),
+        ])
 
         imagenet_default_mean_and_std = args.imagenet_default_mean_and_std
         mean = IMAGENET_INCEPTION_MEAN if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_MEAN
@@ -233,6 +236,7 @@ class DataAugmentationForBEITDataset(object):
 
                 if not self.eval_f1:
                     image, boxes = self.random_hflip(image, boxes)
+                    image = self.common_transform(image)
 
                 if boxes.shape[0] <= self.num_boxes:
                     padding_length = self.num_boxes - boxes_available
