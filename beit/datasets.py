@@ -242,6 +242,7 @@ class DataAugmentationForBEITDataset(object):
                 if not self.eval_f1:
                     image, boxes = self.random_hflip(image, boxes)
                     image, boxes = self.crop_and_resize(image, boxes)
+                    print(boxes)
                     image = self.common_transform(image)
 
                 if boxes.shape[0] <= self.num_boxes:
