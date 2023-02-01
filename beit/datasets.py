@@ -230,6 +230,10 @@ class DataAugmentationForBEITDataset(object):
                 classes = DataAugmentationForBEITDataset._merge_classes(classes)
                 #classes = classes.type(torch.int64)
                 boxes_available = boxes.shape[0]
+
+                if not self.eval_f1:
+                    image, boxes = self.random_hflip(image, boxes)
+
                 if boxes.shape[0] <= self.num_boxes:
                     padding_length = self.num_boxes - boxes_available
                     fake_box = fake_box.expand(padding_length, -1)
@@ -239,7 +243,6 @@ class DataAugmentationForBEITDataset(object):
                             torch.tensor([True] * boxes_available + [False] * padding_length),
                             (torch.cat([boxes, fake_box]), torch.cat([classes, fake_class]))]
                 else:
-                    image, boxes = self.random_hflip(image, boxes)
                     idx = random.sample(range(boxes_available), self.num_boxes)
                     return [self.patch_transform(image),
                             transforms.ToTensor()(image),

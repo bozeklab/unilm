@@ -237,7 +237,7 @@ def main(args, ds_init):
     if args.disable_eval_during_finetuning:
         dataset_val = None
     else:
-        dataset_val = build_instaformer_dataset(args=args, finetune=True, data_root=args.eval_data_path)
+        dataset_val = build_instaformer_dataset(args=args, finetune=True, eval_f1=True, data_root=args.eval_data_path)
 
     if True:  # args.distributed:
         num_tasks = utils.get_world_size()
