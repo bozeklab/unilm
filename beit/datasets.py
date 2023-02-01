@@ -237,13 +237,13 @@ class DataAugmentationForBEITDataset(object):
                 boxes, classes = boxes
                 classes = DataAugmentationForBEITDataset._merge_classes(classes)
                 #classes = classes.type(torch.int64)
-                boxes_available = boxes.shape[0]
 
                 if not self.eval_f1:
                     image, boxes = self.random_hflip(image, boxes)
                     image, boxes = self.crop_and_resize(image, boxes)
-                    print(boxes)
                     image = self.common_transform(image)
+
+                boxes_available = boxes.shape[0]
 
                 if boxes.shape[0] <= self.num_boxes:
                     padding_length = self.num_boxes - boxes_available
