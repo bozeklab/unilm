@@ -202,7 +202,6 @@ class DataAugmentationForBEITDataset(object):
 
         self.patch_transform = transforms.Compose([
             transforms.ToTensor(),
-            self.random_hflip,
             transforms.Normalize(
                 mean=torch.tensor(mean),
                 std=torch.tensor(std))])
@@ -240,6 +239,7 @@ class DataAugmentationForBEITDataset(object):
                             torch.tensor([True] * boxes_available + [False] * padding_length),
                             (torch.cat([boxes, fake_box]), torch.cat([classes, fake_class]))]
                 else:
+                    img, boxes = self.random_hflip(image, boxes)
                     idx = random.sample(range(boxes_available), self.num_boxes)
                     return [self.patch_transform(image),
                             transforms.ToTensor()(image),
