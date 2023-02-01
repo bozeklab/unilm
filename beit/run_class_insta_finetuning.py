@@ -53,7 +53,7 @@ def get_args():
     parser.add_argument('--layer_scale_init_value', default=0.1, type=float,
                         help="0.1 for base, 1e-5 for large. set 0 to disable layer scale")
 
-    parser.add_argument('--input_size', default=224, type=int,
+    parser.add_argument('--input_size', default=448, type=int,
                         help='images input size')
 
     parser.add_argument('--drop', type=float, default=0.0, metavar='PCT',
@@ -85,9 +85,6 @@ def get_args():
     parser.add_argument('--weight_decay_end', type=float, default=None, help="""Final value of the
         weight decay. We use a cosine schedule for WD and using a larger decay by
         the end of training improves performance for ViTs.""")
-
-    parser.add_argument('--input_size', default=448, type=int,
-                        help='images input size for backbone')
 
     parser.add_argument('--lr', type=float, default=5e-4, metavar='LR',
                         help='learning rate (default: 5e-4)')
