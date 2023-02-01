@@ -179,6 +179,9 @@ class DataAugmentationForBEITDataset(object):
     def _merge_classes(classes):
         classes = classes.type(torch.int64) - 1
 
+        print('!!!')
+        print(torch.any(classes == -1))
+
         # epithelial class
         #classes[classes == 3] = 2
 
