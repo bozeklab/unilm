@@ -210,8 +210,6 @@ class RandomResizedCropAndInterpolationWithTwoPic:
         if boxes is not None:
             if classes is not None:
                 boxes, classes = self.rescale_boxes(boxes, i, j, h, w, classes)
-                print(boxes.shape)
-                print(classes.shape)
             else:
                 boxes = self.rescale_boxes(boxes, i, j, h, w)
 
