@@ -86,6 +86,9 @@ def get_args():
         weight decay. We use a cosine schedule for WD and using a larger decay by
         the end of training improves performance for ViTs.""")
 
+    parser.add_argument('--input_size', default=448, type=int,
+                        help='images input size for backbone')
+
     parser.add_argument('--lr', type=float, default=5e-4, metavar='LR',
                         help='learning rate (default: 5e-4)')
     parser.add_argument('--layer_decay', type=float, default=0.9)

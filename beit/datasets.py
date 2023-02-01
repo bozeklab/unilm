@@ -199,6 +199,11 @@ class DataAugmentationForBEITDataset(object):
             transforms.ColorJitter(0.4, 0.4, 0.4),
         ])
 
+        self.crop_and_resize = RandomResizedCropAndInterpolationWithTwoPic(
+            size=args.input_size, second_size=None,
+            interpolation='bicubic', second_interpolation='lanczos',
+        )
+
         imagenet_default_mean_and_std = args.imagenet_default_mean_and_std
         mean = IMAGENET_INCEPTION_MEAN if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_MEAN
         std = IMAGENET_INCEPTION_STD if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_STD
@@ -236,6 +241,7 @@ class DataAugmentationForBEITDataset(object):
 
                 if not self.eval_f1:
                     image, boxes = self.random_hflip(image, boxes)
+                    image, boxes = self.crop_and_resize(image, boxes)
                     image = self.common_transform(image)
 
                 if boxes.shape[0] <= self.num_boxes:
