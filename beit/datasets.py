@@ -194,6 +194,7 @@ class DataAugmentationForBEITDataset(object):
         self.num_boxes = args.num_boxes
         self.finetune = finetune
         self.eval_f1 = eval_f1
+        self.random_hflip = RandomHorizontalFlip(p=0.5)
 
         imagenet_default_mean_and_std = args.imagenet_default_mean_and_std
         mean = IMAGENET_INCEPTION_MEAN if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_MEAN
@@ -201,6 +202,7 @@ class DataAugmentationForBEITDataset(object):
 
         self.patch_transform = transforms.Compose([
             transforms.ToTensor(),
+            self.random_hflip,
             transforms.Normalize(
                 mean=torch.tensor(mean),
                 std=torch.tensor(std))])
