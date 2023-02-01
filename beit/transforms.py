@@ -129,7 +129,7 @@ class RandomResizedCropAndInterpolationWithTwoPic:
         self.scale = scale
         self.ratio = ratio
 
-    def rescale_boxes(self, boxes, i, j, h, w):
+    def rescale_boxes(self, boxes, i, j, h, w, classes = None):
         """Rescale bounding boxes according to the crop parameters"""
         boxes[:, 0::2] -= j
         boxes[:, 1::2] -= i
@@ -151,6 +151,8 @@ class RandomResizedCropAndInterpolationWithTwoPic:
         boxes[:, 0::2] *= ratio_w
         boxes[:, 1::2] *= ratio_h
 
+        if classes is not None:
+            return boxes.int(), classes[idx]
         return boxes.int()
 
     @staticmethod
@@ -196,7 +198,7 @@ class RandomResizedCropAndInterpolationWithTwoPic:
         j = (img.size[0] - w) // 2
         return i, j, h, w
 
-    def __call__(self, img, boxes=None):
+    def __call__(self, img, boxes=None, classes=None):
         """
         Args:
             img (PIL Image): Image to be cropped and resized.
@@ -206,7 +208,10 @@ class RandomResizedCropAndInterpolationWithTwoPic:
         """
         i, j, h, w = self.get_params(img, self.scale, self.ratio)
         if boxes is not None:
-            boxes = self.rescale_boxes(boxes, i, j, h, w)
+            if classes is not None:
+                boxes, classes = self.rescale_boxes(boxes, i, j, h, w, classes)
+            else:
+                boxes = self.rescale_boxes(boxes, i, j, h, w)
 
         if isinstance(self.interpolation, (tuple, list)):
             interpolation = random.choice(self.interpolation)
@@ -214,6 +219,8 @@ class RandomResizedCropAndInterpolationWithTwoPic:
             interpolation = self.interpolation
         if self.second_size is None:
             if boxes is not None:
+                if classes is not None:
+                    return F.resized_crop(img, i, j, h, w, self.size, interpolation), boxes, classes
                 return F.resized_crop(img, i, j, h, w, self.size, interpolation), boxes
             else:
                 return F.resized_crop(img, i, j, h, w, self.size, interpolation)
