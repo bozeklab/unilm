@@ -69,8 +69,6 @@ class RandomHorizontalFlip:
         self.p = p
 
     def flip_boxes(self, boxes, width):
-        print('!!!')
-        print(width)
         w = boxes[:, 2] - boxes[:, 0]
 
         boxes[:, 0::2] *= -1
