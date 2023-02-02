@@ -61,7 +61,6 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         if use_shared_rel_pos_bias:
             self.rel_pos_bias = RelativePositionBias(window_size=self.patch_embed.patch_shape, num_heads=num_heads)
         else:
-            print('!!!')
             self.rel_pos_bias = None
 
         dpr = [x.item() for x in torch.linspace(0, drop_path_rate, depth)]  # stochastic depth decay rule
