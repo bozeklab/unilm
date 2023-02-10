@@ -146,7 +146,7 @@ def evaluate_f1_whole(args, model, device):
         img = img.to(device, non_blocking=True).unsqueeze(0)
         boxes = boxes.float()
 
-        num_boxes = 350
+        num_boxes = 500
         boxes_split = torch.split(boxes, num_boxes, dim=0)
 
         with torch.cuda.amp.autocast():
