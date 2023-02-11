@@ -191,6 +191,7 @@ def evaluate_f1_whole(args, model, device):
         print(f"{types[i]} class accuracy {cls_acc}")
         print(f"{types[i]} class precision {precision_score(_labels.numpy(), _predictions.numpy())}")
         print(f"{types[i]} class recall {recall_score(_labels.numpy(), _predictions.numpy())}")
+        print()
     print(f"Accuracy on the whole ds: {accuracy_score(labels.numpy(), predictions.numpy())}")
 
 
