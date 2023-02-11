@@ -176,21 +176,25 @@ def evaluate_f1_whole(args, model, device):
     print(f"All dataset size {labels.shape[0]}")
     print(f"all dataset class F1 {f1_score(labels.numpy(), predictions.numpy(), zero_division=1, average='weighted')}")
     for i in range(len(types)):
-        _labels = labels.clone()
-        _predictions = predictions.clone()
+        type_samples = (labels == i) | (predictions == i)
 
-        _labels_idx = _labels == i
-        _labels[_labels_idx] = 1
-        _labels[~_labels_idx] = 0
+        labels_true = labels[type_samples].numpy()
+        pred = predictions[type_samples].numpy()
 
-        _pred_idx = _predictions == i
-        _predictions[_pred_idx] = 1
-        _predictions[~_pred_idx] = 0
-        cls_acc = accuracy_score(_labels.numpy(), _predictions.numpy())
-        print(f"{types[i]} class F1 {f1_score(_labels.numpy(), _predictions.numpy(), zero_division=1)}")
-        print(f"{types[i]} class accuracy {cls_acc}")
-        print(f"{types[i]} class precision {precision_score(_labels.numpy(), _predictions.numpy())}")
-        print(f"{types[i]} class recall {recall_score(_labels.numpy(), _predictions.numpy())}")
+        tp_dt = ((labels_true == i) & (pred == i)).sum()
+        tn_dt = ((labels_true != i) & (pred != i)).sum()
+        fp_dt = ((labels_true != i) & (pred == i)).sum()
+        fn_dt = ((labels_true == i) & (pred != i)).sum()
+
+        f1_type = (2 * tp_dt) / (2 * tp_dt + fp_dt + fn_dt)
+        acc_type = (tp_dt + tn_dt) / (tp_dt + tn_dt + fp_dt + fn_dt)
+        prec_type = tp_dt / (tp_dt + fp_dt)
+        recall_type = tp_dt / (tp_dt + fn_dt)
+
+        print(f"{types[i]} class F1 {f1_type}")
+        print(f"{types[i]} class accuracy {acc_type}")
+        print(f"{types[i]} class precision {prec_type}")
+        print(f"{types[i]} class recall {recall_type}")
         print()
     print(f"Accuracy on the whole ds: {accuracy_score(labels.numpy(), predictions.numpy())}")
 
