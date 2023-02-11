@@ -21,7 +21,7 @@ from timm.utils import accuracy
 import utils
 from beit.datasets import build_instaformer_dataset
 from beit.run_beit_inference import _flatten_list
-from sklearn.metrics import f1_score, accuracy_score
+from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_score
 
 
 def train_class_batch(model, img, boxes, attention_mask, classes, criterion):
@@ -189,6 +189,8 @@ def evaluate_f1_whole(args, model, device):
         cls_acc = accuracy_score(_labels.numpy(), _predictions.numpy())
         print(f"{types[i]} class F1 {f1_score(_labels.numpy(), _predictions.numpy(), zero_division=1)}")
         print(f"{types[i]} class accuracy {cls_acc}")
+        print(f"{types[i]} class precision {precision_score(_labels.numpy(), _predictions.numpy())}")
+        print(f"{types[i]} class recall {recall_score(_labels.numpy(), _predictions.numpy())}")
     print(f"Accuracy on the whole ds: {accuracy_score(labels.numpy(), predictions.numpy())}")
 
 
