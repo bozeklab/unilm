@@ -175,6 +175,11 @@ def evaluate_f1_whole(args, model, device):
 
     print(f"All dataset size {labels.shape[0]}")
     print(f"all dataset class F1 {f1_score(labels.numpy(), predictions.numpy(), zero_division=1, average='weighted')}")
+    tp_tn_dt = (labels == predictions).sum()
+    fp_fn_dt = (labels != predictions).sum()
+    acc = tp_tn_dt / (tp_tn_dt + fp_fn_dt)
+    print(f"Accuracy on the whole ds: {acc}")
+
     for i in range(len(types)):
         type_samples = (labels == i) | (predictions == i)
 
@@ -196,7 +201,6 @@ def evaluate_f1_whole(args, model, device):
         print(f"{types[i]} class precision {prec_type}")
         print(f"{types[i]} class recall {recall_type}")
         print()
-    print(f"Accuracy on the whole ds: {accuracy_score(labels.numpy(), predictions.numpy())}")
 
 
 @torch.no_grad()
