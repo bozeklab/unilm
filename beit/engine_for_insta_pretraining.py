@@ -55,26 +55,27 @@ def train_one_epoch(model: torch.nn.Module, d_vae: torch.nn.Module,
             bool_masked_pos = bool_masked_pos.flatten(1).to(torch.bool)
             labels = input_ids[bool_masked_pos]
 
-        with torch.no_grad():
-            valid_instances = torch.logical_and(attention_mask, masked_boxes)
-            instances = instances[valid_instances]
-            instance_labels = d_vae.get_codebook_indices(instances).flatten()
+        #with torch.no_grad():
+        #    valid_instances = torch.logical_and(attention_mask, masked_boxes)
+        #    instances = instances[valid_instances]
+        #    instance_labels = d_vae.get_codebook_indices(instances).flatten()
 
         with torch.cuda.amp.autocast():
             img_outputs, insta_outputs = model(samples, boxes, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask,
                                                boxes_mask=masked_boxes, return_all_tokens=False)
             img_loss = nn.CrossEntropyLoss()(input=img_outputs, target=labels)
 
-            valid_boxes_num = insta_outputs.shape[0]
-            insta_outputs = insta_outputs.view(valid_boxes_num * (instance_img_size // 8) * (instance_img_size // 8),
-                                               img_outputs.shape[-1])
+            #valid_boxes_num = insta_outputs.shape[0]
+            #insta_outputs = insta_outputs.view(valid_boxes_num * (instance_img_size // 8) * (instance_img_size // 8),
+            #                                   img_outputs.shape[-1])
 
-            insta_loss = nn.CrossEntropyLoss()(input=insta_outputs, target=instance_labels.flatten())
-            total_loss = img_loss + insta_loss
+            #insta_loss = nn.CrossEntropyLoss()(input=insta_outputs, target=instance_labels.flatten())
+            total_loss = img_loss# + insta_loss
 
         img_loss_value = img_loss.item()
-        insta_loss_value = insta_loss.item()
-        total_loss_value = total_loss.item()
+        #insta_loss_value = insta_loss.item()
+        #total_loss_value = total_loss.item()
+        total_loss_value = img_loss_value
 
         if not math.isfinite(total_loss_value):
             print("Loss is {}, stopping training".format(total_loss_value))
@@ -90,16 +91,16 @@ def train_one_epoch(model: torch.nn.Module, d_vae: torch.nn.Module,
         torch.cuda.synchronize()
 
         img_mlm_acc = (img_outputs.max(-1)[1] == labels).float().mean().item()
-        insta_mlm_acc = (insta_outputs.max(-1)[1] == instance_labels).float().mean().item()
+        #insta_mlm_acc = (insta_outputs.max(-1)[1] == instance_labels).float().mean().item()
 
         metric_logger.update(mlm_acc=img_mlm_acc)
-        metric_logger.update(insta_mlm_acc=insta_mlm_acc)
+        #metric_logger.update(insta_mlm_acc=insta_mlm_acc)
         if log_writer is not None:
             log_writer.update(img_mlm_acc=img_mlm_acc, head="img loss")
-            log_writer.update(insta_mlm_acc=insta_mlm_acc, head="instance loss")
+            #log_writer.update(insta_mlm_acc=insta_mlm_acc, head="instance loss")
 
         metric_logger.update(img_loss=img_loss_value)
-        metric_logger.update(insta_loss=insta_loss_value)
+        #metric_logger.update(insta_loss=insta_loss_value)
         metric_logger.update(total_loss=total_loss_value)
 
         metric_logger.update(loss_scale=loss_scale_value)
@@ -120,7 +121,7 @@ def train_one_epoch(model: torch.nn.Module, d_vae: torch.nn.Module,
 
         if log_writer is not None:
             log_writer.update(img_loss=img_loss_value, head="img loss")
-            log_writer.update(insta_loss=insta_loss_value, head="insta loss")
+            #log_writer.update(insta_loss=insta_loss_value, head="insta loss")
             log_writer.update(total_loss=total_loss_value, head="total loss")
 
             log_writer.update(loss_scale=loss_scale_value, head="opt")
