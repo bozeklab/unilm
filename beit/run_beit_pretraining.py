@@ -75,6 +75,8 @@ def get_args():
                         help='SGD momentum (default: 0.9)')
     parser.add_argument('--weight_decay', type=float, default=0.05,
                         help='weight decay (default: 0.05)')
+    parser.add_argument('--instance_size', default=32, type=int,
+                        help='instance image size')
     parser.add_argument('--weight_decay_end', type=float, default=None, help="""Final value of the
         weight decay. We use a cosine schedule for WD. 
         (Set the same value with args.weight_decay to keep weight decay no change)""")
@@ -141,7 +143,7 @@ def get_model(args):
     model = create_model(
         args.model,
         pretrained=False,
-        num_classes=args.nb_classes,
+        #num_classes=args.nb_classes,
         drop_path_rate=args.drop_path,
         drop_block_rate=None,
         use_shared_rel_pos_bias=args.rel_pos_bias,
