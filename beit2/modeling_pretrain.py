@@ -219,23 +219,7 @@ class VisionTransformerForMaskedImageModeling(nn.Module):
         else:
             raise NotImplementedError(f"Not support for layer id is {layer_id} now!")
 
-    def get_last_selfattention(self, x):
-        x = self.patch_embed(x)
-        batch_size, seq_len, _ = x.size()
-        cls_tokens = self.cls_token.expand(batch_size, -1, -1)
-        x = torch.cat((cls_tokens, x), dim=1)
-        if self.pos_embed is not None:
-            x = x + self.pos_embed
-        x = self.pos_drop(x)
-        rel_pos_bias = self.rel_pos_bias() if self.rel_pos_bias is not None else None
 
-        for i, blk in enumerate(self.blocks):
-            if i < len(self.blocks) - 1:
-                x = blk(x, rel_pos_bias=rel_pos_bias)
-            else:
-                # return attention of the last block
-                return blk(x, rel_pos_bias=rel_pos_bias, return_attention=True)
-                
 class VisionTransformerForMaskedImageModelingCLS(VisionTransformerForMaskedImageModeling):
     def __init__(self, img_size=224, patch_size=16, in_chans=3, vocab_size=8192, embed_dim=768, depth=12,
                  num_heads=12, mlp_ratio=4., qkv_bias=True, qk_scale=None, drop_rate=0., attn_drop_rate=0.,

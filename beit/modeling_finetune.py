@@ -354,16 +354,33 @@ class VisionTransformer(nn.Module):
 
         x = self.norm(x)
         return x
-        if self.fc_norm is not None:
-            t = x[:, 1:, :]
-            return self.fc_norm(t.mean(1))
-        else:
-            return x[:, 0]
+        #if self.fc_norm is not None:
+        #    t = x[:, 1:, :]
+        #    return self.fc_norm(t.mean(1))
+        #else:
+        #    return x[:, 0]
 
     def forward(self, x):
         x = self.forward_features(x)
         x = self.head(x)
         return x
+
+    def get_last_selfattention(self, x):
+        x = self.patch_embed(x)
+        batch_size, seq_len, _ = x.size()
+        cls_tokens = self.cls_token.expand(batch_size, -1, -1)
+        x = torch.cat((cls_tokens, x), dim=1)
+        if self.pos_embed is not None:
+            x = x + self.pos_embed
+        x = self.pos_drop(x)
+        rel_pos_bias = self.rel_pos_bias() if self.rel_pos_bias is not None else None
+
+        for i, blk in enumerate(self.blocks):
+            if i < len(self.blocks) - 1:
+                x = blk(x, rel_pos_bias=rel_pos_bias)
+            else:
+                # return attention of the last block
+                return blk(x, rel_pos_bias=rel_pos_bias, return_attention=True)
 
     def get_intermediate_layers(self, x):
         x = self.patch_embed(x)

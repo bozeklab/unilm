@@ -67,7 +67,7 @@ def _flatten_list(nested_list):
 
 
 @torch.no_grad()
-def infere(model, dataset, device):
+def infere_insta(model, dataset, device):
     embeddings = []
     labels = []
     images = []
@@ -111,21 +111,24 @@ def infere(model, dataset, device):
 
                 #x = model.forward_features(x=img, boxes=b, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
                 if (i in attn_idx) and (bi == 0):
-                    attn = model.get_last_selfattention(x=img, boxes=b, attention_mask=attention_mask)
+                    #attn = model.get_last_selfattention(x=img, boxes=b, attention_mask=attention_mask)
+                    attn = model.get_last_selfattention(x=img)
                     uimg = T.ToPILImage()(nonnormalized_img)
-                    with open(f"attn_dump/attn_{i}.pickle", 'wb') as f:
+                    with open(f"attn_dump_bt/attn_{i}.pickle", 'wb') as f:
                         pickle.dump(attn.cpu(), f)
-                    uimg.save(f"attn_dump/attn_{i}.png")
+                    uimg.save(f"attn_dump_bt/attn_{i}.png")
 
-                x = model.forward_features(x=img, boxes=b, attention_mask=attention_mask)
-                aggregated_box = x[:, -num_boxes:, :]
-                boxes_out.append(aggregated_box[attention_mask])
-                #batch_size, seq_len, C = x.shape
-                #x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
-        #aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), spatial_scale=0.0625, boxes=[boxes], output_size=(3, 3))
-        #m = nn.AvgPool2d(3, stride=1)
-        #aligned_boxes = m(aligned_boxes).squeeze()
-        aligned_boxes = torch.cat(boxes_out).cpu()
+                #x = model.forward_features(x=img, boxes=b, attention_mask=attention_mask)
+                x = model.forward_features(x=img)
+                #aggregated_box = x[:, -num_boxes:, :]
+                #boxes_out.append(aggregated_box[attention_mask])
+                batch_size, seq_len, C = x.shape
+                # 1/16 == 0.0625
+                x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
+        aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), spatial_scale=0.0625, boxes=[boxes], output_size=(3, 3))
+        m = nn.AvgPool2d(3, stride=1)
+        aligned_boxes = m(aligned_boxes).squeeze()
+        #aligned_boxes = torch.cat(boxes_out).cpu()
 
         #boxes = boxes.cpu()
 
@@ -182,10 +185,10 @@ def main(args):
     dataset_train = build_instaformer_dataset(args, finetune=False)
     print(f"Length of dataset == {len(dataset_train)}")
 
-    embeddings, labels, images = infere(model, dataset_train, device)
+    embeddings, labels, images = infere_insta(model, dataset_train, device)
     output_dict = {'embeddings': embeddings, 'labels': labels, 'images': images}
-    with open('outputs/tumor_insta_448_ft.pickle', 'wb') as f:
-       pickle.dump(output_dict, f)
+    #with open('outputs/tumor_insta_448_ft.pickle', 'wb') as f:
+    #   pickle.dump(output_dict, f)
 
 
 if __name__ == '__main__':
