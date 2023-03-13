@@ -199,7 +199,7 @@ class VisionInstaformerForMaskedImageModeling(nn.Module):
         else:
             # return the masked tokens
             instance_mask = torch.logical_and(attention_mask, boxes_mask)
-            return self.lm_head(aggregated_feat[bool_masked_pos])#, self.insta_lm_head(aggregated_box[instance_mask])
+            return self.lm_head(aggregated_feat[bool_masked_pos]), self.insta_lm_head(aggregated_box[instance_mask])
 
 
 @register_model
