@@ -131,11 +131,12 @@ def infere_insta(model, dataset, device):
                 boxes = boxes.to(device, non_blocking=True)
         aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), spatial_scale=0.0625, boxes=[boxes], output_size=(3, 3))
         m = nn.AvgPool2d(3, stride=1)
-        aligned_boxes = m(aligned_boxes)#.squeeze()
+        aligned_boxes = m(aligned_boxes).squeeze()
         #aligned_boxes = torch.cat(boxes_out).cpu()
         print(aligned_boxes.shape)
 
         boxes = boxes.cpu()
+        aligned_boxes = aligned_boxes.cpu()
 
         for j in range(aligned_boxes.shape[0]):
             embeddings.append(aligned_boxes[j].numpy())
