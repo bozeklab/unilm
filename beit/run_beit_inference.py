@@ -134,7 +134,7 @@ def infere_insta(model, dataset, device):
         aligned_boxes = m(aligned_boxes).squeeze()
         #aligned_boxes = torch.cat(boxes_out).cpu()
 
-        #boxes = boxes.cpu()
+        boxes = boxes.cpu()
 
         for j in range(aligned_boxes.shape[0]):
             embeddings.append(aligned_boxes[j].numpy())
