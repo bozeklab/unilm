@@ -128,6 +128,7 @@ def infere_insta(model, dataset, device):
                 # 1/16 == 0.0625
                 x = x[:, 1:, :]
                 x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
+                boxes = boxes.to(device, non_blocking=True)
         aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), spatial_scale=0.0625, boxes=[boxes], output_size=(3, 3))
         m = nn.AvgPool2d(3, stride=1)
         aligned_boxes = m(aligned_boxes).squeeze()
