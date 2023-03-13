@@ -92,6 +92,8 @@ def infere_insta(model, dataset, device):
         boxes_split = torch.split(boxes, num_boxes, dim=0)
         boxes_out = []
 
+        patch_size = (16, 16)
+
         with torch.cuda.amp.autocast():
             for bi, b in enumerate(boxes_split):
                 if b.shape[0] == num_boxes:
