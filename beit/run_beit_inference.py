@@ -125,6 +125,8 @@ def infere_insta(model, dataset, device):
                 #aggregated_box = x[:, -num_boxes:, :]
                 #boxes_out.append(aggregated_box[attention_mask])
                 batch_size, seq_len, C = x.shape
+                print('!!!')
+                print(x.shape)
                 # 1/16 == 0.0625
                 x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
         aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), spatial_scale=0.0625, boxes=[boxes], output_size=(3, 3))
