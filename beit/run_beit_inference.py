@@ -74,7 +74,7 @@ def infere_insta(model, dataset, device):
 
     model.eval()
 
-    attn_idx = random.sample(range(len(dataset)), 5)
+    attn_idx = random.sample(range(len(dataset)), 50)
 
     for i in range(len(dataset)):
         sample, _ = dataset[i]
