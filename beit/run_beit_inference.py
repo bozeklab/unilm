@@ -74,7 +74,10 @@ def infere_insta(model, dataset, device):
 
     model.eval()
 
-    attn_idx = random.sample(range(len(dataset)), 50)
+    #attn_idx = random.sample(range(len(dataset)), 50)
+    attn_idx = [654, 401, 1318, 761, 807, 706, 1894, 2187, 369, 405, 1198, 424, 1223, 1525, 1243, 1369, 2166, 1961, 602, 992, 1176, 1534, 2220, 1793, 1924, 1817, 60, 294, 878, 1856, 1694, 2041, 23, 698, 936, 2344, 40, 2081, 1859,
+                1732, 1113, 714, 1372, 1105, 1723, 811, 677, 396, 402, 2143]
+    #print(attn_idx)
 
     for i in range(len(dataset)):
         sample, _ = dataset[i]
@@ -113,27 +116,27 @@ def infere_insta(model, dataset, device):
 
                 #x = model.forward_features(x=img, boxes=b, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
                 if (i in attn_idx) and (bi == 0):
-                    #attn = model.get_last_selfattention(x=img, boxes=b, attention_mask=attention_mask)
-                    attn = model.get_last_selfattention(x=img)
+                    attn = model.get_last_selfattention(x=img, boxes=b, attention_mask=attention_mask)
+                    #attn = model.get_last_selfattention(x=img)
                     uimg = T.ToPILImage()(nonnormalized_img)
                     with open(f"attn_dump_bt/attn_{i}.pickle", 'wb') as f:
                         pickle.dump(attn.cpu(), f)
-                    uimg.save(f"attn_dump_bt/attn_{i}.png")
+                    uimg.save(f"attn_dump_2/attn_{i}.png")
 
-                #x = model.forward_features(x=img, boxes=b, attention_mask=attention_mask)
-                x = model.forward_features(x=img)
-                #aggregated_box = x[:, -num_boxes:, :]
-                #boxes_out.append(aggregated_box[attention_mask])
+                x = model.forward_features(x=img, boxes=b, attention_mask=attention_mask)
+                #x = model.forward_features(x=img)
+                aggregated_box = x[:, -num_boxes:, :]
+                boxes_out.append(aggregated_box[attention_mask])
                 batch_size, seq_len, C = x.shape
                 # 1/16 == 0.0625
                 x = x[:, 1:, :]
                 x = x.view(batch_size, img.shape[2] // patch_size[0], img.shape[3] // patch_size[1], C)
                 boxes = boxes.to(device, non_blocking=True)
-        aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), spatial_scale=0.0625, boxes=[boxes], output_size=(3, 3))
-        m = nn.AvgPool2d(3, stride=1)
-        aligned_boxes = m(aligned_boxes)#.squeeze()
-        #aligned_boxes = torch.cat(boxes_out).cpu()
-        print(aligned_boxes.shape)
+        #aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2), spatial_scale=0.0625, boxes=[boxes], output_size=(3, 3))
+        #m = nn.AvgPool2d(3, stride=1)
+        #aligned_boxes = m(aligned_boxes)#.squeeze()
+        aligned_boxes = torch.cat(boxes_out).cpu()
+        #print(aligned_boxes.shape)
 
         boxes = boxes.cpu()
         aligned_boxes = aligned_boxes.cpu()
