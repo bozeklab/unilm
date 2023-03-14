@@ -227,7 +227,13 @@ class TranslateYAbs:
         return img.transform(img.size, Image.AFFINE, (1, 0, 0, 0, 1, v))
 
 
-
+for i in range(448):
+    for j in range(448):
+        bi = i // 16
+        bj = j // 16
+        if attn[bi, bj] == 0:
+            continue
+        img[0, i, j] = 0.6 * img[0, i, j] + 0.4 * attn[bi, bj]
 
 
 

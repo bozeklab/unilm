@@ -11,8 +11,8 @@ ASSETS_DIRECTORY = "assets"
 plt.rcParams["savefig.bbox"] = "tight"
 
 
-img_path = '/Users/piotrwojcik/Downloads/attn_dump/attn_305.png'
-attn_path = '/Users/piotrwojcik/Downloads/attn_dump/attn_305.pickle'
+img_path = '/Users/piotrwojcik/Downloads/attn_dump_bt/attn_405.png'
+attn_path = '/Users/piotrwojcik/Downloads/attn_dump_bt/attn_405.pickle'
 
 
 def show(imgs):
@@ -34,11 +34,12 @@ if __name__ == '__main__':
     img[:, ::16, :] = 0
     img[:, :, ::16] = 0
 
-    p = (9, 24)
+    p = (9, 7)
 
-    cls = False
+    cls = True
+    b_n = None
 
-    if not cls:
+    if not cls and b_n is None:
         for i in range(16):
             for j in range(16):
                 img[2, 16 * p[0] + i, 16 * p[1] + j] = 0
@@ -48,13 +49,22 @@ if __name__ == '__main__':
 
     attn_vis = [img]
 
-    for i in range(2):
+    num_of_patches = 24
+
+    #print(attn[0, 784 + b_n, 803:860])
+
+    for i in range(12):
+        print(attn.shape)
         if cls:
-            attn_i = attn[i, 0, :-100]
+            #attn_i = attn[i, 0, :-100]
+            attn_i = attn[i, 0, :]
+        elif b_n is None:
+            #attn_i = attn[i, p[0] * num_of_patches + p[1] + 1, :-100]
+            attn_i = attn[i, p[0] * num_of_patches + p[1] + 1, :]
         else:
-            attn_i = attn[i, p[0] * 28 + p[1] + 1, :-100]
+            attn_i = attn[i, num_of_patches * num_of_patches + b_n, :-100]
         attn_i = attn_i[1:]
-        attn_i = attn_i.view(28, 28)
+        attn_i = attn_i.view(num_of_patches, num_of_patches)
 
         attn_i *= 5000
         attn_i /= torch.max(attn_i)
