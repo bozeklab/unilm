@@ -78,6 +78,8 @@ def infere_insta(model, dataset, device):
     attn_idx = [654, 401, 1318, 761, 807, 706, 1894, 2187, 369, 405, 1198, 424, 1223, 1525, 1243, 1369, 2166, 1961, 602, 992, 1176, 1534, 2220, 1793, 1924, 1817, 60, 294, 878, 1856, 1694, 2041, 23, 698, 936, 2344, 40, 2081, 1859,
                 1732, 1113, 714, 1372, 1105, 1723, 811, 677, 396, 402, 2143]
     #print(attn_idx)
+    attn_idx = random.sample(range(len(dataset)), 50)
+    print(attn_idx)
 
     for i in range(len(dataset)):
         sample, _ = dataset[i]
