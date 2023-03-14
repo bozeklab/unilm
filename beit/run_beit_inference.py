@@ -116,16 +116,16 @@ def infere_insta(model, dataset, device):
                 #x = model.forward_features(x=img, boxes=b, attention_mask=attention_mask)
                 #boxes_out.append(x)
 
-                #x = model.forward_features(x=img, boxes=b, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
+                x = model.forward_features(x=img, boxes=b, bool_masked_pos=bool_masked_pos, attention_mask=attention_mask)
                 if (i in attn_idx) and (bi == 0):
                     attn = model.get_last_selfattention(x=img, boxes=b, attention_mask=attention_mask)
                     #attn = model.get_last_selfattention(x=img)
                     uimg = T.ToPILImage()(nonnormalized_img)
-                    with open(f"attn_dump_bt/attn_{i}.pickle", 'wb') as f:
+                    with open(f"attn_dump_2/attn_{i}.pickle", 'wb') as f:
                         pickle.dump(attn.cpu(), f)
                     uimg.save(f"attn_dump_2/attn_{i}.png")
 
-                x = model.forward_features(x=img, boxes=b, attention_mask=attention_mask)
+                #x = model.forward_features(x=img, boxes=b, attention_mask=attention_mask)
                 #x = model.forward_features(x=img)
                 aggregated_box = x[:, -num_boxes:, :]
                 boxes_out.append(aggregated_box[attention_mask])
