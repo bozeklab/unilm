@@ -17,6 +17,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from timm.models.layers import drop_path, to_2tuple, trunc_normal_
 from timm.models.registry import register_model
+from torchvision.ops import roi_align
 
 
 def _cfg(url='', **kwargs):
@@ -263,6 +264,9 @@ class VisionTransformer(nn.Module):
                  use_mean_pooling=True, init_scale=0.001):
         super().__init__()
         self.num_classes = num_classes
+        self.img_size = img_size
+        self.patch_size = patch_size
+        self.embed_dim = embed_dim
         self.num_features = self.embed_dim = embed_dim  # num_features for consistency with other models
 
         self.patch_embed = PatchEmbed(
@@ -360,9 +364,20 @@ class VisionTransformer(nn.Module):
         #else:
         #    return x[:, 0]
 
-    def forward(self, x):
+    def forward(self, x, boxes, attention_mask):
         x = self.forward_features(x)
-        x = self.head(x)
+        x = x[:, 1:, :]
+        batch_size = x.shape[0]
+        x = x.view(batch_size, self.img_size // self.patch_size,
+                   self.img_size // self.patch_size, self.embed_dim)
+        aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2),
+                                  spatial_scale=0.0625, boxes=[boxes[attention_mask]], output_size=(3, 3))
+        m = nn.AvgPool2d(3, stride=1)
+        aligned_boxes = m(aligned_boxes)#.squeeze()
+        print('!!!!')
+        print(aligned_boxes.shape)
+
+        x = self.head(aligned_boxes)
         return x
 
     def get_last_selfattention(self, x):
