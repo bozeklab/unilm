@@ -374,9 +374,9 @@ class VisionTransformer(nn.Module):
         aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2),
                                   spatial_scale=0.0625, boxes=[boxes[attention_mask]], output_size=(3, 3))
         m = nn.AvgPool2d(3, stride=1)
-        aligned_boxes = m(aligned_boxes)#.squeeze()
-        print('!!!!')
-        print(aligned_boxes.shape)
+        aligned_boxes = m(aligned_boxes).squeeze()
+        #print('!!!!')
+        #print(aligned_boxes.shape)
 
         x = self.head(aligned_boxes)
         return x
