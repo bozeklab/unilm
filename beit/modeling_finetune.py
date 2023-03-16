@@ -375,10 +375,11 @@ class VisionTransformer(nn.Module):
                                   spatial_scale=0.0625, boxes=[boxes[attention_mask]], output_size=(3, 3))
         m = nn.AvgPool2d(3, stride=1)
         aligned_boxes = m(aligned_boxes).squeeze()
-        print('!!!!')
-        print(self.head)
 
         x = self.head(aligned_boxes)
+        print('!!!')
+        print(x.shape)
+
         return x
 
     def get_last_selfattention(self, x):
