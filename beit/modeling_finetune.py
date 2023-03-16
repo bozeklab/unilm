@@ -370,7 +370,7 @@ class VisionTransformer(nn.Module):
         batch_size = x.shape[0]
         x = x.view(batch_size, self.img_size // self.patch_size,
                    self.img_size // self.patch_size, self.embed_dim)
-        print(boxes[attention_mask])
+        boxes = boxes.float()
         aligned_boxes = roi_align(input=x.permute(0, 3, 1, 2),
                                   spatial_scale=0.0625, boxes=[boxes[attention_mask]], output_size=(3, 3))
         m = nn.AvgPool2d(3, stride=1)
