@@ -235,8 +235,8 @@ class DataAugmentationForBEITDataset(object):
                         (fake_box.expand(self.num_boxes, -1), fake_class.expand(self.num_boxes, -1))]
             else:
                 boxes, classes = boxes
-                classes = DataAugmentationForBEITDataset._merge_classes(classes)
-                #classes = classes.type(torch.int64)
+                #classes = DataAugmentationForBEITDataset._merge_classes(classes)
+                classes = classes.type(torch.int64)
 
                 if not self.eval_f1:
                     image, boxes = self.random_hflip(image, boxes)
@@ -266,8 +266,8 @@ class DataAugmentationForBEITDataset(object):
                     boxes]
         else:
             boxes, classes = boxes
-            classes = DataAugmentationForBEITDataset._merge_classes(classes)
-            #classes = classes.type(torch.int64)
+            #classes = DataAugmentationForBEITDataset._merge_classes(classes)
+            classes = classes.type(torch.int64)
             return [self.patch_transform(image),
                     transforms.ToTensor()(image),
                     (boxes, classes)]

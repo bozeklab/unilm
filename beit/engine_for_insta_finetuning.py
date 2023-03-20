@@ -146,7 +146,7 @@ def evaluate_f1_whole(args, model, device):
         img = img.to(device, non_blocking=True).unsqueeze(0)
         boxes = boxes.float()
 
-        num_boxes = 500
+        num_boxes = 200
         boxes_split = torch.split(boxes, num_boxes, dim=0)
 
         with torch.cuda.amp.autocast():
@@ -170,8 +170,8 @@ def evaluate_f1_whole(args, model, device):
     predictions = torch.cat(predictions).cpu()
     labels = torch.cat(labels).cpu()
 
-    types = ['other', 'inflammatory', 'epithelial', 'spindle']
-    #types = ['neoplastic ', 'inflammatory', 'soft', 'dead', 'epithelial']
+    #types = ['other', 'inflammatory', 'epithelial', 'spindle']
+    types = ['neoplastic ', 'inflammatory', 'soft', 'dead', 'epithelial']
 
     print(f"All dataset size {labels.shape[0]}")
     print(f"all dataset class F1 {f1_score(labels.numpy(), predictions.numpy(), zero_division=1, average='weighted')}")
