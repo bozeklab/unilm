@@ -26,8 +26,6 @@ from sklearn.metrics import f1_score, accuracy_score, precision_score, recall_sc
 
 def train_class_batch(model, img, boxes, attention_mask, classes, criterion):
     outputs = model(x=img, boxes=boxes, attention_mask=attention_mask)
-    print('!!!!!')
-    print(classes[attention_mask].shape)
     loss = criterion(outputs, classes[attention_mask])
     return loss, outputs
 
@@ -182,6 +180,7 @@ def evaluate_f1_whole(args, model, device):
     acc = tp_tn_dt / (tp_tn_dt + fp_fn_dt)
     print(f"Accuracy on the whole ds: {acc}")
 
+    dt = [(41, 243), (78, 225), (1136, 862), (765, 980)]
     for i in range(len(types)):
         type_samples = (labels == i) | (predictions == i)
 
@@ -194,14 +193,24 @@ def evaluate_f1_whole(args, model, device):
         fn_dt = ((labels_true == i) & (pred != i)).sum()
 
         f1_type = (2 * tp_dt) / (2 * tp_dt + fp_dt + fn_dt)
+
+        fp_d = dt[i][0]
+        fn_d = dt[i][1]
+
+        w = [2, 2, 1, 1]
+        fc_type = (2 * (tp_dt + tn_dt)) / (
+            2 * (tp_dt + tn_dt)
+            + w[0] * fp_dt
+            + w[1] * fn_dt
+            + w[2] * fp_d
+            + w[3] * fn_d
+        )
+
         acc_type = (tp_dt + tn_dt) / (tp_dt + tn_dt + fp_dt + fn_dt)
-        prec_type = tp_dt / (tp_dt + fp_dt)
-        recall_type = tp_dt / (tp_dt + fn_dt)
 
         print(f"{types[i]} class F1 {f1_type}")
         print(f"{types[i]} class accuracy {acc_type}")
-        print(f"{types[i]} class precision {prec_type}")
-        print(f"{types[i]} class recall {recall_type}")
+        print(f"{types[i]} Fc {fc_type}")
         print()
 
 
