@@ -194,8 +194,8 @@ def evaluate_f1_whole(args, model, device):
 
         f1_type = (2 * tp_dt) / (2 * tp_dt + fp_dt + fn_dt)
 
-        fp_d = dt[i][0]
-        fn_d = dt[i][1]
+        fp_d = 0#dt[i][0]
+        fn_d = 0#dt[i][1]
 
         w = [2, 2, 1, 1]
         fc_type = (2 * (tp_dt + tn_dt)) / (
