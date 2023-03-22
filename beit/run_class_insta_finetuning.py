@@ -26,7 +26,7 @@ from timm.loss import LabelSmoothingCrossEntropy, SoftTargetCrossEntropy
 from timm.utils import ModelEma
 from optim_factory import create_optimizer, get_parameter_groups, LayerDecayValueAssigner
 
-from datasets import build_instaformer_dataset
+from datasets import build_instaformer_dataset, build_instaformer_eval_dataset
 from engine_for_insta_finetuning import train_one_epoch, evaluate, evaluate_f1_whole
 from utils import NativeScalerWithGradNormCount as NativeScaler
 import utils
@@ -237,7 +237,7 @@ def main(args, ds_init):
     if args.disable_eval_during_finetuning:
         dataset_val = None
     else:
-        dataset_val = build_instaformer_dataset(args=args, finetune=True, eval_f1=True, data_root=args.eval_data_path)
+        dataset_val = build_instaformer_eval_dataset(args=args, data_root=args.eval_data_path)
 
     if True:  # args.distributed:
         num_tasks = utils.get_world_size()

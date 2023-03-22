@@ -377,8 +377,6 @@ class VisionTransformer(nn.Module):
         aligned_boxes = m(aligned_boxes).squeeze()
 
         x = self.head(aligned_boxes)
-        print('!!!')
-        print(x.shape)
 
         return x
 

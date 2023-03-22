@@ -174,26 +174,46 @@ class DataAugmentationForBEiT(object):
         return repr
 
 
-class DataAugmentationForBEITDataset(object):
-    @staticmethod
-    def _merge_classes(classes):
-        classes = classes.type(torch.int64) - 1
+def merge_classes(classes):
+    classes = classes.type(torch.int64) - 1
 
-        # epithelial class
-        classes[classes == 3] = 2
+    # epithelial class
+    classes[classes == 3] = 2
 
-        # spindle-shaped
-        classes[classes == 4] = 3
-        classes[classes == 5] = 3
-        classes[classes == 6] = 3
+    # spindle-shaped
+    classes[classes == 4] = 3
+    classes[classes == 5] = 3
+    classes[classes == 6] = 3
+
+    return classes
 
 
-        return classes
+class DataAugmentationForBEITDatasetEval(object):
+    def __init__(self, args):
+        self.is_conesp = 'CoNSeP' in args.data_path
 
-    def __init__(self, args, finetune=False, eval_f1=False):
+        imagenet_default_mean_and_std = args.imagenet_default_mean_and_std
+        mean = IMAGENET_INCEPTION_MEAN if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_MEAN
+        std = IMAGENET_INCEPTION_STD if not imagenet_default_mean_and_std else IMAGENET_DEFAULT_STD
+
+        self.patch_transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(mean=torch.tensor(mean), std=torch.tensor(std))])
+
+    def __call__(self, image, boxes=None):
+        assert(boxes is None or isinstance(boxes, tuple))
+        boxes, classes = boxes
+        if self.is_conesp:
+            classes = merge_classes(classes)
+        return [self.patch_transform(image), transforms.ToTensor()(image), (boxes, classes)]
+
+
+class DataAugmentationForBEITDatasetFinetune(object):
+
+    def __init__(self, args, finetune=False):
         self.num_boxes = args.num_boxes
+        self.is_conesp = 'CoNSeP' in args.data_path
         self.finetune = finetune
-        self.eval_f1 = eval_f1
         self.random_hflip = RandomHorizontalFlip(p=0.5)
         self.common_transform = transforms.Compose([
             transforms.ColorJitter(0.4, 0.4, 0.4),
@@ -214,7 +234,7 @@ class DataAugmentationForBEITDataset(object):
                 mean=torch.tensor(mean),
                 std=torch.tensor(std))])
 
-        if not self.finetune and not self.eval_f1:
+        if not self.finetune:
             self.masked_position_generator = MaskingGenerator(
                 args.window_size, num_masking_patches=args.num_mask_patches,
                 max_num_patches=args.max_mask_patches_per_block,
@@ -235,13 +255,12 @@ class DataAugmentationForBEITDataset(object):
                         (fake_box.expand(self.num_boxes, -1), fake_class.expand(self.num_boxes, -1))]
             else:
                 boxes, classes = boxes
-                #classes = DataAugmentationForBEITDataset._merge_classes(classes)
-                classes = classes.type(torch.int64)
+                if self.is_conesp:
+                    classes = merge_classes(classes)
 
-                if not self.eval_f1:
-                    image, boxes = self.random_hflip(image, boxes)
-                    image, boxes, classes = self.crop_and_resize(image, boxes, classes)
-                    image = self.common_transform(image)
+                image, boxes = self.random_hflip(image, boxes)
+                image, boxes, classes = self.crop_and_resize(image, boxes, classes)
+                image = self.common_transform(image)
 
                 boxes_available = boxes.shape[0]
 
@@ -259,19 +278,11 @@ class DataAugmentationForBEITDataset(object):
                             transforms.ToTensor()(image),
                             torch.tensor([True] * self.num_boxes),
                             (boxes[idx], classes[idx])]
-        if not self.eval_f1:
+        else:
             return [self.patch_transform(image),
                     transforms.ToTensor()(image),
                     self.masked_position_generator(),
                     boxes]
-        else:
-            boxes, classes = boxes
-            #classes = DataAugmentationForBEITDataset._merge_classes(classes)
-            classes = classes.type(torch.int64)
-            return [self.patch_transform(image),
-                    transforms.ToTensor()(image),
-                    (boxes, classes)]
-
 
 
 def build_beit_pretraining_dataset(args):
@@ -290,8 +301,17 @@ def build_instaformer_pretraining_dataset(args):
                                 transform=transform)
 
 
-def build_instaformer_dataset(args, eval_f1=False, finetune=False, data_root=None):
-    transform = DataAugmentationForBEITDataset(args, eval_f1=eval_f1, finetune=finetune)
+def build_instaformer_eval_dataset(args, data_root=None):
+    transform = DataAugmentationForBEITDatasetEval(args)
+    print("Data Aug = %s" % str(transform))
+    if data_root is None:
+        data_root = args.data_path
+    return SegmentedImageFolder(root=data_root, loader=pil_pkl_loader_classes,
+                                transform=transform)
+
+
+def build_instaformer_dataset(args, finetune=False, data_root=None):
+    transform = DataAugmentationForBEITDatasetFinetune(args, finetune=finetune)
     if data_root is None:
         data_root = args.data_path
     return SegmentedImageFolder(root=data_root, loader=pil_pkl_loader_classes,
